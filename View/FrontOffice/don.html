@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Play to Help - Dons & Challenges</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/fontawesome.css" />
+    <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css" />
+    <link rel="stylesheet" href="assets/css/owl.css" />
+    <link rel="stylesheet" href="assets/css/animate.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="assets/css/dons-assoc.css" />
+    <style>
+         /* Fix header */
+        .header-area {
+            background-color: #1a1a2e;
+            width: 100%;
+        }
+        .header-area .container {
+            max-width: none;
+            width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .header-area.header-sticky { top: 0 !important; z-index: 99999 !important; transition: transform 0.4s ease !important; }
+        .header-area.header-sticky  { display: flex !important; margin-right: 20px; }
+        body.menu-is-open .header-area { display: flex !important; position: fixed !important; }
+        .menu-trigger { cursor: pointer; z-index: 100000; }
+        body.menu-is-open { overflow-x: hidden; padding-top: 0 !important; }
+        @media (max-width: 768px) { body { padding-top: 0 !important; } }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            border-radius: 20px;
+            padding: 50px 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 60px rgba(0,255,136,0.4);
+            text-align: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner h2 {
+            font-size: 2.8em;
+            text-shadow: 0 0 15px #00ff88;
+            animation: glow 1.5s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 15px #00ff88, 0 0 25px #00ff88; }
+            to { text-shadow: 0 0 25px #00ff88, 0 0 35px #00ff88, 0 0 45px #00ff88; }
+        }
+        .hero-banner p {
+            font-size: 1.2em;
+            animation: fadeInUp 1s ease-out 0.5s both;
+            position: relative;
+            z-index: 1;
+        }
+        .main-button a.btn-donate {
+            background: linear-gradient(45deg, #ff6384, #ff9ff3);
+            border: none;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 0 20px rgba(255,99,132,0.4);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        .main-button a.btn-donate:hover {
+            box-shadow: 0 0 30px rgba(255,99,132,0.8);
+            color: #fff;
+            text-shadow: 0 0 10px #ff6384;
+        }
+
+        /* Grid Donation & Challenges */
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .item {
+            background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(0,255,136,0.05));
+            border: 1px solid rgba(0,255,136,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,255,136,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+        .item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 45px rgba(0,255,136,0.3);
+            border-color: #00ff88;
+        }
+        .thumb img {
+            width: 100%;
+            border-radius: 12px;
+            filter: drop-shadow(0 0 10px rgba(0,255,136,0.5));
+            transition: filter 0.3s ease;
+        }
+        .thumb img:hover {
+            filter: drop-shadow(0 0 20px rgba(0,255,136,0.8));
+        }
+        .hover-effect {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1rem;
+            text-align: center;
+            padding: 10px;
+        }
+        .item:hover .hover-effect {
+            opacity: 1;
+        }
+        .down-content {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #00ff88;
+            margin: 0 auto 10px;
+            box-shadow: 0 0 15px rgba(0,255,136,0.5);
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .down-content span {
+            display: block;
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .down-content h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: normal;
+            word-break: break-word;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        .down-content p {
+            font-size: 1rem;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        /* Progress bar */
+        .progress-container {
+            margin: 15px 0;
+        }
+        .progress-bar-bg {
+            background: linear-gradient(to right, #333, #555);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            background: linear-gradient(to right, #00ff88, #36a2eb);
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1.5s ease-in-out;
+            position: relative;
+        }
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        small.progress-text {
+            display:block;
+            font-size: 0.9em;
+            color: #ccc;
+            margin-top: 5px;
+            text-align: center;
+        }
+        /* Buttons */
+        .btn-challenge {
+            background: linear-gradient(45deg, #00ff88, #36a2eb);
+            border: none;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 0 20px rgba(0,255,136,0.4);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn-challenge:hover, .btn-challenge:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 25px rgba(0,255,136,0.6);
+            color: #fff;
+            text-shadow: 0 0 10px #00ff88;
+            outline: none;
+        }
+        /* Modal styling */
+        .modal-header {
+            background: linear-gradient(45deg, #00ff88, #36a2eb);
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        .btn-close {
+            background: transparent;
+            border: none;
+        }
+        .modal-body {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,255,136,0.05));
+            color: #fff;
+        }
+        .btn-donate {
+            background: linear-gradient(45deg, #ff6384, #ff9ff3);
+            border: none;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 0 20px rgba(255,99,132,0.4);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn-donate:hover, .btn-donate:focus {
+            box-shadow: 0 0 30px rgba(255,99,132,0.8);
+            outline: none;
+        }
+        /* Form control */
+        .form-control {
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.5);
+            background: rgba(0,0,0,0.7);
+            outline: none;
+            color: #fff;
+        }
+        /* Footer */
+        footer {
+            padding: 20px 0;
+            background: #111;
+            color: #ccc;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        footer a {
+            color: #00ff88;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header id="mainHeader" class="header-area header-sticky">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <nav class="main-nav d-flex align-items-center justify-content-between">
+                        <a href="index.html" class="logo">
+                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
+                        </a>
+                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
+                            <form id="search" action="search.html" class="d-flex align-items-center">
+                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
+                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                    <span class="sr-only">Rechercher</span>
+                                </button>
+                            </form>
+                        </div>
+                        <ul class="nav d-flex align-items-center mb-0">
+                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="browse.html">Événements</a></li>
+                            <li><a href="streams.html">Streams Solidaires</a></li>
+                            <li><a href="association.html">Associations</a></li>
+                            <li><a href="don.html">Dons & Challenges</a></li>
+                            <li><a href="backoffice.html">Back-Office</a></li>
+                            <li><a href="profile.html">Profil</a></li>
+                        </ul>
+                        <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="hero-banner">
+                    <h2>Rejoignez la Révolution Gaming Solidaire !</h2>
+                    <p>Plongez dans un univers où chaque kill, chaque stream, et chaque don devient une arme contre l'injustice. Choisissez votre association, lancez un défi épique, et transformez vos victoires virtuelles en victoires réelles.</p>
+                    <div class="main-button">
+                        <a href="don.html" class="btn-donate" role="button">Lancez Votre Défi Maintenant</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRID DE DONATIONS ET CHALLENGES -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-content">
+                    <div class="live-stream">
+                        <div>
+                            <div class="header-section mb-4">
+                                <h4><em>Derniers</em> Dons & Challenges Solidaires</h4>
+                            </div>
+                        </div>
+                        <div class="challenge-grid" id="liste-dons">
+                            <!-- Don 1 -->
+                            <div class="item don-item">
+                                <div class="thumb position-relative">
+                                    <img src="assets/images/challenge-1.png" alt="Don UNICEF">
+                                    <div class="hover-effect">
+                                        <ul style="list-style:none; padding:0; margin:0;">
+                                            <li><i class="fa fa-euro"></i> 50€</li>
+                                            <li><i class="fa fa-calendar"></i> 2025-11-09</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="down-content">
+                                    <div class="avatar">
+                                        <img src="assets/images/avatar-01.jpg" alt="Test User">
+                                    </div>
+                                    <span><i class="fa fa-heart"></i> Test User</span>
+                                    <h4>Pour UNICEF</h4>
+                                </div>
+                            </div>
+
+                            <!-- Don 2 -->
+                            <div class="item don-item">
+                                <div class="thumb position-relative">
+                                    <img src="assets/images/challenge-1.png" alt="Don WWF">
+                                    <div class="hover-effect">
+                                        <ul style="list-style:none; padding:0; margin:0;">
+                                            <li><i class="fa fa-euro"></i> 30€</li>
+                                            <li><i class="fa fa-calendar"></i> 2025-11-08</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="down-content">
+                                    <div class="avatar">
+                                        <img src="assets/images/avatar-02.jpg" alt="Gamer Pro">
+                                    </div>
+                                    <span><i class="fa fa-heart"></i> Gamer Pro</span>
+                                    <h4>Pour WWF</h4>
+                                </div>
+                            </div>
+
+                            <!-- Challenge 1 -->
+                            <div class="item challenge-card">
+                                <div class="thumb position-relative">
+                                    <img src="assets/images/feature-left.jpg" alt="Défi UNICEF">
+                                    <div class="hover-effect">
+                                        <h6 style="margin:0;">Défi : 10 kills Fortnite</h6>
+                                    </div>
+                                </div>
+                                <div class="down-content">
+                                    <h4>10 kills Fortnite pour UNICEF</h4>
+                                    <p>Récompense : Badge Épique + Shoutout</p>
+                                    <div class="progress-container">
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-fill" style="width: 50%;"></div>
+                                        </div>
+                                    </div>
+                                    <small class="progress-text">50€ / 100€ (50%)</small>
+                                    <a href="streams.html" class="btn-challenge mt-2" role="button">Rejoindre en Stream</a>
+                                </div>
+                            </div>
+
+                            <!-- Challenge 2 -->
+                            <div class="item challenge-card">
+                                <div class="thumb position-relative">
+                                    <img src="assets/images/feature-right.jpg" alt="Défi WWF">
+                                    <div class="hover-effect">
+                                        <h6 style="margin:0;">Défi : Marathon WoW</h6>
+                                    </div>
+                                </div>
+                                <div class="down-content">
+                                    <h4>Marathon WoW 24h pour WWF</h4>
+                                    <p>Récompense : NFT Solidaire</p>
+                                    <div class="progress-container">
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-fill" style="width: 25%;"></div>
+                                        </div>
+                                    </div>
+                                    <small class="progress-text">50€ / 200€ (25%)</small>
+                                    <a href="streams.html" class="btn-challenge mt-2" role="button">Rejoindre en Stream</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modalDon" class="btn btn-donate me-3" role="button">Faire un Don Simple</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modalChallenge" class="btn btn-challenge" role="button">Lancer un Challenge Stream</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DON -->
+    <div class="modal fade" id="modalDon" tabindex="-1" aria-labelledby="modalDonLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDonLabel"><i class="fa fa-heart"></i> Faire un Don Solidaire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formDon">
+                        <div class="mb-3">
+                            <label for="montant" class="form-label">Montant (€)</label>
+                            <input type="number" class="form-control" id="montant" name="montant" min="1" placeholder="Votre don change le monde..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="association" class="form-label">Association</label>
+                            <select class="form-control" id="association" name="association" required>
+                                <option value="">Choisissez votre cause...</option>
+                                <option value="1">UNICEF (5000€ collectés)</option>
+                                <option value="2">WWF (3000€ collectés)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-donate w-100" aria-label="Donner et Inspirer">
+                            <i class="fa fa-gift"></i> Donner et Inspirer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHALLENGE -->
+    <div class="modal fade" id="modalChallenge" tabindex="-1" aria-labelledby="modalChallengeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalChallengeLabel"><i class="fa fa-gamepad"></i> Créer un Challenge Don Stream</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formChallenge">
+                        <div class="mb-3">
+                            <label for="challenge-assoc" class="form-label">Association</label>
+                            <select class="form-control" id="challenge-assoc" name="challenge-assoc" required>
+                                <option value="">Sélectionnez votre cause héroïque...</option>
+                                <option value="1">UNICEF</option>
+                                <option value="2">WWF</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="defi" class="form-label">Défi In-Game (ex. : "10 kills dans CS:GO")</label>
+                            <input type="text" class="form-control" id="defi" name="defi" placeholder="Votre mission épique..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="objectif" class="form-label">Objectif Dons (€)</label>
+                            <input type="number" class="form-control" id="objectif" name="objectif" min="10" placeholder="Le niveau à atteindre..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recompense" class="form-label">Récompense (ex. : Badge + Shoutout Stream)</label>
+                            <input type="text" class="form-control" id="recompense" name="recompense" placeholder="Le trésor pour les héros..." required>
+                        </div>
+                        <button type="submit" class="btn btn-challenge w-100" aria-label="Lancer le Challenge Épique">
+                            <i class="fa fa-rocket"></i> Lancer le Challenge Épique !
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>Copyright © 2025 <a href="#">Play to Help</a> - Gaming pour l'Humanitaire. Tous droits réservés.<br>
+            Design inspiré de <a href="https://templatemo.com" target="_blank" rel="noopener">TemplateMo</a> | Distributed By <a href="https://themewagon.com" target="_blank" rel="noopener">ThemeWagon</a></p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/isotope.min.js"></script>
+    <script src="assets/js/owl-carousel.js"></script>
+    <script src="assets/js/tabs.js"></script>
+    <script src="assets/js/popup.js"></script>
+    <script src="assets/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/dons-assoc.js"></script>
+    <script>
+        // Toggle menu open class
+        $('.menu-trigger').click(function(e) {
+            e.preventDefault();
+            $('body').toggleClass('menu-is-open');
+        });
+
+        // Close menu when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.main-nav, .menu-trigger').length) {
+                $('body').removeClass('menu-is-open');
+            }
+        });
+
+        // Show/hide header on scroll: hide scroll down, show scroll up
+        $(document).ready(function() {
+            var lastScrollTop = 0;
+            var $header = $('#mainHeader');
+
+            $(window).on('scroll', function() {
+                var st = $(this).scrollTop();
+
+                if (st > lastScrollTop && st > 100) {
+                    // Scroll vers bas, cacher header
+                    $header.css({
+                        'transform': 'translateY(-100%)',
+                        'transition': 'transform 0.4s ease'
+                    });
+                } else {
+                    // Scroll vers haut, montrer header
+                    $header.css({
+                        'transform': 'translateY(0)',
+                        'transition': 'transform 0.4s ease'
+                    });
+                }
+                lastScrollTop = st;
+            });
+        });
+
+        // Form Don submit simulation
+        $('#formDon').submit(function(e) {
+            e.preventDefault();
+            const montant = $('#montant').val();
+            alert(`Super ! Votre don de ${montant}€ va transformer des vies. Merci, héros du gaming ! ❤️🎮`);
+            $('#modalDon').modal('hide');
+            this.reset();
+        });
+
+        // Form Challenge submit simulation
+        $('#formChallenge').submit(function(e) {
+            e.preventDefault();
+            const defi = $('#defi').val();
+            alert(`Défi "${defi}" lancé ! Préparez-vous pour l'aventure solidaire – que le stream commence ! 🚀`);
+            $('#modalChallenge').modal('hide');
+            this.reset();
+        });
+
+        // Animate challenge cards fadeInUp on load
+        $('.challenge-card').each(function(i) {
+            $(this).delay(200 * i).queue(function(next){
+                $(this).addClass('animated fadeInUp');
+                next();
+            });
+        });
+    </script>
+</body>
+</html>
