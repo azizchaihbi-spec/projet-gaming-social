@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.stat-card {
+    @apply p-4 rounded-lg border border-green-400 text-center;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.top-streamer-card, .leaderboard-card {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.progress-bar {
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+}
+
+.event-item {
+    @apply p-3 rounded-lg bg-gray-700;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Neon glow effect for important elements */
+.neon-glow {
+    text-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #059669;
+}
