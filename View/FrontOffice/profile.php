@@ -136,7 +136,15 @@ $user = $_SESSION['user'];
                                         <div class="detail-item">
                                             <i class="fa fa-user-circle"></i>
                                             <span><strong>Rôle:</strong> <span id="profileRole">
-                                                <?php echo $user['role'] === 'streamer' ? 'Streamer' : 'Viewer'; ?>
+                                                <?php
+                                                    if ($user['role'] === 'streamer') {
+                                                        echo 'Streamer';
+                                                    } elseif ($user['role'] === 'admin') {
+                                                        echo 'Administrateur';
+                                                    } else {
+                                                        echo 'Viewer';
+                                                    }
+                                                ?>
                                             </span></span>
                                         </div>
                                     </div>
@@ -177,6 +185,11 @@ $user = $_SESSION['user'];
                                         <button id="editStreamerButton" class="btn-primary" onclick="openEditStreamerModal()">
                                             <i class="fa fa-edit"></i> Modifier infos streamer
                                         </button>
+                                        <?php endif; ?>
+                                        <?php if ($user['role'] === 'admin'): ?>
+                                        <a href="../../view/BackOffice/index.php" class="btn-primary">
+                                            <i class="fa fa-cog"></i> Back-Office Admin
+                                        </a>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -274,6 +287,6 @@ $user = $_SESSION['user'];
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/custom.js"></script>
-    <script src="scripts.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

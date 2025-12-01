@@ -31,7 +31,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
             <div class="flex items-center space-x-6">
                 <a href="index.php" class="text-cyan-400 hover:text-cyan-300 transition">Dashboard</a>
-                <button class="bg-cyan-600 hover:bg-cyan-500 px-4 py-2 rounded-lg transition">Déconnexion</button>
+
             </div>
         </div>
     </nav>

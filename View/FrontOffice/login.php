@@ -86,6 +86,12 @@ if (isset($_SESSION['user'])) {
                                 <input type="password" id="loginPassword" placeholder="••••••••" required>
                             </div>
                             
+                            <div style="text-align: right; margin-bottom: 15px;">
+                                <a href="forgot_password.php" class="forgot-password">
+                                    <i class="fa fa-key"></i> Mot de passe oublié ?
+                                </a>
+                            </div>
+                            
                             <button type="button" class="submit-btn" onclick="handleLogin()">
                                 <i class="fa fa-sign-in"></i> Se connecter
                             </button>
@@ -108,6 +114,6 @@ if (isset($_SESSION['user'])) {
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/custom.js"></script>
-    <script src="scripts.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

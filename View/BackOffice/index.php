@@ -85,13 +85,13 @@ switch ($action) {
     <nav class="bg-gray-900/80 backdrop-blur-lg border-b border-cyan-500/30 py-4 px-6">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <h1 class="text-2xl font-bold text-cyan-400 font-orbitron">PLAY2HELP</h1>
+                <h1 class="🎥 Streamer	ext-2xl font-bold text-cyan-400 font-orbitron">PLAY2HELP</h1>
                 <span class="text-gray-400">|</span>
                 <span class="text-gray-300">Admin Dashboard</span>
             </div>
             <div class="flex items-center space-x-6">
-                <a href="../../FrontOffice/login.php" class="text-cyan-400 hover:text-cyan-300 transition">Site Principal</a>
-                <button class="bg-cyan-600 hover:bg-cyan-500 px-4 py-2 rounded-lg transition">Déconnexion</button>
+                <a href="../../View/FrontOffice/login.php" class="text-cyan-400 hover:text-cyan-300 transition">Site Principal</a>
+               
             </div>
         </div>
     </nav>
@@ -217,9 +217,19 @@ switch ($action) {
                                 </td>
                                 <td class="py-5 px-6">
                                     <span class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap
-                                        <?= ($user['role'] ?? '') === 'streamer' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30' ?>">
-                                        <?= ($user['role'] ?? '') === 'streamer' ? '🎥 Streamer' : '👁️ Viewer' ?>
+                                        <?= match($user['role'] ?? '') {
+                                            'streamer' => 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+                                            'admin'    => 'bg-red-500/20 text-red-400 border border-red-500/30',
+                                            default    => 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+                                        } ?>">
+                                        
+                                        <?= match($user['role'] ?? '') {
+                                            'streamer' => '🎥 Streamer',
+                                            'admin'    => '⚙️ Admin',
+                                            default    => '👁️ Viewer',
+                                        } ?>
                                     </span>
+
                                 </td>
                                 <td class="py-5 px-6 text-gray-400">
                                     <?= isset($user['join_date']) ? date('d/m/Y', strtotime($user['join_date'])) : 'N/A' ?>

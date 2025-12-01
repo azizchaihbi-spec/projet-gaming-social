@@ -67,8 +67,91 @@ class Auth {
         $this->pdo = config::getConnexion();
     }
 
+    private function validateUser(User $user) {
+        $errors = [];
+
+        $first = trim((string)$user->getFirstName());
+        $last = trim((string)$user->getLastName());
+        $username = trim((string)$user->getUsername());
+        $email = trim((string)$user->getEmail());
+        $birthdate = trim((string)$user->getBirthdate());
+        $country = trim((string)$user->getCountry());
+        $role = trim((string)$user->getRole());
+        $password = (string)$user->getPassword();
+        $streamLink = trim((string)$user->getStreamLink());
+
+        // Noms alphabetiques 2-50 (accents, espaces, tirets, apostrophes)
+        if ($first === '' || !preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,50}$/u", $first)) {
+            $errors[] = "Prénom invalide (lettres uniquement, 2-50)";
+        }
+        if ($last === '' || !preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,50}$/u", $last)) {
+            $errors[] = "Nom invalide (lettres uniquement, 2-50)";
+        }
+
+        // Username 3-30 alphanum _ -
+        if ($username === '' || !preg_match('/^[A-Za-z0-9_-]{3,30}$/', $username)) {
+            $errors[] = "Nom d'utilisateur invalide (3-30, lettres/chiffres/_/-)";
+        }
+
+        // Email
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Email invalide";
+        }
+
+        // Age >= 13
+        if ($birthdate === '') {
+            $errors[] = "Date de naissance obligatoire";
+        } else {
+            try {
+                $bd = new DateTime($birthdate);
+                $today = new DateTime();
+                $age = $today->diff($bd)->y;
+                if ($age < 13) {
+                    $errors[] = "Âge minimum 13 ans";
+                }
+            } catch (Exception $e) {
+                $errors[] = "Date de naissance invalide";
+            }
+        }
+
+        // Pays
+        if ($country === '') {
+            $errors[] = "Pays obligatoire";
+        }
+
+        // Rôle (viewer/streamer)
+        if ($role === '' || !in_array($role, ['viewer','streamer'], true)) {
+            $errors[] = "Rôle invalide";
+        }
+
+        // Mot de passe
+        if (!(strlen($password) >= 6 && preg_match('/[a-z]/', $password) && preg_match('/[A-Z]/', $password) && preg_match('/[0-9]/', $password))) {
+            $errors[] = "Mot de passe faible (min 6, 1 maj, 1 min, 1 chiffre)";
+        }
+
+        // Lien de stream optionnel mais valide si fourni
+        if ($streamLink !== '') {
+            if (!filter_var($streamLink, FILTER_VALIDATE_URL)) {
+                $errors[] = "Lien de stream invalide";
+            } else {
+                $scheme = parse_url($streamLink, PHP_URL_SCHEME);
+                if (!in_array($scheme, ['http','https'], true)) {
+                    $errors[] = "Lien de stream doit utiliser http/https";
+                }
+            }
+        }
+
+        return $errors;
+    }
+
     public function register(User $user) {
         try {
+            // Validation côté serveur
+            $errors = $this->validateUser($user);
+            if (!empty($errors)) {
+                return ['success' => false, 'message' => implode(' | ', $errors)];
+            }
+
             // Vérifier si l'email existe déjà
             $checkStmt = $this->pdo->prepare("SELECT id FROM users WHERE email = ?");
             $checkStmt->execute([$user->getEmail()]);
@@ -193,6 +276,126 @@ class Auth {
             }
         } catch (PDOException $e) {
             return ['success' => false, 'message' => 'Erreur base de données: ' . $e->getMessage()];
+        }
+    }
+
+    // Créer un token de réinitialisation de mot de passe
+    public function createResetToken($email) {
+        try {
+            // Vérifier si l'email existe
+            $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                return ['success' => false, 'message' => 'Aucun compte associé à cet email'];
+            }
+
+            // Générer un token unique et sécurisé
+            $token = bin2hex(random_bytes(32)); // 64 caractères hexadécimaux
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour')); // Expire dans 1 heure
+
+            // Stocker le token dans la base de données
+            $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET reset_token = ?, reset_token_expires = ? 
+                WHERE email = ?
+            ");
+            $result = $stmt->execute([$token, $expires, $email]);
+
+            if ($result) {
+                return [
+                    'success' => true, 
+                    'token' => $token,
+                    'email' => $email,
+                    'message' => 'Token créé avec succès'
+                ];
+            } else {
+                return ['success' => false, 'message' => 'Erreur lors de la création du token'];
+            }
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Erreur base de données: ' . $e->getMessage()];
+        }
+    }
+
+    // Valider un token de réinitialisation
+    public function validateResetToken($token) {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT id, email, reset_token_expires 
+                FROM users 
+                WHERE reset_token = ? 
+                AND reset_token IS NOT NULL
+            ");
+            $stmt->execute([$token]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                return ['success' => false, 'message' => 'Token invalide ou expiré'];
+            }
+
+            // Vérifier si le token n'a pas expiré
+            $now = new DateTime();
+            $expires = new DateTime($user['reset_token_expires']);
+
+            if ($now > $expires) {
+                // Token expiré, le supprimer
+                $this->clearResetToken($user['id']);
+                return ['success' => false, 'message' => 'Le lien a expiré. Veuillez faire une nouvelle demande'];
+            }
+
+            return [
+                'success' => true, 
+                'userId' => $user['id'],
+                'email' => $user['email']
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Erreur lors de la validation: ' . $e->getMessage()];
+        }
+    }
+
+    // Réinitialiser le mot de passe avec un token valide
+    public function resetPasswordByToken($token, $newPassword) {
+        try {
+            // Valider le token
+            $validation = $this->validateResetToken($token);
+            if (!$validation['success']) {
+                return $validation;
+            }
+
+            $userId = $validation['userId'];
+
+            // Hasher le nouveau mot de passe
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            // Mettre à jour le mot de passe
+            $stmt = $this->pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+            $result = $stmt->execute([$hashedPassword, $userId]);
+
+            if ($result) {
+                // Supprimer le token après utilisation
+                $this->clearResetToken($userId);
+                return ['success' => true, 'message' => 'Mot de passe réinitialisé avec succès!'];
+            } else {
+                return ['success' => false, 'message' => 'Erreur lors de la mise à jour du mot de passe'];
+            }
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Erreur base de données: ' . $e->getMessage()];
+        }
+    }
+
+    // Supprimer le token de réinitialisation
+    private function clearResetToken($userId) {
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET reset_token = NULL, reset_token_expires = NULL 
+                WHERE id = ?
+            ");
+            $stmt->execute([$userId]);
+        } catch (PDOException $e) {
+            // Log l'erreur mais ne pas bloquer le processus
+            error_log('Erreur clearResetToken: ' . $e->getMessage());
         }
     }
 }

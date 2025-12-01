@@ -31,7 +31,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
             <div class="flex items-center space-x-6">
                 <a href="index.php" class="text-cyan-400 hover:text-cyan-300 transition">Dashboard</a>
-                <button class="bg-cyan-600 hover:bg-cyan-500 px-4 py-2 rounded-lg transition">Déconnexion</button>
+
             </div>
         </div>
     </nav>
@@ -58,18 +58,19 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <!-- Formulaire -->
         <div class="card rounded-3xl p-8 glow">
-            <form action="index.php?action=create" method="POST" class="space-y-6">
+            <div id="clientErrors"></div>
+            <form id="createUserForm" action="index.php?action=create" method="POST" class="space-y-6">
                 
                 <!-- Informations de base -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Prénom *</label>
-                        <input type="text" name="first_name" required 
+                        <input type="text" name="first_name" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
                         <label class="block text-cyan-400 mb-2">Nom *</label>
-                        <input type="text" name="last_name" required 
+                           <input type="text" name="last_name" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                 </div>
@@ -77,12 +78,12 @@ if (session_status() === PHP_SESSION_NONE) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Nom d'utilisateur *</label>
-                        <input type="text" name="username" required 
+                           <input type="text" name="username" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
                         <label class="block text-cyan-400 mb-2">Email *</label>
-                        <input type="email" name="email" required 
+                           <input type="text" name="email" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                 </div>
@@ -90,7 +91,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Date de naissance</label>
-                        <input type="date" name="birthdate" 
+                           <input type="date" name="birthdate" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
@@ -108,12 +109,12 @@ if (session_status() === PHP_SESSION_NONE) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Pays</label>
-                        <input type="text" name="country" 
+                           <input type="text" name="country" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
                         <label class="block text-cyan-400 mb-2">Ville</label>
-                        <input type="text" name="city" 
+                           <input type="text" name="city" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                 </div>
@@ -122,14 +123,15 @@ if (session_status() === PHP_SESSION_NONE) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Rôle *</label>
-                        <select name="role" required class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                        <select name="role" class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                             <option value="viewer">Viewer</option>
                             <option value="streamer">Streamer</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-cyan-400 mb-2">Mot de passe *</label>
-                        <input type="password" name="password" required 
+                           <input type="password" name="password" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                 </div>
@@ -140,7 +142,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     
                     <div>
                         <label class="block text-cyan-400 mb-2">Lien de stream</label>
-                        <input type="url" name="stream_link" 
+                           <input type="text" name="stream_link" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
 
@@ -173,20 +175,6 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </main>
 
-    <script>
-        feather.replace();
-
-        // Afficher/masquer les champs streamer
-        const roleSelect = document.querySelector('select[name="role"]');
-        const streamerFields = document.getElementById('streamer-fields');
-
-        roleSelect.addEventListener('change', function() {
-            if (this.value === 'streamer') {
-                streamerFields.classList.remove('hidden');
-            } else {
-                streamerFields.classList.add('hidden');
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

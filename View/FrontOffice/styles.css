@@ -194,6 +194,56 @@ body {
     display: none;
 }
 
+/* Alert blocks - professional styling for messages */
+.alert {
+    display: none;
+    width: 100%;
+    margin-top: 18px;
+    border-radius: 14px;
+    padding: 16px 18px;
+    border: 1px solid transparent;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.30);
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+.alert.show { display: block; }
+.alert .alert-body {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+.alert .alert-icon {
+    font-size: 20px;
+    line-height: 1;
+    margin-top: 2px;
+}
+.alert .alert-title {
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+.alert .alert-list {
+    margin: 8px 0 0 20px;
+    padding: 0;
+    list-style: disc;
+}
+.alert .alert-list li { margin: 6px 0; line-height: 1.5; }
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.10);
+    border-color: rgba(239, 68, 68, 0.45);
+    color: #ff7b7b;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+.alert-success {
+    background: rgba(16, 185, 129, 0.10);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #34d399;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
 .forgot-password,
 .back-to-login {
     display: block;

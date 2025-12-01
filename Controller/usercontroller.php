@@ -121,7 +121,7 @@ class UserController {
     private function validateUser(User $user, $excludeId = null) {
         $errors = [];
 
-        // Validation des champs requis
+        // Required fields
         $required = ['first_name', 'last_name', 'username', 'email', 'role'];
         foreach ($required as $field) {
             $getter = 'get' . str_replace('_', '', ucwords($field, '_'));
@@ -130,18 +130,83 @@ class UserController {
             }
         }
 
-        // Validation email
-        if (!filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
+        // Name validation: only letters (including accents), spaces, hyphens, apostrophes; 2-50 chars
+        $nameRe = '/^[\p{L} \'-]{2,50}$/u';
+        if (!empty($user->getFirstName()) && !preg_match($nameRe, $user->getFirstName())) {
+            $errors[] = "Prénom invalide (lettres, espaces, -, ' ; 2-50 caractères)";
+        }
+        if (!empty($user->getLastName()) && !preg_match($nameRe, $user->getLastName())) {
+            $errors[] = "Nom invalide (lettres, espaces, -, ' ; 2-50 caractères)";
+        }
+
+        // Username validation
+        if (!empty($user->getUsername()) && !preg_match('/^[a-zA-Z0-9_-]{3,30}$/', $user->getUsername())) {
+            $errors[] = "Nom d'utilisateur invalide (3-30 caractères, lettres, chiffres, - et _ autorisés)";
+        }
+
+        // Email validation
+        if (!empty($user->getEmail()) && !filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Format d'email invalide";
         }
 
+        // Birthdate -> must be older than 13 years
+        $birth = $user->getBirthdate();
+        if (empty($birth)) {
+            $errors[] = "Date de naissance requise";
+        } else {
+            $birthDate = null;
+            // Accept DD/MM/YYYY or ISO YYYY-MM-DD
+            if (strpos($birth, '/') !== false) {
+                $parts = explode('/', $birth);
+                if (count($parts) === 3) {
+                    $d = intval($parts[0]);
+                    $m = intval($parts[1]);
+                    $y = intval($parts[2]);
+                    if (checkdate($m, $d, $y)) {
+                        $birthDate = new DateTime("$y-$m-$d");
+                    }
+                }
+            } else {
+                try {
+                    $birthDate = new DateTime($birth);
+                } catch (Exception $e) {
+                    $birthDate = null;
+                }
+            }
+
+            if (!$birthDate) {
+                $errors[] = "Format de date de naissance invalide";
+            } else {
+                $today = new DateTime();
+                $age = $today->diff($birthDate)->y;
+                if ($age <= 13) {
+                    $errors[] = "Vous devez avoir plus de 13 ans";
+                }
+            }
+        }
+
+        // Password validation: required on create, optional on update but must meet strength if provided
+        $password = $user->getPassword();
+        if ($excludeId === null) {
+            // create
+            if (empty($password)) {
+                $errors[] = "Mot de passe requis";
+            }
+        }
+        if (!empty($password)) {
+            $pwOk = strlen($password) >= 6 && preg_match('/[A-Z]/', $password) && preg_match('/[a-z]/', $password) && preg_match('/\d/', $password);
+            if (!$pwOk) {
+                $errors[] = "Mot de passe trop faible (min 6 caractères, 1 majuscule, 1 minuscule, 1 chiffre)";
+            }
+        }
+
         // Vérification unicité email
-        if ($this->emailExists($user->getEmail(), $excludeId)) {
+        if (!empty($user->getEmail()) && $this->emailExists($user->getEmail(), $excludeId)) {
             $errors[] = "Cet email est déjà utilisé";
         }
 
         // Vérification unicité username
-        if ($this->usernameExists($user->getUsername(), $excludeId)) {
+        if (!empty($user->getUsername()) && $this->usernameExists($user->getUsername(), $excludeId)) {
             $errors[] = "Ce nom d'utilisateur est déjà utilisé";
         }
 

@@ -25,7 +25,7 @@
             </div>
             <div class="flex items-center space-x-6">
                 <a href="index.php" class="text-cyan-400 hover:text-cyan-300 transition">Dashboard</a>
-                <button class="bg-cyan-600 hover:bg-cyan-500 px-4 py-2 rounded-lg transition">Déconnexion</button>
+
             </div>
         </div>
     </nav>
@@ -52,18 +52,20 @@
 
         <!-- Formulaire -->
         <div class="card rounded-3xl p-8 glow">
-            <form action="index.php?action=edit&id=<?= $user->getId() ?>" method="POST" class="space-y-6">
+            <div id="clientErrors"></div>
+            <form id="modifUserForm" action="index.php?action=edit&id=<?= $user->getId() ?>" method="POST" class="space-y-6">
+
                 
                 <!-- Informations de base -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Prénom *</label>
-                        <input type="text" name="first_name" value="<?= htmlspecialchars($user->getFirstName()) ?>" required 
+                        <input type="text" name="first_name" value="<?= htmlspecialchars($user->getFirstName()) ?>" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
                         <label class="block text-cyan-400 mb-2">Nom *</label>
-                        <input type="text" name="last_name" value="<?= htmlspecialchars($user->getLastName()) ?>" required 
+                        <input type="text" name="last_name" value="<?= htmlspecialchars($user->getLastName()) ?>" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                 </div>
@@ -71,12 +73,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Nom d'utilisateur *</label>
-                        <input type="text" name="username" value="<?= htmlspecialchars($user->getUsername()) ?>" required 
+                        <input type="text" name="username" value="<?= htmlspecialchars($user->getUsername()) ?>" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
                         <label class="block text-cyan-400 mb-2">Email *</label>
-                        <input type="email" name="email" value="<?= htmlspecialchars($user->getEmail()) ?>" required 
+                        <input type="text" name="email" value="<?= htmlspecialchars($user->getEmail()) ?>" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                 </div>
@@ -84,7 +86,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Date de naissance</label>
-                        <input type="date" name="birthdate" value="<?= htmlspecialchars($user->getBirthdate()) ?>" 
+                        <input type="text" name="birthdate" value="<?= htmlspecialchars($user->getBirthdate()) ?>" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
@@ -116,7 +118,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-cyan-400 mb-2">Rôle *</label>
-                        <select name="role" required class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                        <select name="role" class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                             <option value="viewer" <?= $user->getRole() === 'viewer' ? 'selected' : '' ?>>Viewer</option>
                             <option value="streamer" <?= $user->getRole() === 'streamer' ? 'selected' : '' ?>>Streamer</option>
                         </select>
@@ -134,7 +136,7 @@
                     
                     <div>
                         <label class="block text-cyan-400 mb-2">Lien de stream</label>
-                        <input type="url" name="stream_link" value="<?= htmlspecialchars($user->getStreamLink()) ?>" 
+                        <input type="text" name="stream_link" value="<?= htmlspecialchars($user->getStreamLink()) ?>" 
                                class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
                     </div>
 
@@ -167,20 +169,6 @@
         </div>
     </main>
 
-    <script>
-        feather.replace();
-
-        // Afficher/masquer les champs streamer
-        const roleSelect = document.querySelector('select[name="role"]');
-        const streamerFields = document.getElementById('streamer-fields');
-
-        roleSelect.addEventListener('change', function() {
-            if (this.value === 'streamer') {
-                streamerFields.classList.remove('hidden');
-            } else {
-                streamerFields.classList.add('hidden');
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

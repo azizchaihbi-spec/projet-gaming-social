@@ -116,7 +116,8 @@ body {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 14px 18px;
     background: var(--darker-bg);
@@ -127,14 +128,21 @@ body {
     transition: all 0.3s;
 }
 
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: var(--primary-pink);
     background: rgba(231, 94, 141, 0.05);
 }
 
-.form-group input::placeholder {
+.form-group input::placeholder,
+.form-group textarea::placeholder {
     color: var(--text-light);
     opacity: 0.5;
 }
@@ -760,4 +768,9 @@ footer a {
 }
 footer a:hover {
     text-decoration: underline;
+}
+#streamerFields {
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(-10px);
 }
