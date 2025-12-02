@@ -1,0 +1,5 @@
+lien back+front office 
+front office : 
+http://localhost/play-to-help/index.php?
+back office : 
+http://localhost/play-to-help/index.php?page=admin

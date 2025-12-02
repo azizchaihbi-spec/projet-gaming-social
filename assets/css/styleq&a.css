@@ -1,0 +1,495 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0f0f1a;
+  color: #e0e0ff;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3), transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 0, 150, 0.2), transparent 50%);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.header h1 {
+  font-size: 2.8rem;
+  color: #ff69b4;
+  text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493;
+}
+.header p {
+  color: #b0b0ff;
+}
+
+/* Formulaire */
+.ask-section {
+  background: rgba(20, 20, 40, 0.7);
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid #ff69b4;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+  margin-bottom: 30px;
+}
+.ask-section h2 {
+  color: #ff69b4;
+  margin-bottom: 15px;
+}
+.ask-section input,
+.ask-section textarea,
+.ask-section select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: rgba(10, 10, 30, 0.8);
+  border: 1px solid #6e6eff;
+  border-radius: 8px;
+  color: #fff;
+}
+.ask-section button {
+  background: linear-gradient(45deg, #ff1493, #ff69b4);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Question Card */
+.question-card {
+  background: rgba(15, 15, 35, 0.8);
+  border: 1px solid #6e6eff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(110, 110, 255, 0.2);
+  transition: all 0.3s ease;
+}
+.question-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(110, 110, 255, 0.4);
+}
+.question-title {
+  font-size: 1.4rem;
+  color: #ff69b4;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.community-badge {
+  background: #6e6eff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+.question-author {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+.question-content {
+  margin: 15px 0;
+  color: #ddd;
+  line-height: 1.6;
+}
+.question-image {
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+/* Likes & boutons */
+.actions {
+  margin: 15px 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.like-btn, .dislike-btn, .reply-btn {
+  background: none;
+  border: 1px solid #6e6eff;
+  color: #6e6eff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+.like-btn:hover { 
+  background: rgba(34,197,94,0.2); 
+  color: #22c55e; 
+  border-color: #22c55e;
+  transform: translateY(-2px);
+}
+.dislike-btn:hover { 
+  background: rgba(239,68,68,0.2); 
+  color: #ef4444; 
+  border-color: #ef4444;
+  transform: translateY(-2px);
+}
+.reply-btn:hover { 
+  background: rgba(255,105,180,0.2); 
+  color: #ff69b4; 
+  border-color: #ff69b4;
+  transform: translateY(-2px);
+}
+
+/* ========================================= */
+/*      BOUTONS MODIFICATION & SUPPRESSION   */
+/* ========================================= */
+.edit-btn, .delete-btn {
+  background: none;
+  border: 1px solid;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-left: 8px;
+}
+
+.edit-btn {
+  border-color: #6e6eff;
+  color: #6e6eff;
+  background: rgba(110, 110, 255, 0.1);
+}
+
+.edit-btn:hover {
+  background: rgba(110, 110, 255, 0.3);
+  color: white;
+  border-color: #6e6eff;
+  box-shadow: 0 0 15px rgba(110, 110, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  border-color: #e91e63;
+  color: #e91e63;
+  background: rgba(233, 30, 99, 0.1);
+}
+
+.delete-btn:hover {
+  background: rgba(233, 30, 99, 0.3);
+  color: white;
+  border-color: #e91e63;
+  box-shadow: 0 0 15px rgba(233, 30, 99, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Réponses */
+.answers {
+  margin-top: 20px;
+  padding-left: 20px;
+  border-left: 2px dashed #ff69b4;
+}
+.answer {
+  background: rgba(10, 10, 25, 0.6);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #6e6eff;
+}
+.answer-author { color: #aaa; font-size: 0.9rem; }
+.answer-date { color: #888; font-size: 0.8rem; }
+.answer-content { color: #ccc; margin-top: 5px; }
+
+/* Formulaire réponse */
+.reply-form {
+  margin-top: 15px;
+  display: none;
+  background: rgba(10, 10, 30, 0.7);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #6e6eff;
+  box-shadow: 0 0 20px rgba(110, 110, 255, 0.3);
+}
+
+.reply-form h4 {
+  color: #ff69b4;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.reply-form input,
+.reply-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: rgba(10, 10, 30, 0.8);
+  border: 1px solid #6e6eff;
+  border-radius: 8px;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.reply-form input:focus,
+.reply-form textarea:focus {
+  outline: none;
+  border-color: #ff69b4;
+  box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+}
+
+.reply-form button {
+  background: linear-gradient(45deg, #6e6eff, #ff69b4);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+}
+
+.reply-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+}
+
+.reply-form button[type="button"] {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
+
+.reply-form button[type="button"]:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.reply-btn {
+  background: none;
+  border: 1px solid #6e6eff;
+  color: #6e6eff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.reply-btn:hover {
+  background: rgba(110, 110, 255, 0.2);
+  color: white;
+}
+
+/* ========================================= */
+/*            EFFET HOVER MAGIQUE            */
+/* ========================================= */
+
+.ask-section input,
+.ask-section textarea,
+.ask-section select,
+.reply-form input,
+.reply-form textarea {
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.ask-section input:hover,
+.ask-section textarea:hover,
+.ask-section select:hover,
+.reply-form input:hover,
+.reply-form textarea:hover {
+  border-color: #ff69b4 !important;
+  box-shadow: 
+    0 0 15px rgba(255, 105, 180, 0.6),
+    0 0 30px rgba(255, 105, 180, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+.ask-section input:focus,
+.ask-section textarea:focus,
+.ask-section select:focus,
+.reply-form input:focus,
+.reply-form textarea:focus {
+  outline: none;
+  border-color: #ff1493 !important;
+  box-shadow: 
+    0 0 20px rgba(255, 20, 147, 0.8),
+    0 0 40px rgba(255, 20, 147, 0.4) !important;
+  transform: translateY(-3px);
+  background: rgba(20, 10, 40, 0.9) !important;
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 15px rgba(255, 105, 180, 0.6); }
+  50% { box-shadow: 0 0 30px rgba(255, 20, 147, 0.9); }
+  100% { box-shadow: 0 0 15px rgba(255, 105, 180, 0.6); }
+}
+
+.ask-section input:focus,
+.ask-section textarea:focus,
+.reply-form input:focus,
+.reply-form textarea:focus {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+/* ========================================= */
+/*       BOUTON CHOISIR FICHIER CUSTOM       */
+/* ========================================= */
+
+#imageInput {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+#imageInput + label {
+  display: inline-block;
+  background: linear-gradient(45deg, #ff1493, #ff69b4);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+}
+
+#imageInput + label:hover {
+  background: linear-gradient(45deg, #ff69b4, #ff1493);
+  transform: translateY(-3px);
+  box-shadow: 0 0 25px rgba(255, 105, 180, 0.8);
+}
+
+#imageInput:focus + label,
+#imageInput:valid + label {
+  background: linear-gradient(45deg, #6e6eff, #ff69b4);
+  box-shadow: 0 0 30px rgba(110, 110, 255, 0.7);
+}
+
+#imageInput + label::after {
+  content: "Aucun fichier";
+  margin-left: 15px;
+  font-weight: normal;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+#imageInput:focus + label::after,
+#imageInput:valid + label::after {
+  content: "Fichier sélectionné !";
+  color: #aaffaa;
+}
+
+/* ========================================= */
+/*       STYLE CUSTOM POUR FILTRE COMMUNITY  */
+/* ========================================= */
+
+#filterCommunity {
+  background: linear-gradient(45deg, #6e6eff, #ff69b4) !important;
+  color: white !important;
+  padding: 12px 24px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin: 10px 0 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 0 15px rgba(110, 110, 255, 0.5) !important;
+  border: 1px solid #6e6eff !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 16px !important;
+  padding-right: 40px !important;
+}
+
+#filterCommunity:hover {
+  background: linear-gradient(45deg, #ff69b4, #6e6eff) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 0 25px rgba(255, 105, 180, 0.8) !important;
+  border-color: #ff69b4 !important;
+}
+
+#filterCommunity:focus {
+  background: linear-gradient(45deg, #ff1493, #6e6eff) !important;
+  box-shadow: 0 0 30px rgba(255, 20, 147, 0.7) !important;
+  border-color: #ff1493 !important;
+  outline: none !important;
+  animation: pulse-glow 2s infinite ease-in-out !important;
+}
+
+#filterCommunity option {
+  background: rgba(20, 20, 40, 0.95) !important;
+  color: #e0e0ff !important;
+  padding: 10px !important;
+  border: none !important;
+}
+
+#filterCommunity::-ms-expand {
+  display: none !important;
+}
+
+#filterCommunity::-webkit-select-placeholder {
+  color: white !important;
+}
+
+#filterCommunity::-webkit-dropdown-arrow {
+  display: none !important;
+}
+/* ========================================= */
+/*      BOUTONS MODIFICATION & SUPPRESSION   */
+/* ========================================= */
+.edit-btn, .delete-btn {
+  background: none;
+  border: 1px solid;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-left: 8px;
+}
+
+.edit-btn {
+  border-color: #6e6eff;
+  color: #6e6eff;
+  background: rgba(110, 110, 255, 0.1);
+}
+
+.edit-btn:hover {
+  background: rgba(110, 110, 255, 0.3);
+  color: white;
+  border-color: #6e6eff;
+  box-shadow: 0 0 15px rgba(110, 110, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  border-color: #e91e63;
+  color: #e91e63;
+  background: rgba(233, 30, 99, 0.1);
+}
+
+.delete-btn:hover {
+  background: rgba(233, 30, 99, 0.3);
+  color: white;
+  border-color: #e91e63;
+  box-shadow: 0 0 15px rgba(233, 30, 99, 0.5);
+  transform: translateY(-2px);
+}
