@@ -23,21 +23,23 @@ class ChallengeController {
         ]);
     }
 
-    public function getOne(int $id): ?Challenge {
-        $sql = "SELECT * FROM challenge WHERE id_challenge = ?";
-        $q = config::getConnexion()->prepare($sql);
-        $q->execute([$id]);
-        $data = $q->fetch(PDO::FETCH_ASSOC);
-        if (!$data) return null;
-        return new Challenge(
-            $data['id_challenge'],
-            $data['id_association'],
-            $data['name'],
-            $data['objectif'],
-            $data['recompense'],
-            $data['progression']
-        );
-    }
+    // Dans ChallengeController.php, assurez-vous que cette méthode existe :
+// Dans ChallengeController.php, assurez-vous que cette méthode existe :
+public function getOne(int $id): ?Challenge {
+    $sql = "SELECT * FROM challenge WHERE id_challenge = ?";
+    $q = config::getConnexion()->prepare($sql);
+    $q->execute([$id]);
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+    if (!$data) return null;
+    return new Challenge(
+        $data['id_challenge'],
+        $data['id_association'],
+        $data['name'],
+        $data['objectif'],
+        $data['recompense'],
+        $data['progression']
+    );
+}
 
     public function update(Challenge $c) {
         $sql = "UPDATE challenge SET id_association=?, name=?, objectif=?, recompense=? WHERE id_challenge=?";
