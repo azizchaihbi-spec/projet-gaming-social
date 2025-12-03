@@ -6,7 +6,7 @@ require_once '../../controllers/ChallengeController.php';
 session_start();
 // Vérification d'accès admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: /play to help/views/frontoffice/index.html');
+    header('Location: index.php');
     exit;
 }
 
