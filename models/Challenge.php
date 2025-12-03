@@ -39,6 +39,7 @@ class Challenge {
     public function setRecompense(?string $v): void { $this->recompense = $v; }
     public function setProgression(?float $v): void { $this->progression = $v; }
 
+    // Méthode pour calculer le pourcentage
     public function getPourcentage(): float {
         if ($this->objectif <= 0) return 0;
         return min(100, round(($this->progression / $this->objectif) * 100, 2));

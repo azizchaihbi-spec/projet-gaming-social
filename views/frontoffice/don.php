@@ -13,6 +13,22 @@
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
     <link rel="stylesheet" href="assets/css/dons-assoc.css" />
     
+    <style>
+        .border-purple {
+            border-color: #a78bfa !important;
+        }
+        .btn-challenge {
+            background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
+            border: none;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-challenge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(167, 139, 250, 0.6);
+        }
+    </style>
 </head>
 <body>
 
@@ -46,8 +62,8 @@
                             <li><a href="browse.html">Événements</a></li>
                             <li><a href="streams.html">Streams Solidaires</a></li>
                             <li><a href="association.html">Associations</a></li>
-                            <li><a href="don.php">Dons & Challenges</a></li>
-                            <li><a href="../../play to help/views/backoffice/index.php">Back-Office</a></li>
+                            <li><a href="don.php" class="active">Dons & Challenges</a></li>
+                            <li><a href="../../../play to help/views/backoffice/index.php">Back-Office</a></li>
                             <li><a href="profile.html">Profil</a></li>
                         </ul>
                         <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
@@ -175,7 +191,7 @@
         </div>
     </div>
 
-    <!-- MODAL DON – AUCUN required, type="text" pour l'email -->
+    <!-- MODAL DON -->
     <div class="modal fade" id="modalDon" tabindex="-1" aria-labelledby="modalDonLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bg-dark text-light border border-success">
@@ -197,48 +213,47 @@
                         </div>
 
                         <div class="mb-3 position-relative">
-                        <label class="form-label">Email <small class="text-muted">(facultatif)</small></label>
-                        <input 
-                            type="text" 
-                            class="form-control bg-secondary text-light border-success" 
-                            name="email" 
-                            placeholder="jean@example.com"
-                            id="emailInput">
-                        <div class="invalid-feedback">
-                            Email invalide ! Exemple correct : jean@exemple.com
+                            <label class="form-label">Email <small class="text-muted">(facultatif)</small></label>
+                            <input 
+                                type="text" 
+                                class="form-control bg-secondary text-light border-success" 
+                                name="email" 
+                                placeholder="jean@example.com"
+                                id="emailInput">
+                            <div class="invalid-feedback">
+                                Email invalide ! Exemple correct : jean@exemple.com
+                            </div>
                         </div>
-                    </div>
 
                         <div class="alert alert-info small p-2" role="alert">
                             Ces informations sont <strong>100 % facultatives</strong>. Tu peux donner de façon totalement anonyme !
                         </div>
 
-                    <!-- Montant -->
-                    <div class="mb-3">
-                        <label class="form-label">Montant (€) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control bg-secondary text-light border-success" name="montant" step="0.01" placeholder="10.00">
-                        <div class="invalid-feedback">Le montant doit être supérieur à 0 €</div>
-                    </div>
+                        <!-- Montant -->
+                        <div class="mb-3">
+                            <label class="form-label">Montant (€) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control bg-secondary text-light border-success" name="montant" step="0.01" placeholder="10.00">
+                            <div class="invalid-feedback">Le montant doit être supérieur à 0 €</div>
+                        </div>
 
-                    <!-- Association -->
-                    <div class="mb-4">
-                        <label class="form-label">Association <span class="text-danger">*</span></label>
-                        <select class="form-select bg-secondary text-light border-success" name="id_association">
-                            <option value="">Choisissez votre cause...</option>
-                            <?php
-                            try {
-                                $stmt = config::getConnexion()->query("SELECT id_association, name FROM association ORDER BY name");
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                    
-                                    echo '<option value="'.$row['id_association'].'"'.$selected.'>'.htmlspecialchars($row['name']).'</option>';
+                        <!-- Association -->
+                        <div class="mb-4">
+                            <label class="form-label">Association <span class="text-danger">*</span></label>
+                            <select class="form-select bg-secondary text-light border-success" name="id_association">
+                                <option value="">Choisissez votre cause...</option>
+                                <?php
+                                try {
+                                    $stmt = config::getConnexion()->query("SELECT id_association, name FROM association ORDER BY name");
+                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        echo '<option value="'.$row['id_association'].'">'.htmlspecialchars($row['name']).'</option>';
+                                    }
+                                } catch (Exception $e) {
+                                    echo '<option disabled>Erreur chargement associations</option>';
                                 }
-                            } catch (Exception $e) {
-                                echo '<option disabled>Erreur chargement associations</option>';
-                            }
-                            ?>
-                        </select>
-                        <div class="invalid-feedback">Veuillez sélectionner une association</div>
-                    </div>
+                                ?>
+                            </select>
+                            <div class="invalid-feedback">Veuillez sélectionner une association</div>
+                        </div>
 
                         <button type="submit" class="btn btn-success btn-lg w-100 py-3 fs-5 shadow-lg">
                             Donner et Inspirer
@@ -249,38 +264,97 @@
             </div>
         </div>
     </div>
-    <!-- MODAL CHALLENGE (inchangé) -->
+
+    <!-- MODAL CHALLENGE AMÉLIORÉ -->
     <div class="modal fade" id="modalChallenge" tabindex="-1" aria-labelledby="modalChallengeLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalChallengeLabel">Créer un Challenge Don Stream</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light border border-purple">
+                <div class="modal-header border-purple">
+                    <h5 class="modal-title" id="modalChallengeLabel">
+                        🎮 Créer un Challenge Don Stream
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formChallenge">
+                    <form id="formChallenge" class="needs-validation" novalidate>
+                        
+                        <!-- Association -->
                         <div class="mb-3">
-                            <label for="challenge-assoc" class="form-label">Association</label>
-                            <select class="form-control" id="challenge-assoc" name="challenge-assoc">
+                            <label for="challenge-assoc" class="form-label">
+                                Association <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control bg-secondary text-light border-purple" 
+                                    id="challenge-assoc" 
+                                    name="challenge-assoc" 
+                                    required>
                                 <option value="">Sélectionnez votre cause héroïque...</option>
-                                <option value="1">UNICEF</option>
-                                <option value="2">WWF</option>
+                                <?php
+                                try {
+                                    $stmt = config::getConnexion()->query("SELECT id_association, name FROM association ORDER BY name");
+                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        echo '<option value="'.$row['id_association'].'">'.htmlspecialchars($row['name']).'</option>';
+                                    }
+                                } catch (Exception $e) {
+                                    echo '<option disabled>Erreur chargement associations</option>';
+                                }
+                                ?>
                             </select>
+                            <div class="invalid-feedback">Veuillez sélectionner une association</div>
                         </div>
+
+                        <!-- Défi In-Game -->
                         <div class="mb-3">
-                            <label for="defi" class="form-label">Défi In-Game</label>
-                            <input type="text" class="form-control" id="defi" name="defi" placeholder="Votre mission épique...">
+                            <label for="defi" class="form-label">
+                                Défi In-Game <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control bg-secondary text-light border-purple" 
+                                   id="defi" 
+                                   name="defi" 
+                                   placeholder="Ex: 10 kills Fortnite, Marathon WoW 24h..." 
+                                   required>
+                            <div class="invalid-feedback">Le défi est requis</div>
+                            <small class="text-muted">Décrivez votre mission épique !</small>
                         </div>
+
+                        <!-- Objectif Dons -->
                         <div class="mb-3">
-                            <label for="objectif" class="form-label">Objectif Dons (€)</label>
-                            <input type="number" class="form-control" id="objectif" name="objectif" min="10" placeholder="Le niveau à atteindre...">
+                            <label for="objectif" class="form-label">
+                                Objectif Dons (€) <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" 
+                                   class="form-control bg-secondary text-light border-purple" 
+                                   id="objectif" 
+                                   name="objectif" 
+                                   min="10" 
+                                   step="0.01" 
+                                   placeholder="100.00" 
+                                   required>
+                            <div class="invalid-feedback">L'objectif doit être d'au moins 10€</div>
+                            <small class="text-muted">Le niveau à atteindre (minimum 10€)</small>
                         </div>
-                        <div class="mb-3">
-                            <label for="recompense" class="form-label">Récompense</label>
-                            <input type="text" class="form-control" id="recompense" name="recompense" placeholder="Le trésor pour les héros...">
+
+                        <!-- Récompense -->
+                        <div class="mb-4">
+                            <label for="recompense" class="form-label">
+                                Récompense <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control bg-secondary text-light border-purple" 
+                                   id="recompense" 
+                                   name="recompense" 
+                                   placeholder="Ex: Badge Épique + Shoutout, NFT Solidaire..." 
+                                   required>
+                            <div class="invalid-feedback">La récompense est requise</div>
+                            <small class="text-muted">Le trésor pour les héros !</small>
                         </div>
-                        <button type="submit" class="btn btn-challenge w-100">
-                            Lancer le Challenge Épique !
+
+                        <div class="alert alert-info small p-2" role="alert">
+                            <strong>💡 Astuce :</strong> Plus votre challenge est créatif et engageant, plus vous mobiliserez la communauté !
+                        </div>
+
+                        <button type="submit" class="btn btn-challenge w-100 py-3 fs-5 shadow-lg">
+                            🚀 Lancer le Challenge Épique !
                         </button>
                     </form>
                 </div>
@@ -305,57 +379,157 @@
     <script src="assets/js/custom.js"></script>
     <script src="assets/js/dons-assoc.js"></script>
 
-    <!-- AJAX POUR LE DON (utilise ton add.php existant) -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("formDon");
-    if (!form) return;
+    <!-- AJAX POUR LE DON -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("formDon");
+        if (!form) return;
 
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
 
-        const btn = form.querySelector("button[type='submit']");
-        const result = document.getElementById("donResult");
+            const btn = form.querySelector("button[type='submit']");
+            const result = document.getElementById("donResult");
 
-        btn.disabled = true;
-        btn.innerHTML = "Don en cours...";
-        result.innerHTML = '<div class="alert alert-info">Enregistrement du don...</div>';
+            btn.disabled = true;
+            btn.innerHTML = "Don en cours...";
+            result.innerHTML = '<div class="alert alert-info">Enregistrement du don...</div>';
 
-        const formData = new FormData(form);
+            const formData = new FormData(form);
 
-        try {
-            const response = await fetch("../backoffice/add.php", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+            try {
+                const response = await fetch("../backoffice/add.php", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="alert alert-success p-4 text-center">
+                            <h4>❤️ Merci pour ton don de <strong>${data.message}</strong> !</h4>
+                            <p>Tu viens de rendre le monde un peu meilleur.</p>
+                        </div>`;
+                    form.reset();
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById("modalDon")).hide();
+                    }, 4000);
+                } else {
+                    result.innerHTML = `<div class="alert alert-danger p-3">${data.message}</div>`;
                 }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                result.innerHTML = `
-                    <div class="alert alert-success p-4 text-center">
-                        <h4>❤️ Merci pour ton don de <strong>${data.message}</strong> !</h4>
-                        <p>Tu viens de rendre le monde un peu meilleur.</p>
-                    </div>`;
-                form.reset();
-                setTimeout(() => {
-                    bootstrap.Modal.getInstance(document.getElementById("modalDon")).hide();
-                }, 4000);
-            } else {
-                result.innerHTML = `<div class="alert alert-danger p-3">${data.message}</div>`;
+            } catch (error) {
+                result.innerHTML = '<div class="alert alert-danger p-3">Erreur réseau. Réessayez.</div>';
             }
-        } catch (error) {
-            result.innerHTML = '<div class="alert alert-danger p-3">Erreur réseau. Réessayez.</div>';
-        }
 
-        btn.disabled = false;
-        btn.innerHTML = "Donner et Inspirer";
+            btn.disabled = false;
+            btn.innerHTML = "Donner et Inspirer";
+        });
     });
-});
-</script>
-</script>
+    </script>
+
+    <!-- AJAX POUR LE CHALLENGE -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const formChallenge = document.getElementById("formChallenge");
+        if (!formChallenge) return;
+
+        formChallenge.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const btn = formChallenge.querySelector("button[type='submit']");
+            const originalText = btn.innerHTML;
+
+            // Validation côté client
+            const assoc = formChallenge.querySelector('#challenge-assoc').value;
+            const defi = formChallenge.querySelector('#defi').value.trim();
+            const objectif = parseFloat(formChallenge.querySelector('#objectif').value);
+            const recompense = formChallenge.querySelector('#recompense').value.trim();
+
+            // Supprimer les messages d'erreur précédents
+            const existingAlert = formChallenge.querySelector('.alert:not(.alert-info)');
+            if (existingAlert) existingAlert.remove();
+
+            // Validation
+            if (!assoc) {
+                showChallengeAlert('danger', 'Veuillez sélectionner une association');
+                return;
+            }
+            if (!defi) {
+                showChallengeAlert('danger', 'Le défi est requis');
+                return;
+            }
+            if (!objectif || objectif < 10) {
+                showChallengeAlert('danger', 'L\'objectif doit être d\'au moins 10€');
+                return;
+            }
+            if (!recompense) {
+                showChallengeAlert('danger', 'La récompense est requise');
+                return;
+            }
+
+            // Désactiver le bouton
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Création en cours...';
+
+            const formData = new FormData(formChallenge);
+
+            try {
+                const response = await fetch("../backoffice/addchallenge.php", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showChallengeAlert('success', `
+                        <h5 class="mb-2">🎮 Challenge Créé avec Succès !</h5>
+                        <p class="mb-0">${data.message}</p>
+                    `);
+                    
+                    formChallenge.reset();
+                    
+                    // Fermer le modal après 3 secondes
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById("modalChallenge"));
+                        if (modal) modal.hide();
+                        
+                        // Recharger la page pour afficher le nouveau challenge
+                        window.location.reload();
+                    }, 3000);
+                } else {
+                    showChallengeAlert('danger', data.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showChallengeAlert('danger', 'Erreur réseau. Veuillez réessayer.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // Fonction helper pour afficher les alertes
+        function showChallengeAlert(type, message) {
+            const existingAlert = formChallenge.querySelector('.alert:not(.alert-info)');
+            if (existingAlert) existingAlert.remove();
+
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} mt-3`;
+            alert.innerHTML = message;
+            
+            const submitBtn = formChallenge.querySelector("button[type='submit']");
+            submitBtn.parentNode.insertBefore(alert, submitBtn);
+        }
+    });
+    </script>
+
 </body>
 </html>
