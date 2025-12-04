@@ -14,19 +14,820 @@
     <link rel="stylesheet" href="assets/css/dons-assoc.css" />
     
     <style>
+        /* ===== VARIABLES & RESET ===== */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --dark-bg: rgba(20, 20, 35, 0.95);
+            --card-bg: rgba(30, 30, 50, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glow-purple: 0 0 40px rgba(102, 126, 234, 0.6);
+            --glow-cyan: 0 0 40px rgba(0, 242, 254, 0.6);
+            --glow-pink: 0 0 40px rgba(245, 87, 108, 0.6);
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Particules animées en arrière-plan */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(0, 242, 254, 0.1) 0%, transparent 50%);
+            animation: particleFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* ===== HERO BANNER CRÉATIF ===== */
+        .hero-banner {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 30px;
+            padding: 60px 40px;
+            margin: 40px auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--glow-purple), inset 0 0 60px rgba(102, 126, 234, 0.1);
+            animation: heroGlow 3s ease-in-out infinite alternate;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(102, 126, 234, 0.2), transparent 30%);
+            animation: rotate 8s linear infinite;
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: rgba(20, 20, 35, 0.7);
+            border-radius: 28px;
+            z-index: 1;
+        }
+
+        .hero-banner > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-banner h2 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff !important;
+            margin-bottom: 20px;
+            text-shadow: 
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 30px #ff1744,
+                0 0 40px #ff1744,
+                0 0 50px #ff1744,
+                0 0 60px #ff1744,
+                0 0 70px #ff1744;
+            animation: textShine 3s ease-in-out infinite;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes textShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        @keyframes heroGlow {
+            0% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.4), inset 0 0 60px rgba(102, 126, 234, 0.1); }
+            100% { box-shadow: 0 0 60px rgba(102, 126, 234, 0.8), inset 0 0 80px rgba(102, 126, 234, 0.2); }
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-banner p {
+            font-size: 1.3rem;
+            color: #fff !important;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 30px #ff1744,
+                0 0 40px #ff1744;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-banner .main-button {
+            text-align: center;
+        }
+
+        /* ===== BOUTONS MODERNES ===== */
+        .btn-donate {
+            background: var(--success-gradient);
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+        }
+
+        .btn-donate::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-donate:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-donate:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(67, 233, 123, 0.6);
+        }
+
+        .btn-challenge {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-challenge::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-challenge:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-challenge:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .header-section h4 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4facfe, #00f2fe, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+
+        .header-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
+        }
+
+        /* ===== GRID CRÉATIF ===== */
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        /* ===== CARTES DON GLASSMORPHISM ===== */
+        .don-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(67, 233, 123, 0.3);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .don-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(67, 233, 123, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .don-item:hover::before {
+            left: 100%;
+        }
+
+        .don-item:hover {
+            transform: translateY(-15px) scale(1.03);
+            border-color: rgba(67, 233, 123, 0.8);
+            box-shadow: 0 20px 60px rgba(67, 233, 123, 0.4), var(--glow-cyan);
+        }
+
+        .don-item .thumb {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .don-item .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .don-item:hover .thumb img {
+            transform: scale(1.2) rotate(3deg);
+        }
+
+        .don-item .hover-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.9), rgba(56, 249, 215, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .don-item:hover .hover-effect {
+            opacity: 1;
+        }
+
+        .don-item .hover-effect ul li {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin: 5px 0;
+        }
+
+        .don-item .down-content {
+            padding: 20px;
+            background: var(--card-bg);
+        }
+
+        .don-item .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(67, 233, 123, 0.6);
+            margin-bottom: 15px;
+            box-shadow: 0 0 20px rgba(67, 233, 123, 0.4);
+        }
+
+        .don-item .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .don-item .down-content span {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .don-item .down-content h4 {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* ===== CARTES CHALLENGE FUTURISTES ===== */
+        .challenge-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .challenge-card:hover::before {
+            left: 100%;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4), var(--glow-purple);
+        }
+
+        .challenge-card .thumb {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .challenge-card .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .challenge-card:hover .thumb img {
+            transform: scale(1.2) rotate(-3deg);
+        }
+
+        .challenge-card .hover-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            padding: 20px;
+        }
+
+        .challenge-card:hover .hover-effect {
+            opacity: 1;
+        }
+
+        .challenge-card .hover-effect h6 {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .challenge-card .down-content {
+            padding: 25px;
+            background: var(--card-bg);
+        }
+
+        .challenge-card .down-content h4 {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .challenge-card .down-content p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        /* ===== BARRE DE PROGRESSION NÉON ===== */
+        .progress-container {
+            margin: 20px 0 10px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px;
+            position: relative;
+            transition: width 0.6s ease;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+            animation: progressGlow 2s ease-in-out infinite;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShine 2s linear infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(102, 126, 234, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(102, 126, 234, 1); }
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* ===== MODALS FUTURISTES ===== */
+        .modal-content {
+            background: linear-gradient(135deg, rgba(15, 12, 41, 0.98), rgba(48, 43, 99, 0.98));
+            backdrop-filter: blur(30px);
+            border: 3px solid transparent;
+            border-radius: 30px;
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(102, 126, 234, 0.5),
+                inset 0 0 60px rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
+            border-radius: 30px;
+            z-index: -1;
+            animation: borderRotate 4s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes borderRotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Modal Don - Thème Cyan/Turquoise Immersif */
+        #modalDon .modal-content {
+            background: linear-gradient(135deg, rgba(6, 23, 41, 0.98), rgba(13, 71, 161, 0.98), rgba(0, 150, 199, 0.95));
+        }
+
+        #modalDon .modal-content::before {
+            background: linear-gradient(135deg, #00d4ff, #0099ff, #00f2fe, #00d4ff);
+            background-size: 300% 300%;
+        }
+
+        #modalDon .modal-header {
+            border-bottom: 2px solid rgba(0, 212, 255, 0.5);
+            padding: 30px;
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        #modalDon .modal-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                0 0 10px rgba(0, 212, 255, 1),
+                0 0 20px rgba(0, 212, 255, 0.8),
+                0 0 30px rgba(0, 212, 255, 0.6),
+                0 0 40px rgba(0, 153, 255, 0.4);
+        }
+
+        #modalDon .form-control,
+        #modalDon .form-select {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid rgba(0, 212, 255, 0.4);
+            border-radius: 15px;
+            color: white;
+            padding: 14px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #modalDon .form-control:focus,
+        #modalDon .form-select:focus {
+            background: rgba(0, 212, 255, 0.18);
+            border-color: rgba(0, 212, 255, 1);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 0 0 15px rgba(0, 242, 254, 0.4);
+            color: white;
+            outline: none;
+        }
+
+        #modalDon .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        #modalDon .btn-success {
+            background: linear-gradient(135deg, #00d4ff, #0099ff, #00f2fe);
+            border: none;
+            color: white;
+            font-weight: 800;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 
+                0 10px 40px rgba(0, 212, 255, 0.6),
+                0 0 20px rgba(0, 242, 254, 0.4);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #modalDon .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        #modalDon .btn-success:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        #modalDon .btn-success:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 15px 60px rgba(0, 212, 255, 0.9),
+                0 0 40px rgba(0, 242, 254, 0.7);
+        }
+
+        /* Modal Challenge - Thème Violet/Rose */
+        #modalChallenge .modal-content {
+            background: linear-gradient(135deg, rgba(41, 12, 41, 0.98), rgba(99, 43, 99, 0.98));
+        }
+
+        #modalChallenge .modal-content::before {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 300% 300%;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid rgba(102, 126, 234, 0.4);
+            padding: 30px;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                0 0 10px rgba(102, 126, 234, 1),
+                0 0 20px rgba(102, 126, 234, 0.8),
+                0 0 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .modal-body {
+            padding: 35px;
+        }
+
+        .form-control, .form-select {
+            background: rgba(102, 126, 234, 0.08);
+            border: 2px solid rgba(102, 126, 234, 0.4);
+            border-radius: 15px;
+            color: white;
+            padding: 14px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 1);
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
+            color: white;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .form-label {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .text-danger {
+            color: #ff1744 !important;
+            text-shadow: 0 0 10px rgba(255, 23, 68, 0.6);
+        }
+
+        .text-muted {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        small.text-muted {
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .alert {
+            border-radius: 15px;
+            border: 2px solid;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .alert-info {
+            background: rgba(79, 172, 254, 0.15);
+            border-color: rgba(79, 172, 254, 0.5);
+            color: #4facfe;
+        }
+
+        .alert-success {
+            background: rgba(67, 233, 123, 0.15);
+            border-color: rgba(67, 233, 123, 0.5);
+            color: #43e97b;
+        }
+
+        .alert-danger {
+            background: rgba(255, 23, 68, 0.15);
+            border-color: rgba(255, 23, 68, 0.5);
+            color: #ff1744;
+        }
+
+        .invalid-feedback {
+            color: #ff1744;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
         .border-purple {
             border-color: #a78bfa !important;
         }
-        .btn-challenge {
-            background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
-            border: none;
-            color: white;
-            font-weight: bold;
-            transition: all 0.3s ease;
+
+        .border-success {
+            border-color: #43e97b !important;
         }
-        .btn-challenge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(167, 139, 250, 0.6);
+
+        /* ===== ANIMATIONS SUPPLÉMENTAIRES ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .don-item, .challenge-card {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .don-item:nth-child(1), .challenge-card:nth-child(1) { animation-delay: 0.1s; }
+        .don-item:nth-child(2), .challenge-card:nth-child(2) { animation-delay: 0.2s; }
+        .don-item:nth-child(3), .challenge-card:nth-child(3) { animation-delay: 0.3s; }
+        .don-item:nth-child(4), .challenge-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-banner h2 {
+                font-size: 2rem;
+            }
+            
+            .hero-banner p {
+                font-size: 1rem;
+            }
+            
+            .challenge-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn-donate, .btn-challenge {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
