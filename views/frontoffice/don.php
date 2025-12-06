@@ -1026,21 +1026,21 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-info small p-2" role="alert">
-                            Ces informations sont <strong>100 % facultatives</strong>. Tu peux donner de façon totalement anonyme !
+                        <div class="alert alert-info small p-3 mb-4" role="alert" style="background: rgba(0, 212, 255, 0.15); border: 2px solid rgba(0, 212, 255, 0.4); border-radius: 15px;">
+                            <strong>ℹ️ Ces informations sont 100 % facultatives.</strong> Tu peux donner de façon totalement anonyme !
                         </div>
 
                         <!-- Montant -->
-                        <div class="mb-3">
-                            <label class="form-label">Montant (€) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control bg-secondary text-light border-success" name="montant" step="0.01" placeholder="10.00">
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold">Montant (€) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control bg-secondary text-light border-success" name="montant" step="0.01" placeholder="300" style="font-size: 1.2rem; padding: 15px;">
                             <div class="invalid-feedback">Le montant doit être supérieur à 0 €</div>
                         </div>
 
                         <!-- Association -->
                         <div class="mb-4">
-                            <label class="form-label">Association <span class="text-danger">*</span></label>
-                            <select class="form-select bg-secondary text-light border-success" name="id_association">
+                            <label class="form-label text-uppercase fw-bold">Association <span class="text-danger">*</span></label>
+                            <select class="form-select bg-secondary text-light border-success" name="id_association" style="font-size: 1.1rem; padding: 15px;">
                                 <option value="">Choisissez votre cause...</option>
                                 <?php
                                 try {
@@ -1056,8 +1056,47 @@
                             <div class="invalid-feedback">Veuillez sélectionner une association</div>
                         </div>
 
-                        <button type="submit" class="btn btn-success btn-lg w-100 py-3 fs-5 shadow-lg">
-                            Donner et Inspirer
+                        <!-- Mode de Paiement -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold">Mode de Paiement <span class="text-danger">*</span></label>
+                            
+                            <div class="payment-options row g-3">
+                                <!-- Option Stripe -->
+                                <div class="col-md-6">
+                                    <div class="payment-option payment-option-stripe" style="background: transparent; border: 2px solid rgba(0, 212, 255, 0.5); border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s; height: 100%;">
+                                        <label class="d-flex align-items-start cursor-pointer" style="cursor: pointer; margin: 0;">
+                                            <input type="radio" name="payment_mode" value="stripe" checked class="me-3 mt-1" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span style="font-size: 1.3rem; margin-right: 8px;">💳</span>
+                                                    <strong style="font-size: 1rem; color: #fff;">Paiement en ligne (Stripe Test)</strong>
+                                                </div>
+                                                <small class="text-muted d-block" style="font-size: 0.85rem;">Carte test : 4242 4242 4242 4242</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Option Don Direct -->
+                                <div class="col-md-6">
+                                    <div class="payment-option payment-option-direct" style="background: transparent; border: 2px solid rgba(255, 193, 7, 0.5); border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s; height: 100%;">
+                                        <label class="d-flex align-items-start cursor-pointer" style="cursor: pointer; margin: 0;">
+                                            <input type="radio" name="payment_mode" value="direct" class="me-3 mt-1" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span style="font-size: 1.3rem; margin-right: 8px;">💰</span>
+                                                    <strong style="font-size: 1rem; color: #fff;">Don Direct</strong>
+                                                </div>
+                                                <small class="text-muted d-block" style="font-size: 0.85rem;">Sans paiement en ligne</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmitDon" class="btn btn-success btn-lg w-100 py-3 fs-4 shadow-lg text-uppercase fw-bold" style="background: linear-gradient(135deg, #00d4ff, #0099ff); border: none; border-radius: 15px; letter-spacing: 1px;">
+                            💳 Procéder au Paiement
                         </button>
                         <div id="donResult" class="mt-3 text-center fw-bold fs-5"></div>
                     </form>
@@ -1180,11 +1219,94 @@
     <script src="assets/js/custom.js"></script>
     <script src="assets/js/dons-assoc.js"></script>
 
-    <!-- AJAX POUR LE DON -->
+    <!-- STRIPE SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- AJAX POUR LE DON AVEC 2 MODES DE PAIEMENT -->
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("formDon");
         if (!form) return;
+
+        // Effet hover sur les options de paiement
+        const paymentOptions = document.querySelectorAll('.payment-option');
+        paymentOptions.forEach(option => {
+            const isDirect = option.classList.contains('payment-option-direct');
+            const isStripe = option.classList.contains('payment-option-stripe');
+            
+            option.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                if (isDirect) {
+                    this.style.boxShadow = '0 8px 25px rgba(255, 193, 7, 0.3)';
+                } else if (isStripe) {
+                    this.style.boxShadow = '0 8px 25px rgba(0, 212, 255, 0.3)';
+                }
+            });
+            option.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                updatePaymentSelection();
+            });
+        });
+
+        // Mettre à jour la sélection visuelle
+        function updatePaymentSelection() {
+            paymentOptions.forEach(opt => {
+                const radio = opt.querySelector('input[type="radio"]');
+                const isDirect = opt.classList.contains('payment-option-direct');
+                const isStripe = opt.classList.contains('payment-option-stripe');
+                
+                if (radio.checked) {
+                    if (isDirect) {
+                        opt.style.borderColor = 'rgba(255, 193, 7, 1)';
+                        opt.style.borderWidth = '3px';
+                        opt.style.background = 'rgba(255, 193, 7, 0.15)';
+                    } else if (isStripe) {
+                        opt.style.borderColor = 'rgba(0, 212, 255, 1)';
+                        opt.style.borderWidth = '3px';
+                        opt.style.background = 'rgba(0, 212, 255, 0.15)';
+                    }
+                } else {
+                    if (isDirect) {
+                        opt.style.borderColor = 'rgba(255, 193, 7, 0.5)';
+                        opt.style.borderWidth = '2px';
+                        opt.style.background = 'transparent';
+                    } else if (isStripe) {
+                        opt.style.borderColor = 'rgba(0, 212, 255, 0.5)';
+                        opt.style.borderWidth = '2px';
+                        opt.style.background = 'transparent';
+                    }
+                }
+            });
+        }
+
+        // Écouter les changements de radio
+        document.querySelectorAll('input[name="payment_mode"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                updatePaymentSelection();
+                updateButtonText();
+            });
+        });
+
+        // Mettre à jour le texte du bouton selon le mode
+        function updateButtonText() {
+            const btn = document.getElementById('btnSubmitDon');
+            const selectedMode = document.querySelector('input[name="payment_mode"]:checked').value;
+            
+            if (selectedMode === 'stripe') {
+                btn.innerHTML = '💳 Procéder au Paiement';
+            } else {
+                btn.innerHTML = '💰 Procéder au Paiement';
+            }
+        }
+
+        // Initialiser la sélection
+        updatePaymentSelection();
+        updateButtonText();
 
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -1192,43 +1314,145 @@
             const btn = form.querySelector("button[type='submit']");
             const result = document.getElementById("donResult");
 
-            btn.disabled = true;
-            btn.innerHTML = "Don en cours...";
-            result.innerHTML = '<div class="alert alert-info">Enregistrement du don...</div>';
+            // Validation
+            const montant = parseFloat(form.querySelector('[name="montant"]').value);
+            const id_association = form.querySelector('[name="id_association"]').value;
+            const nom = form.querySelector('[name="nom"]').value.trim() || 'Anonyme';
+            const prenom = form.querySelector('[name="prenom"]').value.trim();
+            const email = form.querySelector('[name="email"]').value.trim() || 'anonyme@playtohelp.com';
+            const paymentMode = form.querySelector('input[name="payment_mode"]:checked').value;
 
-            const formData = new FormData(form);
-
-            try {
-                const response = await fetch("../backoffice/add.php", {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    result.innerHTML = `
-                        <div class="alert alert-success p-4 text-center">
-                            <h4>❤️ Merci pour ton don de <strong>${data.message}</strong> !</h4>
-                            <p>Tu viens de rendre le monde un peu meilleur.</p>
-                        </div>`;
-                    form.reset();
-                    setTimeout(() => {
-                        bootstrap.Modal.getInstance(document.getElementById("modalDon")).hide();
-                    }, 4000);
-                } else {
-                    result.innerHTML = `<div class="alert alert-danger p-3">${data.message}</div>`;
-                }
-            } catch (error) {
-                result.innerHTML = '<div class="alert alert-danger p-3">Erreur réseau. Réessayez.</div>';
+            // Validation du montant
+            if (!montant || montant <= 0) {
+                result.innerHTML = '<div class="alert alert-danger">Le montant doit être supérieur à 0 €</div>';
+                return;
             }
 
-            btn.disabled = false;
-            btn.innerHTML = "Donner et Inspirer";
+            // Validation de l'association
+            if (!id_association) {
+                result.innerHTML = '<div class="alert alert-danger">Veuillez sélectionner une association</div>';
+                return;
+            }
+
+            // Construire le nom complet
+            const nomComplet = prenom ? `${prenom} ${nom}` : nom;
+
+            btn.disabled = true;
+
+            // MODE STRIPE - Redirection vers Stripe Checkout
+            if (paymentMode === 'stripe') {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirection vers Stripe...';
+                result.innerHTML = '<div class="alert alert-info">🔒 Redirection sécurisée vers Stripe...</div>';
+
+                const formData = new FormData();
+                formData.append('montant', montant);
+                formData.append('nom', nomComplet);
+                formData.append('email', email);
+                formData.append('id_association', id_association);
+
+                try {
+                    const response = await fetch("../backoffice/process_payment.php", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success && data.redirect_url) {
+                        result.innerHTML = `
+                            <div class="alert alert-success p-4 text-center">
+                                <h5>✅ Redirection vers le paiement sécurisé...</h5>
+                                <p class="mb-0">Vous allez être redirigé vers Stripe</p>
+                            </div>`;
+                        
+                        // Rediriger vers Stripe Checkout
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 1000);
+                    } else {
+                        result.innerHTML = `<div class="alert alert-danger p-3">❌ ${data.error || 'Erreur lors de la création du paiement'}</div>`;
+                        btn.disabled = false;
+                        btn.innerHTML = '💳 Procéder au Paiement';
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    result.innerHTML = '<div class="alert alert-danger p-3">❌ Erreur réseau. Réessayez.</div>';
+                    btn.disabled = false;
+                    btn.innerHTML = '💳 Procéder au Paiement';
+                }
+            } 
+            // MODE DON DIRECT - Enregistrement direct dans la BDD
+            else if (paymentMode === 'direct') {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enregistrement du don...';
+                result.innerHTML = '<div class="alert alert-info">💰 Enregistrement de votre don direct...</div>';
+
+                const formData = new FormData();
+                formData.append('montant', montant);
+                formData.append('prenom', prenom || '');
+                formData.append('nom', nom);
+                formData.append('email', email);
+                formData.append('id_association', id_association);
+
+                try {
+                    const response = await fetch("../backoffice/add.php", {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        result.innerHTML = `
+                            <div class="alert alert-success p-4 text-center">
+                                <h5>✅ Don enregistré avec succès !</h5>
+                                <p class="mb-0">Montant : ${data.message}</p>
+                                <p class="mb-0 mt-2">Merci pour votre générosité ! 💚</p>
+                            </div>`;
+                        
+                        // Réinitialiser le formulaire
+                        form.reset();
+                        updatePaymentSelection();
+                        
+                        // Fermer le modal après 3 secondes
+                        setTimeout(() => {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById("modalDon"));
+                            if (modal) modal.hide();
+                            window.location.reload();
+                        }, 3000);
+                    } else {
+                        result.innerHTML = `<div class="alert alert-danger p-3">❌ ${data.error || 'Erreur lors de l\'enregistrement'}</div>`;
+                        btn.disabled = false;
+                        btn.innerHTML = '💳 Procéder au Paiement';
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    result.innerHTML = '<div class="alert alert-danger p-3">❌ Erreur réseau. Réessayez.</div>';
+                    btn.disabled = false;
+                    btn.innerHTML = '💳 Procéder au Paiement';
+                }
+            }
         });
+
+        // Validation email en temps réel
+        const emailInput = document.getElementById('emailInput');
+        if (emailInput) {
+            emailInput.addEventListener('blur', function() {
+                const email = this.value.trim();
+                if (email && !isValidEmail(email)) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
     });
     </script>
 

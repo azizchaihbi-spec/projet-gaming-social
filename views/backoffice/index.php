@@ -29,8 +29,14 @@ foreach ($dons as $d) {
 // ---- CHALLENGE DATA ---- //
 $challengeC = new ChallengeController();
 $challenges = $challengeC->list();
-?>
 
+// Liste des associations pour le filtre
+$assocQuery = $conn->query("SELECT id_association as id, name as nom FROM association ORDER BY name");
+$associationsList = [];
+while ($row = $assocQuery->fetch_assoc()) {
+    $associationsList[] = $row;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr" class="bg-gray-950 text-gray-100">
 <head>
@@ -41,15 +47,38 @@ $challenges = $challengeC->list();
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
-
     <style>
-        body { font-family: 'Space Mono', monospace; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(34, 211, 238, 0.3); }
-        .neon { text-shadow: 0 0 20px #22d3ee, 0 0 40px #22d3ee; }
-        .glow:hover { box-shadow: 0 0 30px rgba(34, 211, 238, 0.6); }
-        .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, transparent, #22d3ee, transparent); animation: scan 6s linear infinite; }
-        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
-        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        body { 
+            font-family: 'Space Mono', monospace; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+        }
+        .card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(34, 211, 238, 0.3); 
+        }
+        .neon { 
+            text-shadow: 0 0 20px #22d3ee, 0 0 40px #22d3ee; 
+        }
+        .glow:hover { 
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.6); 
+        }
+        .scanline { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 4px; 
+            background: linear-gradient(90deg, transparent, #22d3ee, transparent); 
+            animation: scan 6s linear infinite; 
+        }
+        @keyframes scan { 
+            0% { transform: translateY(-100%); } 
+            100% { transform: translateY(100vh); } 
+        }
+        .font-orbitron { 
+            font-family: 'Orbitron', sans-serif; 
+        }
         
         /* Styles pour l'édition inline */
         .editable-cell {
@@ -113,15 +142,74 @@ $challenges = $challengeC->list();
             box-shadow: 0 10px 40px rgba(167, 139, 250, 0.6);
             border-color: #a78bfa;
         }
+        
+        /* Dropdown Tri */
+        .sort-dropdown {
+            position: relative;
+        }
+        .sort-button {
+            background: rgba(34, 211, 238, 0.1);
+            border: 2px solid rgba(34, 211, 238, 0.4);
+            color: #22d3ee;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .sort-button:hover {
+            background: rgba(34, 211, 238, 0.2);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+        .sort-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(30, 41, 59, 0.95);
+            border: 2px solid rgba(34, 211, 238, 0.4);
+            border-radius: 10px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .sort-menu.active {
+            display: block;
+        }
+        .sort-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #e2e8f0;
+        }
+        .sort-option:hover {
+            background: rgba(34, 211, 238, 0.2);
+            color: #22d3ee;
+        }
+        
+        /* Dropdown Challenges */
+        .sort-button-challenges {
+            background: rgba(167, 139, 250, 0.1);
+            border-color: rgba(167, 139, 250, 0.4);
+            color: #a78bfa;
+        }
+        .sort-button-challenges:hover {
+            background: rgba(167, 139, 250, 0.2);
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+        }
+        .sort-menu-challenges {
+            border-color: rgba(167, 139, 250, 0.4);
+        }
     </style>
 </head>
-
 <body class="relative min-h-screen overflow-x-hidden">
-
     <div class="scanline"></div>
-
+    
     <main class="container mx-auto px-6 py-12 max-w-7xl">
-
         <!-- TITRE FUTURISTE -->
         <div class="text-center mb-16">
             <h1 class="text-6xl md:text-8xl font-bold font-orbitron neon animate-pulse">PLAY2HELP</h1>
@@ -130,27 +218,21 @@ $challenges = $challengeC->list();
 
         <!-- NAVIGATION VERS NOUVELLES PAGES -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
-            
             <!-- Analytics Challenges -->
             <a href="challenge_analytics.php" class="nav-btn rounded-2xl p-8 text-center block group">
                 <div class="text-6xl mb-4 group-hover:scale-110 transition-transform">📊</div>
                 <h3 class="text-2xl font-bold text-purple-300 mb-2">Analytics Challenges</h3>
                 <p class="text-gray-400">Explorez les performances par association</p>
-                <div class="mt-4 text-cyan-400 font-semibold">
-                    Voir les stats <i data-feather="arrow-right" class="inline w-4 h-4 ml-1"></i>
-                </div>
+                <div class="mt-4 text-cyan-400 font-semibold">Voir les stats <i data-feather="arrow-right" class="inline w-4 h-4 ml-1"></i></div>
             </a>
-
+            
             <!-- Retour Front -->
             <a href="../frontoffice/don.php" class="nav-btn rounded-2xl p-8 text-center block group">
                 <div class="text-6xl mb-4 group-hover:scale-110 transition-transform">🎮</div>
                 <h3 class="text-2xl font-bold text-emerald-300 mb-2">Espace Public</h3>
                 <p class="text-gray-400">Retour à l'interface utilisateur</p>
-                <div class="mt-4 text-cyan-400 font-semibold">
-                    Accéder <i data-feather="arrow-right" class="inline w-4 h-4 ml-1"></i>
-                </div>
+                <div class="mt-4 text-cyan-400 font-semibold">Accéder <i data-feather="arrow-right" class="inline w-4 h-4 ml-1"></i></div>
             </a>
-
         </div>
 
         <!-- 4 CARTES DE STATS -->
@@ -159,17 +241,14 @@ $challenges = $challengeC->list();
                 <h3 class="text-5xl font-bold text-cyan-400 neon"><?= number_format($totalCollecte, 0, '', ' ') ?> €</h3>
                 <p class="text-gray-300 mt-3 text-lg">Total collecté</p>
             </div>
-
             <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
                 <h3 class="text-5xl font-bold text-emerald-400"><?= $nombreDons ?></h3>
                 <p class="text-gray-300 mt-3 text-lg">Dons reçus</p>
             </div>
-
             <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
                 <h3 class="text-5xl font-bold text-purple-400"><?= $associations ?></h3>
                 <p class="text-gray-300 mt-3 text-lg">Associations</p>
             </div>
-
             <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
                 <h3 class="text-5xl font-bold text-yellow-400 animate-pulse">LIVE</h3>
                 <p class="text-gray-300 mt-3 text-lg">En direct</p>
@@ -182,14 +261,12 @@ $challenges = $challengeC->list();
                 <h2 class="text-3xl font-bold text-center mb-8 neon font-orbitron">Répartition des dons</h2>
                 <canvas id="donutChart"></canvas>
             </div>
-
             <div class="card p-10 rounded-3xl glow">
                 <h2 class="text-3xl font-bold text-center mb-8 neon font-orbitron">Progression 2025</h2>
                 <canvas id="lineChart"></canvas>
             </div>
         </div>
-
-        <!-- TABLEAU DES DONS -->
+        <!-- TABLEAU DES DONS AVEC FILTRAGE ET RECHERCHE -->
         <div class="card rounded-3xl p-10 glow mb-20">
             <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
                 <h2 class="text-4xl font-bold neon font-orbitron">Tous les dons • <?= $nombreDons ?></h2>
@@ -197,38 +274,80 @@ $challenges = $challengeC->list();
                     ➕ Nouveau don
                 </a>
             </div>
-
+            
+            <!-- Filtres et Recherche -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">🔍 Recherche</label>
+                    <input type="text" id="searchInput" placeholder="Nom, email, association..." 
+                           class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-2 focus:border-cyan-500 focus:outline-none text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">🏢 Association</label>
+                    <select id="filterAssociation" class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-2 focus:border-cyan-500 focus:outline-none text-white">
+                        <option value="">Toutes les associations</option>
+                        <?php foreach ($associationsList as $assoc): ?>
+                            <option value="<?php echo $assoc['id']; ?>"><?php echo htmlspecialchars($assoc['nom']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">🎯 Tri</label>
+                    <div class="sort-dropdown">
+                        <button class="sort-button" onclick="toggleSortMenu(event)">
+                            <span>⚡</span>
+                            <span id="sortLabel">Trier par...</span>
+                            <span>▼</span>
+                        </button>
+                        <div class="sort-menu" id="sortMenu">
+                            <div class="sort-option" onclick="sortDons('date_desc')">📅 Date (récent → ancien)</div>
+                            <div class="sort-option" onclick="sortDons('date_asc')">📅 Date (ancien → récent)</div>
+                            <div class="sort-option" onclick="sortDons('montant_desc')">💰 Montant (élevé → bas)</div>
+                            <div class="sort-option" onclick="sortDons('montant_asc')">💰 Montant (bas → élevé)</div>
+                            <div class="sort-option" onclick="sortDons('nom_asc')">👤 Nom (A → Z)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="border-b-2 border-cyan-500 text-cyan-400">
                             <th class="py-4 px-6">Date</th>
                             <th class="py-4 px-6">Donateur</th>
+                            <th class="py-4 px-6">Email</th>
                             <th class="py-4 px-6">Montant</th>
                             <th class="py-4 px-6">Association</th>
                             <th class="py-4 px-6 text-center">Actions</th>
                         </tr>
                     </thead>
-
-                    <tbody>
-                        <?php foreach ($dons as $d): ?>
-                        <tr class="border-b border-gray-800 hover:bg-gray-900/50 transition">
+                    <tbody id="donsTableBody">
+                        <?php foreach ($dons as $d): 
+                            $don_id = $d['id_don'] ?? $d['id'];
+                            $don_nom = ($d['prenom'] ? $d['prenom'] . ' ' : '') . $d['nom'];
+                        ?>
+                        <tr class="border-b border-gray-800 hover:bg-gray-900/50 transition don-row"
+                            data-id="<?php echo $don_id; ?>"
+                            data-nom="<?php echo htmlspecialchars($don_nom); ?>"
+                            data-email="<?php echo htmlspecialchars($d['email'] ?? ''); ?>"
+                            data-montant="<?php echo $d['montant']; ?>"
+                            data-association="<?php echo htmlspecialchars($d['association_nom'] ?? ''); ?>"
+                            data-association-id="<?php echo $d['id_association']; ?>"
+                            data-date="<?php echo $d['date_don']; ?>">
                             <td class="py-5 px-6"><?= date('d/m/Y', strtotime($d['date_don'])) ?></td>
-                            <td class="py-5 px-6 font-medium">
-                                <?= htmlspecialchars(($d['prenom']??'') . ' ' . ($d['nom']??'')) ?>
-                            </td>
-                            <td class="py-5 px-6 text-2xl font-bold text-emerald-400">
-                                <?= number_format($d['montant'], 2) ?> €
-                            </td>
-                            <td class="py-5 px-6 text-cyan-400 font-medium">
-                                <?= htmlspecialchars($d['association_nom'] ?? '—') ?>
-                            </td>
+                            <td class="py-5 px-6 font-medium"><?= htmlspecialchars($don_nom) ?></td>
+                            <td class="py-5 px-6 text-gray-400"><?= htmlspecialchars($d['email'] ?? 'N/A') ?></td>
+                            <td class="py-5 px-6 text-2xl font-bold text-emerald-400"><?= number_format($d['montant'], 2) ?> €</td>
+                            <td class="py-5 px-6 text-cyan-400 font-medium"><?= htmlspecialchars($d['association_nom'] ?? '—') ?></td>
                             <td class="py-5 px-6 text-center">
                                 <div class="flex justify-center gap-6">
-                                    <a href="edit.php?id=<?= $d['id_don'] ?>" class="text-yellow-400 hover:text-yellow-300">
+                                    <a href="edit.php?id=<?= $don_id ?>" class="text-yellow-400 hover:text-yellow-300">
                                         <i data-feather="edit-2"></i>
                                     </a>
-                                    <a href="delete.php?id=<?= $d['id_don'] ?>" onclick="return confirm('Supprimer ce don ?')" class="text-red-500 hover:text-red-400">
+                                    <a href="delete.php?id=<?= $don_id ?>" onclick="return confirm('Supprimer ce don ?')" class="text-red-500 hover:text-red-400">
                                         <i data-feather="trash-2"></i>
                                     </a>
                                 </div>
@@ -236,12 +355,10 @@ $challenges = $challengeC->list();
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
-
                 </table>
             </div>
         </div>
-
-        <!-- TABLEAU DES CHALLENGES AVEC ÉDITION INLINE -->
+        <!-- TABLEAU DES CHALLENGES AVEC ÉDITION INLINE ET TRI -->
         <div class="card rounded-3xl p-10 glow mt-20">
             <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
                 <h2 class="text-4xl font-bold neon font-orbitron">Challenges • <?= count($challenges) ?></h2>
@@ -249,7 +366,61 @@ $challenges = $challengeC->list();
                     ➕ Nouveau Challenge
                 </a>
             </div>
-
+            
+            <!-- Filtres et Tri Challenges -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <!-- Filtre Min -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">💰 Min (€)</label>
+                    <input type="number" 
+                           id="filterMinChallenges" 
+                           placeholder="Objectif min..." 
+                           step="0.01"
+                           class="w-full bg-gray-800 border border-purple-500/30 rounded-lg px-4 py-2 focus:border-purple-500 focus:outline-none text-white">
+                </div>
+                
+                <!-- Filtre Max -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">💎 Max (€)</label>
+                    <input type="number" 
+                           id="filterMaxChallenges" 
+                           placeholder="Objectif max..." 
+                           step="0.01"
+                           class="w-full bg-gray-800 border border-purple-500/30 rounded-lg px-4 py-2 focus:border-purple-500 focus:outline-none text-white">
+                </div>
+                
+                <!-- Filtre Pourcentage -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">📊 % Min</label>
+                    <input type="number" 
+                           id="filterPourcentageChallenges" 
+                           placeholder="% min..." 
+                           min="0"
+                           max="100"
+                           class="w-full bg-gray-800 border border-purple-500/30 rounded-lg px-4 py-2 focus:border-purple-500 focus:outline-none text-white">
+                </div>
+                
+                <!-- Tri -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">🎯 Tri</label>
+                    <div class="sort-dropdown">
+                        <button class="sort-button sort-button-challenges" onclick="toggleSortMenuChallenges(event)">
+                            <span>⚡</span>
+                            <span id="sortLabelChallenges">Trier par...</span>
+                            <span>▼</span>
+                        </button>
+                        <div class="sort-menu sort-menu-challenges" id="sortMenuChallenges">
+                            <div class="sort-option" onclick="sortChallenges('id_desc')">🔢 ID (élevé → bas)</div>
+                            <div class="sort-option" onclick="sortChallenges('id_asc')">🔢 ID (bas → élevé)</div>
+                            <div class="sort-option" onclick="sortChallenges('nom_asc')">📝 Nom (A → Z)</div>
+                            <div class="sort-option" onclick="sortChallenges('objectif_desc')">🎯 Objectif (élevé → bas)</div>
+                            <div class="sort-option" onclick="sortChallenges('progression_desc')">📊 Progression (élevé → bas)</div>
+                            <div class="sort-option" onclick="sortChallenges('pourcentage_desc')">% Pourcentage (élevé → bas)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
@@ -264,36 +435,33 @@ $challenges = $challengeC->list();
                             <th class="py-4 px-6 text-center">Actions</th>
                         </tr>
                     </thead>
-
                     <tbody id="challengesTableBody">
-                        <?php foreach ($challenges as $c): ?>
-                        <?php 
+                        <?php foreach ($challenges as $c): 
+                            $challenge_id = $c['id_challenge'] ?? $c['id'];
+                            $challenge_name = $c['name'] ?? $c['nom'] ?? 'N/A';
                             $objectif = floatval($c['objectif'] ?? 0);
                             $progression = floatval($c['progression'] ?? 0);
                             $pourcentage = $objectif > 0 ? min(100, round(($progression / $objectif) * 100, 2)) : 0;
                         ?>
-                        <tr class="border-b border-gray-800 hover:bg-gray-900/50 transition" data-challenge-id="<?= $c['id_challenge'] ?>">
-                            
+                        <tr class="border-b border-gray-800 hover:bg-gray-900/50 transition challenge-row" 
+                            data-challenge-id="<?= $challenge_id ?>"
+                            data-id="<?= $challenge_id ?>"
+                            data-nom="<?= htmlspecialchars($challenge_name) ?>"
+                            data-objectif="<?= $objectif ?>"
+                            data-progression="<?= $progression ?>"
+                            data-pourcentage="<?= $pourcentage ?>">
                             <!-- ID -->
-                            <td class="py-5 px-6 text-gray-400">
-                                #<?= htmlspecialchars($c['id_challenge']) ?>
-                            </td>
-
+                            <td class="py-5 px-6 text-gray-400">#<?= htmlspecialchars($challenge_id) ?></td>
+                            
                             <!-- Nom du Challenge -->
-                            <td class="py-5 px-6 text-cyan-300 font-medium">
-                                <?= htmlspecialchars($c['name']) ?>
-                            </td>
-
+                            <td class="py-5 px-6 text-cyan-300 font-medium"><?= htmlspecialchars($challenge_name) ?></td>
+                            
                             <!-- Association -->
-                            <td class="py-5 px-6 text-purple-400">
-                                <?= htmlspecialchars($c['association_nom'] ?? 'Non définie') ?>
-                            </td>
-
+                            <td class="py-5 px-6 text-purple-400"><?= htmlspecialchars($c['association_nom'] ?? 'Non définie') ?></td>
+                            
                             <!-- Objectif (Non éditable) -->
-                            <td class="py-5 px-6 text-emerald-400 font-bold">
-                                <?= number_format($objectif, 2) ?> €
-                            </td>
-
+                            <td class="py-5 px-6 text-emerald-400 font-bold"><?= number_format($objectif, 2) ?> €</td>
+                            
                             <!-- Progression (Éditable) -->
                             <td class="py-5 px-6">
                                 <div class="editable-cell text-yellow-400 font-bold" 
@@ -303,7 +471,7 @@ $challenges = $challengeC->list();
                                     <span class="display-value"><?= number_format($progression, 2) ?> €</span>
                                 </div>
                             </td>
-
+                            
                             <!-- Pourcentage avec barre de progression -->
                             <td class="py-5 px-6">
                                 <div class="flex items-center gap-3">
@@ -314,22 +482,19 @@ $challenges = $challengeC->list();
                                     <span class="percentage-display text-sm font-medium"><?= $pourcentage ?>%</span>
                                 </div>
                             </td>
-
+                            
                             <!-- Récompense -->
-                            <td class="py-5 px-6 text-gray-300">
-                                <?= htmlspecialchars($c['recompense']) ?>
-                            </td>
-
+                            <td class="py-5 px-6 text-gray-300"><?= htmlspecialchars($c['recompense']) ?></td>
+                            
                             <!-- Actions -->
                             <td class="py-5 px-6 text-center">
                                 <div class="flex justify-center gap-6">
-                                    <a href="../backoffice/editchallenge.php?id=<?= $c['id_challenge'] ?>" 
+                                    <a href="../backoffice/editchallenge.php?id=<?= $challenge_id ?>" 
                                        class="text-yellow-400 hover:text-yellow-300 transition"
                                        title="Modifier">
                                         <i data-feather="edit-2"></i>
                                     </a>
-
-                                    <a href="../backoffice/deletechallenge.php?id=<?= $c['id_challenge'] ?>" 
+                                    <a href="../backoffice/deletechallenge.php?id=<?= $challenge_id ?>" 
                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce challenge ?')" 
                                        class="text-red-500 hover:text-red-400 transition"
                                        title="Supprimer">
@@ -339,7 +504,6 @@ $challenges = $challengeC->list();
                             </td>
                         </tr>
                         <?php endforeach; ?>
-
                         <?php if (empty($challenges)): ?>
                         <tr>
                             <td colspan="8" class="py-10 text-center text-gray-400 text-lg">
@@ -348,11 +512,9 @@ $challenges = $challengeC->list();
                         </tr>
                         <?php endif; ?>
                     </tbody>
-
                 </table>
             </div>
         </div>
-
     </main>
 
     <!-- FOOTER -->
@@ -360,11 +522,11 @@ $challenges = $challengeC->list();
         <p>Copyright © 2025 <span class="text-cyan-400 font-bold">Play to Help</span> - Gaming pour l'Humanitaire</p>
         <p class="text-sm mt-2">Dashboard Admin • Tous droits réservés</p>
     </footer>
-
-    <!-- GRAPHIQUES -->
+    <!-- SCRIPTS -->
     <script>
         feather.replace();
-
+        
+        // ===== GRAPHIQUES =====
         // Doughnut
         new Chart(document.getElementById('donutChart'), {
             type: 'doughnut',
@@ -392,7 +554,7 @@ $challenges = $challengeC->list();
                 } 
             }
         });
-
+        
         // Line Chart
         new Chart(document.getElementById('lineChart'), {
             type: 'line',
@@ -441,146 +603,174 @@ $challenges = $challengeC->list();
                 }
             }
         });
-
-        // ===== ÉDITION INLINE DE LA PROGRESSION =====
-        document.querySelectorAll('.editable-cell').forEach(cell => {
-            cell.addEventListener('click', function() {
-                if (this.querySelector('.edit-input')) return; // Déjà en édition
+        
+        // ===== FILTRAGE ET RECHERCHE DONS =====
+        const searchInput = document.getElementById('searchInput');
+        const filterAssociation = document.getElementById('filterAssociation');
+        const donsRows = document.querySelectorAll('.don-row');
+        
+        function filterDons() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedAssoc = filterAssociation.value;
+            
+            donsRows.forEach(row => {
+                const nom = row.dataset.nom.toLowerCase();
+                const email = row.dataset.email.toLowerCase();
+                const association = row.dataset.association.toLowerCase();
+                const associationId = row.dataset.associationId;
                 
-                const field = this.dataset.field;
-                const currentValue = parseFloat(this.dataset.value);
-                const displayValue = this.querySelector('.display-value');
+                const matchesSearch = nom.includes(searchTerm) || email.includes(searchTerm) || association.includes(searchTerm);
+                const matchesAssoc = !selectedAssoc || associationId === selectedAssoc;
                 
-                // Créer l'input
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.step = '0.01';
-                input.min = '0';
-                input.value = currentValue;
-                input.className = 'edit-input';
-                
-                // Créer les boutons
-                const buttonsDiv = document.createElement('div');
-                buttonsDiv.className = 'flex gap-2 mt-2';
-                
-                const saveBtn = document.createElement('button');
-                saveBtn.innerHTML = '✓ Sauver';
-                saveBtn.className = 'save-btn';
-                
-                const cancelBtn = document.createElement('button');
-                cancelBtn.innerHTML = '✗ Annuler';
-                cancelBtn.className = 'cancel-btn';
-                
-                buttonsDiv.appendChild(saveBtn);
-                buttonsDiv.appendChild(cancelBtn);
-                
-                // Remplacer le contenu
-                displayValue.style.display = 'none';
-                this.appendChild(input);
-                this.appendChild(buttonsDiv);
-                input.focus();
-                input.select();
-                
-                // Fonction pour restaurer l'affichage
-                const restore = () => {
-                    input.remove();
-                    buttonsDiv.remove();
-                    displayValue.style.display = 'inline';
-                };
-                
-                // Annuler
-                cancelBtn.addEventListener('click', restore);
-                
-                // Sauvegarder
-                saveBtn.addEventListener('click', async () => {
-                    const newValue = parseFloat(input.value);
-                    
-                    if (isNaN(newValue) || newValue < 0) {
-                        alert('Valeur invalide! La progression doit être >= 0');
-                        return;
-                    }
-                    
-                    const row = cell.closest('tr');
-                    const challengeId = row.dataset.challengeId;
-                    
-                    // Désactiver le bouton
-                    saveBtn.disabled = true;
-                    saveBtn.innerHTML = '⏳ Sauvegarde...';
-                    
-                    try {
-                        const response = await fetch('update_progression.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `id=${challengeId}&progression=${newValue}`
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Mettre à jour l'affichage
-                            cell.dataset.value = newValue;
-                            displayValue.textContent = newValue.toFixed(2) + ' €';
-                            
-                            // Mettre à jour la barre de progression et le pourcentage
-                            updateProgressBar(row, newValue, data.objectif);
-                            
-                            // Restaurer l'affichage
-                            restore();
-                            
-                            // Animation de succès
-                            cell.style.background = 'rgba(16, 185, 129, 0.3)';
-                            setTimeout(() => {
-                                cell.style.background = '';
-                            }, 1000);
-                        } else {
-                            alert('Erreur: ' + data.message);
-                            saveBtn.disabled = false;
-                            saveBtn.innerHTML = '✓ Sauver';
-                        }
-                    } catch (error) {
-                        console.error('Erreur:', error);
-                        alert('Erreur réseau. Veuillez réessayer.');
-                        saveBtn.disabled = false;
-                        saveBtn.innerHTML = '✓ Sauver';
-                    }
-                });
-                
-                // Sauvegarder avec Enter
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        saveBtn.click();
-                    } else if (e.key === 'Escape') {
-                        cancelBtn.click();
-                    }
-                });
+                if (matchesSearch && matchesAssoc) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
+        }
+        
+        searchInput.addEventListener('input', filterDons);
+        filterAssociation.addEventListener('change', filterDons);
+        
+        // ===== TRI DONS =====
+        function toggleSortMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('sortMenu');
+            menu.classList.toggle('active');
+        }
+        
+        function sortDons(type) {
+            const tbody = document.getElementById('donsTableBody');
+            const rows = Array.from(tbody.querySelectorAll('.don-row'));
+            
+            rows.sort((a, b) => {
+                switch(type) {
+                    case 'date_desc':
+                        return new Date(b.dataset.date) - new Date(a.dataset.date);
+                    case 'date_asc':
+                        return new Date(a.dataset.date) - new Date(b.dataset.date);
+                    case 'montant_desc':
+                        return parseFloat(b.dataset.montant) - parseFloat(a.dataset.montant);
+                    case 'montant_asc':
+                        return parseFloat(a.dataset.montant) - parseFloat(b.dataset.montant);
+                    case 'nom_asc':
+                        return a.dataset.nom.localeCompare(b.dataset.nom);
+                    default:
+                        return 0;
+                }
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+            
+            // Mettre à jour le label
+            const labels = {
+                'date_desc': '📅 Date (récent → ancien)',
+                'date_asc': '📅 Date (ancien → récent)',
+                'montant_desc': '💰 Montant (élevé → bas)',
+                'montant_asc': '💰 Montant (bas → élevé)',
+                'nom_asc': '👤 Nom (A → Z)'
+            };
+            document.getElementById('sortLabel').textContent = labels[type];
+            document.getElementById('sortMenu').classList.remove('active');
+        }
+        
+        // ===== FILTRAGE CHALLENGES PAR MIN/MAX =====
+        const filterMinChallenges = document.getElementById('filterMinChallenges');
+        const filterMaxChallenges = document.getElementById('filterMaxChallenges');
+        const filterPourcentageChallenges = document.getElementById('filterPourcentageChallenges');
+        const challengeRows = document.querySelectorAll('.challenge-row');
+        
+        function filterChallenges() {
+            const minValue = parseFloat(filterMinChallenges.value) || 0;
+            const maxValue = parseFloat(filterMaxChallenges.value) || Infinity;
+            const minPourcentage = parseFloat(filterPourcentageChallenges.value) || 0;
+            
+            challengeRows.forEach(row => {
+                const objectif = parseFloat(row.dataset.objectif);
+                const pourcentage = parseFloat(row.dataset.pourcentage);
+                
+                const matchesMin = objectif >= minValue;
+                const matchesMax = objectif <= maxValue;
+                const matchesPourcentage = pourcentage >= minPourcentage;
+                
+                if (matchesMin && matchesMax && matchesPourcentage) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        filterMinChallenges.addEventListener('input', filterChallenges);
+        filterMaxChallenges.addEventListener('input', filterChallenges);
+        filterPourcentageChallenges.addEventListener('input', filterChallenges);
+        
+        // ===== TRI CHALLENGES =====
+        function toggleSortMenuChallenges(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('sortMenuChallenges');
+            menu.classList.toggle('active');
+        }
+        
+        function sortChallenges(type) {
+            const tbody = document.getElementById('challengesTableBody');
+            const rows = Array.from(tbody.querySelectorAll('.challenge-row'));
+            
+            rows.sort((a, b) => {
+                switch(type) {
+                    case 'id_desc':
+                        return parseInt(b.dataset.id) - parseInt(a.dataset.id);
+                    case 'id_asc':
+                        return parseInt(a.dataset.id) - parseInt(b.dataset.id);
+                    case 'nom_asc':
+                        return a.dataset.nom.localeCompare(b.dataset.nom);
+                    case 'objectif_desc':
+                        return parseFloat(b.dataset.objectif) - parseFloat(a.dataset.objectif);
+                    case 'progression_desc':
+                        return parseFloat(b.dataset.progression) - parseFloat(a.dataset.progression);
+                    case 'pourcentage_desc':
+                        return parseFloat(b.dataset.pourcentage) - parseFloat(a.dataset.pourcentage);
+                    default:
+                        return 0;
+                }
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+            
+            // Mettre à jour le label
+            const labels = {
+                'id_desc': '🔢 ID (élevé → bas)',
+                'id_asc': '🔢 ID (bas → élevé)',
+                'nom_asc': '📝 Nom (A → Z)',
+                'objectif_desc': '🎯 Objectif (élevé → bas)',
+                'progression_desc': '📊 Progression (élevé → bas)',
+                'pourcentage_desc': '% Pourcentage (élevé → bas)'
+            };
+            document.getElementById('sortLabelChallenges').textContent = labels[type];
+            document.getElementById('sortMenuChallenges').classList.remove('active');
+        }
+        
+        // Fermer les menus au clic extérieur
+        document.addEventListener('click', () => {
+            document.getElementById('sortMenu').classList.remove('active');
+            document.getElementById('sortMenuChallenges').classList.remove('active');
         });
         
-        // Fonction pour mettre à jour la barre de progression
-        function updateProgressBar(row, progression, objectif) {
-            const pourcentage = objectif > 0 ? Math.min(100, Math.round((progression / objectif) * 100 * 100) / 100) : 0;
-            
-            const progressBar = row.querySelector('.progress-bar');
-            const percentageDisplay = row.querySelector('.percentage-display');
-            
-            // Mettre à jour la largeur
-            progressBar.style.width = pourcentage + '%';
-            percentageDisplay.textContent = pourcentage + '%';
-            
-            // Changer la couleur selon le pourcentage
-            if (pourcentage >= 100) {
-                progressBar.className = 'progress-bar bg-gradient-to-r from-green-500 to-emerald-500 h-2.5 rounded-full transition-all duration-500';
-            } else if (pourcentage >= 75) {
-                progressBar.className = 'progress-bar bg-gradient-to-r from-cyan-500 to-blue-500 h-2.5 rounded-full transition-all duration-500';
-            } else if (pourcentage >= 50) {
-                progressBar.className = 'progress-bar bg-gradient-to-r from-purple-500 to-cyan-500 h-2.5 rounded-full transition-all duration-500';
-            } else {
-                progressBar.className = 'progress-bar bg-gradient-to-r from-orange-500 to-yellow-500 h-2.5 rounded-full transition-all duration-500';
-            }
-        }
-    </script>
+        // ===== ÉDITION DE LA PROGRESSION - OUVRIR UNE PAGE =====
+        document.querySelectorAll('.editable-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                const row = cell.closest('tr');
+                const challengeId = row.dataset.challengeId;
+                const challengeName = row.dataset.nom;
+                const currentProgression = parseFloat(cell.dataset.value);
+                const objectif = parseFloat(row.dataset.objectif);
+                
+                // Ouvrir la page d'édition
+                window.location.href = `edit_progression_page.php?id=${challengeId}&nom=${encodeURIComponent(challengeName)}&progression=${currentProgression}&objectif=${objectif}`;
+            });
+        });
 
+    </script>
 </body>
 </html>
