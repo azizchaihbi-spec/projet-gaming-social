@@ -1,33 +1,214 @@
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../models/PublicationModel.php';
+require_once __DIR__ . '/../../models/ReponseModel.php';
+
+// Connexion à la base de données
+try {
+    $pdo = new PDO(
+        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8",
+        DB_USER,
+        DB_PASS
+    );
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+
+// Initialisation
+$publicationModel = new PublicationModel($pdo);
+$reponseModel = new ReponseModel($pdo);
+
+// Récupérer tous les forums
+$forums = $publicationModel->getForums();
+
+// Statistiques globales
+$totalPosts = $publicationModel->getTotalPublications();
+$totalAnswers = $reponseModel->getTotalReponses();
+$statsForums = $publicationModel->getStatistiquesParForum();
+
+// === FILTRE PAR FORUM (CORRIGÉ) ===
+$forumSelectionne = null;
+$publications = [];
+
+if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['id_forum'])) {
+    $idForum = (int)$_GET['id_forum'];
+    $publications = $publicationModel->afficherPublicationsParForum($idForum);
+    
+    foreach ($forums as $forum) {
+        if ($forum['id_forum'] == $idForum) {
+            $forumSelectionne = $forum;
+            break;
+        }
+    }
+} else {
+    $publications = $publicationModel->getAllPublicationsForAdmin();
+}
+?>
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="bg-gray-950 text-gray-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BACK-OFFICE Q&A - Admin</title>
-  <link rel="stylesheet" href="/play-to-help/assets/css/admin.css">
+  <title>Play2Help • Backoffice Q&A</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Space Mono', monospace; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(34, 211, 238, 0.3); }
+    .neon { text-shadow: 0 0 20px #22d3ee, 0 0 40px #22d3ee; }
+    .glow:hover { box-shadow: 0 0 30px rgba(34, 211, 238, 0.6); }
+    .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, transparent, #22d3ee, transparent); animation: scan 6s linear infinite; }
+    @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
+  </style>
 </head>
-<body>
+<body class="relative min-h-screen overflow-x-hidden">
+  <div class="scanline"></div>
 
-<div class="admin-wrapper">
-  <header class="admin-header">
-    <h1>BACK-OFFICE Q&A</h1>
-    <p>Gestion complète • Suppression • Bannissement • Statistiques</p>
-  </header>
+  <main class="container mx-auto px-6 py-12 max-w-7xl">
+    <!-- TITRE FUTURISTE -->
+    <div class="text-center mb-16">
+      <h1 class="text-6xl md:text-8xl font-bold font-orbitron neon animate-pulse">PLAY2HELP</h1>
+      <p class="text-cyan-400 text-xl mt-4">Q&A Dashboard</p>
+    </div>
 
-  <div class="stats-grid">
-    <div class="stat-card"><h3>Questions</h3><span id="totalPosts">0</span></div>
-    <div class="stat-card"><h3>Réponses</h3><span id="totalAnswers">0</span></div>
-    <div class="stat-card"><h3>Bannis</h3><span id="bannedCount">0</span></div>
-  </div>
+    <!-- 3 CARTES DE STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
+        <h3 class="text-5xl font-bold text-cyan-400 neon"><?= $totalPosts ?></h3>
+        <p class="text-gray-300 mt-3 text-lg">Questions</p>
+      </div>
+      <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
+        <h3 class="text-5xl font-bold text-emerald-400"><?= $totalAnswers ?></h3>
+        <p class="text-gray-300 mt-3 text-lg">Réponses</p>
+      </div>
+      <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
+        <h3 class="text-5xl font-bold text-purple-400"><?= count($forums) ?></h3>
+        <p class="text-gray-300 mt-3 text-lg">Forums</p>
+      </div>
+    </div>
 
-  <div class="admin-controls">
-    <input type="text" id="searchInput" placeholder="Rechercher par pseudo ou mot-clé..." autocomplete="off">
-    <button onclick="clearAll()" class="btn-danger">SUPPRIMER TOUT LE SITE</button>
-  </div>
+    <!-- STATISTIQUES PAR FORUM -->
+    <div class="card rounded-3xl p-10 glow mb-10">
+      <h2 class="text-3xl font-bold text-center mb-8 neon font-orbitron">Statistiques par Forum</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <?php foreach ($statsForums as $stat): ?>
+          <div class="card p-6 rounded-xl text-center border-2 transition transform hover:scale-105" 
+               style="border-color: <?= htmlspecialchars($stat['couleur']) ?>;">
+            <h3 class="text-xl font-bold mb-2" style="color: <?= htmlspecialchars($stat['couleur']) ?>;">
+              <?= htmlspecialchars($stat['forum_nom']) ?>
+            </h3>
+            <div class="text-4xl font-bold text-white my-3"><?= $stat['nb_publications'] ?></div>
+            <p class="text-gray-400 text-sm">publications</p>
+            <p class="text-emerald-400 text-sm mt-2">likes <?= $stat['total_likes'] ?></p>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
 
-  <div id="adminPostsList" class="posts-grid"></div>
+   <!-- FILTRE PAR FORUM — VERSION QUI MARCHE À 1000000% -->
+<div class="card rounded-3xl p-10 glow mb-10">
+  <h2 class="text-3xl font-bold text-center mb-8 neon font-orbitron">Filtrer par Forum</h2>
+  
+  <form method="GET" action="<?= basename($_SERVER['PHP_SELF']) ?>" class="flex flex-col md:flex-row gap-4">
+    <select name="id_forum" id="forumSelect" 
+            class="flex-1 bg-gray-800 border-2 border-cyan-500 rounded-full px-6 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
+      <option value="">-- Tous les forums --</option>
+      <?php foreach ($forums as $forum): ?>
+        <option value="<?= $forum['id_forum'] ?>"
+                <?= (isset($_GET['id_forum']) && $_GET['id_forum'] == $forum['id_forum']) ? 'selected' : '' ?>>
+          <?= htmlspecialchars($forum['nom']) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+    <button type="submit" class="bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-3 rounded-full text-xl font-bold hover:scale-110 transition">
+      Filtrer
+    </button>
+  </form>
 </div>
 
-<script src="/play-to-help/assets/js/admin.js"></script>
+    <!-- BANNIÈRE DU FORUM SÉLECTIONNÉ -->
+    <?php if ($forumSelectionne): ?>
+      <div class="card rounded-3xl p-10 glow mb-10 border-2" style="border-color: <?= htmlspecialchars($forumSelectionne['couleur']) ?>;">
+        <h2 class="text-4xl font-bold text-center mb-4" style="color: <?= htmlspecialchars($forumSelectionne['couleur']) ?>;">
+          <?= htmlspecialchars($forumSelectionne['nom']) ?>
+        </h2>
+        <p class="text-center text-gray-300 text-lg mb-4">
+          <?= htmlspecialchars($forumSelectionne['description']) ?>
+        </p>
+        <p class="text-center text-cyan-400 font-bold">
+          <?= count($publications) ?> publication(s) trouvée(s)
+        </p>
+      </div>
+    <?php endif; ?>
+
+    <!-- LISTE DES PUBLICATIONS -->
+    <div class="card rounded-3xl p-10 glow mb-20">
+      <h2 class="text-4xl font-bold text-center mb-10 neon font-orbitron">
+        Publications <?= $forumSelectionne ? 'du forum' : '' ?>
+      </h2>
+      
+      <?php if (!empty($publications)): ?>
+        <div class="grid grid-cols-1 gap-6">
+          <?php foreach ($publications as $pub): ?>
+            <div class="card p-8 rounded-2xl border-2 border-gray-700 hover:border-cyan-500 transition publication-item">
+              <h3 class="text-2xl font-bold text-cyan-400 mb-3">
+                <?= htmlspecialchars($pub['titre']) ?>
+              </h3>
+              <div class="text-gray-400 mb-4 flex flex-wrap gap-4">
+                <span>Par <?= htmlspecialchars($pub['prenom']) ?> <?= htmlspecialchars($pub['auteur_nom'] ?? '') ?></span>
+                <span><?= date('d/m/Y à H:i', strtotime($pub['date_publication'])) ?></span>
+                <span class="font-bold" style="color: <?= htmlspecialchars($pub['forum_couleur'] ?? '#22d3ee') ?>;">
+                  <?= htmlspecialchars($pub['forum_nom']) ?>
+                </span>
+              </div>
+              <div class="text-gray-300 mb-4 leading-relaxed">
+                <?= nl2br(htmlspecialchars(substr($pub['contenu'], 0, 200))) ?><?= strlen($pub['contenu']) > 200 ? '...' : '' ?>
+              </div>
+              <?php if (!empty($pub['image'])): ?>
+                <img src="/play-to-help/<?= htmlspecialchars($pub['image']) ?>" alt="Image" class="max-w-full rounded-xl mb-4">
+              <?php endif; ?>
+              <div class="flex justify-between items-center pt-4 border-t border-gray-700">
+                <div class="flex gap-6">
+                  <span class="text-emerald-400 font-bold">likes <?= $pub['likes'] ?></span>
+                  <span class="text-yellow-400 font-bold">réponses <?= $pub['nb_reponses'] ?></span>
+                </div>
+                <button onclick="deletePublication(<?= $pub['id_publication'] ?>)" 
+                        class="text-red-500 hover:text-red-400 transition">
+                  <i data-feather="trash-2"></i> Supprimer
+                </button>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php else: ?>
+        <div class="text-center py-20">
+          <p class="text-gray-400 text-2xl">Aucune publication trouvée</p>
+        </div>
+      <?php endif; ?>
+    </div>
+  </main>
+
+  <footer class="text-center py-8 text-gray-500 border-t border-gray-800 mt-20">
+    <p>Copyright © 2025 <span class="text-cyan-400 font-bold">Play to Help</span></p>
+  </footer>
+
+  <script>
+    feather.replace();
+
+    // Suppression
+    function deletePublication(id) {
+      if (!confirm("Supprimer cette publication et toutes ses réponses ?")) return;
+      fetch('../../api_admin.php?action=deletePost', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'id=' + id
+      })
+      .then(() => location.reload());
+    }
+  </script>
 </body>
 </html>

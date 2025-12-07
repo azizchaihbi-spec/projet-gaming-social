@@ -101,6 +101,44 @@ switch ($action) {
     break;
         
     default:
-        echo json_encode(['error' => 'Action non reconnue']);
+        echo json_encode(['error' => 'Action non reconnue']); 
+    
+        case 'edit_reply':
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id_reponse = $input['id'] ?? 0;
+        $nouveau_contenu = $input['contenu'] ?? '';
+
+        // Vérifie que c'est bien l'auteur (id_auteur = 1 pour l'instant)
+        $check = $pdo->prepare("SELECT id_auteur FROM reponse WHERE id_reponse = ? AND supprimee = 0");
+        $check->execute([$id_reponse]);
+        $auteur = $check->fetchColumn();
+
+        if ($auteur == 1) { // ← plus tard : $_SESSION['id_user']
+            $stmt = $pdo->prepare("UPDATE reponse SET contenu = ? WHERE id_reponse = ?");
+            $success = $stmt->execute([$nouveau_contenu, $id_reponse]);
+            echo json_encode(['success' => $success]);
+        } else {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Pas ta réponse']);
+        }
+        break;
+
+    case 'delete_reply':
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id_reponse = $input['id'] ?? 0;
+
+        $check = $pdo->prepare("SELECT id_auteur FROM reponse WHERE id_reponse = ? AND supprimee = 0");
+        $check->execute([$id_reponse]);
+        $auteur = $check->fetchColumn();
+
+        if ($auteur == 1) {
+            $stmt = $pdo->prepare("UPDATE reponse SET supprimee = 1 WHERE id_reponse = ?");
+            $success = $stmt->execute([$id_reponse]);
+            echo json_encode(['success' => $success]);
+        } else {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Pas ta réponse']);
+        }
+        break;
 }
 ?>

@@ -143,5 +143,64 @@ public function getAllPublicationsForAdmin($search = '') {
         return [];
     }
 }
+public function afficherPublicationsParForum($idForum) {
+    try {
+        $sql = "SELECT p.id_publication,
+                       p.titre,
+                       p.contenu,
+                       p.image,
+                       p.date_publication,
+                       p.likes,
+                       f.nom as forum_nom,
+                       f.description as forum_description,
+                       f.couleur as forum_couleur,
+                       u.prenom,
+                       u.nom as auteur_nom,
+                       (SELECT COUNT(*) 
+                        FROM reponse r 
+                        WHERE r.id_publication = p.id_publication 
+                          AND r.supprimee = 0) as nb_reponses
+                FROM publication p
+                INNER JOIN forum f ON p.id_forum = f.id_forum
+                INNER JOIN utilisateur u ON p.id_auteur = u.id_user
+                WHERE p.id_forum = ? 
+                  AND p.supprimee = 0
+                ORDER BY p.date_publication DESC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$idForum]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    } catch (PDOException $e) {
+        error_log("Erreur afficherPublicationsParForum: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * BONUS : Statistiques par forum avec JOINTURE et GROUP BY
+ */
+public function getStatistiquesParForum() {
+    try {
+        $sql = "SELECT f.id_forum,
+                       f.nom as forum_nom,
+                       f.couleur,
+                       f.description,
+                       COUNT(p.id_publication) as nb_publications,
+                       IFNULL(SUM(p.likes), 0) as total_likes
+                FROM forum f
+                LEFT JOIN publication p ON f.id_forum = p.id_forum 
+                                        AND p.supprimee = 0
+                GROUP BY f.id_forum, f.nom, f.couleur, f.description
+                ORDER BY nb_publications DESC";
+        
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    } catch (PDOException $e) {
+        error_log("Erreur getStatistiquesParForum: " . $e->getMessage());
+        return [];
+    }
+}
 }
 ?>
