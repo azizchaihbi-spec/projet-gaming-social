@@ -1069,9 +1069,9 @@
                                             <div class="flex-grow-1">
                                                 <div class="d-flex align-items-center mb-2">
                                                     <span style="font-size: 1.3rem; margin-right: 8px;">💳</span>
-                                                    <strong style="font-size: 1rem; color: #fff;">Paiement en ligne (Stripe Test)</strong>
+                                                    <strong style="font-size: 1rem; color: #fff;">Paiement en ligne via Stripe</strong>
                                                 </div>
-                                                <small class="text-muted d-block" style="font-size: 0.85rem;">Carte test : 4242 4242 4242 4242</small>
+                                                
                                             </div>
                                         </label>
                                     </div>
@@ -1087,7 +1087,7 @@
                                                     <span style="font-size: 1.3rem; margin-right: 8px;">💰</span>
                                                     <strong style="font-size: 1rem; color: #fff;">Don Direct</strong>
                                                 </div>
-                                                <small class="text-muted d-block" style="font-size: 0.85rem;">Sans paiement en ligne</small>
+                                               
                                             </div>
                                         </label>
                                     </div>

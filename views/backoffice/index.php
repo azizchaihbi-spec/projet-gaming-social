@@ -143,26 +143,29 @@ while ($row = $assocQuery->fetch_assoc()) {
             border-color: #a78bfa;
         }
         
-        /* Dropdown Tri */
+        /* Dropdown Tri - Design Gaming Créatif */
         .sort-dropdown {
             position: relative;
         }
         .sort-button {
-            background: rgba(34, 211, 238, 0.1);
-            border: 2px solid rgba(34, 211, 238, 0.4);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(6, 182, 212, 0.15));
+            border: 2px solid rgba(34, 211, 238, 0.5);
             color: #22d3ee;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 10px;
             transition: all 0.3s ease;
             width: 100%;
+            font-weight: 600;
         }
         .sort-button:hover {
-            background: rgba(34, 211, 238, 0.2);
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.25), rgba(6, 182, 212, 0.25));
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.5);
+            transform: translateY(-2px);
         }
         .sort-menu {
             position: absolute;
@@ -191,18 +194,18 @@ while ($row = $assocQuery->fetch_assoc()) {
             color: #22d3ee;
         }
         
-        /* Dropdown Challenges */
+        /* Dropdown Challenges - Design Gaming Créatif */
         .sort-button-challenges {
-            background: rgba(167, 139, 250, 0.1);
-            border-color: rgba(167, 139, 250, 0.4);
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(139, 92, 246, 0.15));
+            border-color: rgba(167, 139, 250, 0.5);
             color: #a78bfa;
         }
         .sort-button-challenges:hover {
-            background: rgba(167, 139, 250, 0.2);
-            box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(139, 92, 246, 0.25));
+            box-shadow: 0 0 25px rgba(167, 139, 250, 0.5);
         }
         .sort-menu-challenges {
-            border-color: rgba(167, 139, 250, 0.4);
+            border-color: rgba(167, 139, 250, 0.5);
         }
     </style>
 </head>
@@ -275,18 +278,18 @@ while ($row = $assocQuery->fetch_assoc()) {
                 </a>
             </div>
             
-            <!-- Filtres et Recherche -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <!-- Filtres et Recherche - Design Gaming Créatif -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div>
-                    <label class="block text-sm text-gray-400 mb-2">🔍 Recherche</label>
+                    <label class="block text-sm text-cyan-300 mb-2 font-bold">🔍 Recherche Rapide</label>
                     <input type="text" id="searchInput" placeholder="Nom, email, association..." 
-                           class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-2 focus:border-cyan-500 focus:outline-none text-white">
+                           class="w-full bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border-2 border-cyan-500/50 rounded-xl px-4 py-3 focus:border-cyan-400 focus:outline-none text-white font-medium transition-all hover:shadow-lg hover:shadow-cyan-500/30">
                 </div>
                 
                 <div>
-                    <label class="block text-sm text-gray-400 mb-2">🏢 Association</label>
-                    <select id="filterAssociation" class="w-full bg-gray-800 border border-cyan-500/30 rounded-lg px-4 py-2 focus:border-cyan-500 focus:outline-none text-white">
-                        <option value="">Toutes les associations</option>
+                    <label class="block text-sm text-cyan-300 mb-2 font-bold">🏢 Association</label>
+                    <select id="filterAssociation" class="w-full bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border-2 border-emerald-500/50 rounded-xl px-4 py-3 focus:border-emerald-400 focus:outline-none text-white font-medium transition-all hover:shadow-lg hover:shadow-emerald-500/30">
+                        <option value="">🌍 Toutes</option>
                         <?php foreach ($associationsList as $assoc): ?>
                             <option value="<?php echo $assoc['id']; ?>"><?php echo htmlspecialchars($assoc['nom']); ?></option>
                         <?php endforeach; ?>
@@ -294,21 +297,29 @@ while ($row = $assocQuery->fetch_assoc()) {
                 </div>
                 
                 <div>
-                    <label class="block text-sm text-gray-400 mb-2">🎯 Tri</label>
+                    <label class="block text-sm text-cyan-300 mb-2 font-bold">⚡ Tri Rapide</label>
                     <div class="sort-dropdown">
                         <button class="sort-button" onclick="toggleSortMenu(event)">
                             <span>⚡</span>
-                            <span id="sortLabel">Trier par...</span>
+                            <span id="sortLabel">Trier...</span>
                             <span>▼</span>
                         </button>
                         <div class="sort-menu" id="sortMenu">
-                            <div class="sort-option" onclick="sortDons('date_desc')">📅 Date (récent → ancien)</div>
-                            <div class="sort-option" onclick="sortDons('date_asc')">📅 Date (ancien → récent)</div>
-                            <div class="sort-option" onclick="sortDons('montant_desc')">💰 Montant (élevé → bas)</div>
-                            <div class="sort-option" onclick="sortDons('montant_asc')">💰 Montant (bas → élevé)</div>
-                            <div class="sort-option" onclick="sortDons('nom_asc')">👤 Nom (A → Z)</div>
+                            <div class="sort-option" onclick="sortDons('date_desc')">📅 Date (↓ récent)</div>
+                            <div class="sort-option" onclick="sortDons('date_asc')">📅 Date (↑ ancien)</div>
+                            <div class="sort-option" onclick="sortDons('montant_desc')">💰 Montant (↓)</div>
+                            <div class="sort-option" onclick="sortDons('montant_asc')">💰 Montant (↑)</div>
+                            <div class="sort-option" onclick="sortDons('nom_asc')">👤 Nom (A→Z)</div>
                         </div>
                     </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2 opacity-0">Reset</label>
+                    <button onclick="resetFiltersDons()" 
+                            class="w-full bg-gradient-to-r from-red-900/30 to-orange-900/30 border-2 border-red-500/50 rounded-xl px-4 py-3 text-white font-bold transition-all hover:shadow-lg hover:shadow-red-500/30 hover:scale-105">
+                        🔄 Reset
+                    </button>
                 </div>
             </div>
             
@@ -367,55 +378,51 @@ while ($row = $assocQuery->fetch_assoc()) {
                 </a>
             </div>
             
-            <!-- Filtres et Tri Challenges -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <!-- Filtre Min -->
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">💰 Min (€)</label>
-                    <input type="number" 
-                           id="filterMinChallenges" 
-                           placeholder="Objectif min..." 
-                           step="0.01"
-                           class="w-full bg-gray-800 border border-purple-500/30 rounded-lg px-4 py-2 focus:border-purple-500 focus:outline-none text-white">
+            <!-- Filtres et Tri Challenges - Design Gaming Créatif -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <!-- Filtre Range Min-Max -->
+                <div class="col-span-2">
+                    <label class="block text-sm text-purple-300 mb-2 font-bold">💰 Plage d'Objectif (€)</label>
+                    <div class="flex gap-2">
+                        <input type="number" 
+                               id="filterMinChallenges" 
+                               placeholder="Min..." 
+                               step="1"
+                               class="w-1/2 bg-gradient-to-r from-purple-900/30 to-purple-800/30 border-2 border-purple-500/50 rounded-xl px-4 py-3 focus:border-purple-400 focus:outline-none text-white text-center font-bold transition-all hover:shadow-lg hover:shadow-purple-500/30">
+                        <span class="text-purple-400 text-2xl self-center">→</span>
+                        <input type="number" 
+                               id="filterMaxChallenges" 
+                               placeholder="Max..." 
+                               step="1"
+                               class="w-1/2 bg-gradient-to-r from-purple-800/30 to-pink-900/30 border-2 border-pink-500/50 rounded-xl px-4 py-3 focus:border-pink-400 focus:outline-none text-white text-center font-bold transition-all hover:shadow-lg hover:shadow-pink-500/30">
+                    </div>
                 </div>
                 
-                <!-- Filtre Max -->
+                <!-- Bouton Reset Filtres -->
                 <div>
-                    <label class="block text-sm text-gray-400 mb-2">💎 Max (€)</label>
-                    <input type="number" 
-                           id="filterMaxChallenges" 
-                           placeholder="Objectif max..." 
-                           step="0.01"
-                           class="w-full bg-gray-800 border border-purple-500/30 rounded-lg px-4 py-2 focus:border-purple-500 focus:outline-none text-white">
+                    <label class="block text-sm text-gray-400 mb-2 opacity-0">Reset</label>
+                    <button onclick="resetFiltersChallenges()" 
+                            class="w-full bg-gradient-to-r from-red-900/30 to-orange-900/30 border-2 border-red-500/50 rounded-xl px-4 py-3 text-white font-bold transition-all hover:shadow-lg hover:shadow-red-500/30 hover:scale-105">
+                        🔄 Reset
+                    </button>
                 </div>
                 
-                <!-- Filtre Pourcentage -->
+                <!-- Tri Créatif -->
                 <div>
-                    <label class="block text-sm text-gray-400 mb-2">📊 % Min</label>
-                    <input type="number" 
-                           id="filterPourcentageChallenges" 
-                           placeholder="% min..." 
-                           min="0"
-                           max="100"
-                           class="w-full bg-gray-800 border border-purple-500/30 rounded-lg px-4 py-2 focus:border-purple-500 focus:outline-none text-white">
-                </div>
-                
-                <!-- Tri -->
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">🎯 Tri</label>
+                    <label class="block text-sm text-purple-300 mb-2 font-bold">⚡ Tri Rapide</label>
                     <div class="sort-dropdown">
                         <button class="sort-button sort-button-challenges" onclick="toggleSortMenuChallenges(event)">
                             <span>⚡</span>
-                            <span id="sortLabelChallenges">Trier par...</span>
+                            <span id="sortLabelChallenges">Trier...</span>
                             <span>▼</span>
                         </button>
                         <div class="sort-menu sort-menu-challenges" id="sortMenuChallenges">
-                            <div class="sort-option" onclick="sortChallenges('id_desc')">🔢 ID (élevé → bas)</div>
-                            <div class="sort-option" onclick="sortChallenges('id_asc')">🔢 ID (bas → élevé)</div>
-                            <div class="sort-option" onclick="sortChallenges('nom_asc')">📝 Nom (A → Z)</div>
-                            <div class="sort-option" onclick="sortChallenges('objectif_desc')">🎯 Objectif (élevé → bas)</div>
-                            <div class="sort-option" onclick="sortChallenges('progression_desc')">📊 Progression (élevé → bas)</div>
-                            <div class="sort-option" onclick="sortChallenges('pourcentage_desc')">% Pourcentage (élevé → bas)</div>
+                            <div class="sort-option" onclick="sortChallenges('id_desc')">🔢 ID (↓ élevé)</div>
+                            <div class="sort-option" onclick="sortChallenges('id_asc')">🔢 ID (↑ bas)</div>
+                            <div class="sort-option" onclick="sortChallenges('nom_asc')">📝 Nom (A→Z)</div>
+                            <div class="sort-option" onclick="sortChallenges('objectif_desc')">🎯 Objectif (↓)</div>
+                            <div class="sort-option" onclick="sortChallenges('progression_desc')">📊 Progression (↓)</div>
+                            <div class="sort-option" onclick="sortChallenges('pourcentage_desc')">💯 % (↓)</div>
                         </div>
                     </div>
                 </div>
@@ -633,6 +640,21 @@ while ($row = $assocQuery->fetch_assoc()) {
         searchInput.addEventListener('input', filterDons);
         filterAssociation.addEventListener('change', filterDons);
         
+        // Fonction Reset pour les dons
+        function resetFiltersDons() {
+            searchInput.value = '';
+            filterAssociation.value = '';
+            document.getElementById('sortLabel').textContent = 'Trier...';
+            filterDons();
+            
+            // Animation de reset
+            const btn = event.target;
+            btn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+            }, 500);
+        }
+        
         // ===== TRI DONS =====
         function toggleSortMenu(event) {
             event.stopPropagation();
@@ -678,23 +700,19 @@ while ($row = $assocQuery->fetch_assoc()) {
         // ===== FILTRAGE CHALLENGES PAR MIN/MAX =====
         const filterMinChallenges = document.getElementById('filterMinChallenges');
         const filterMaxChallenges = document.getElementById('filterMaxChallenges');
-        const filterPourcentageChallenges = document.getElementById('filterPourcentageChallenges');
         const challengeRows = document.querySelectorAll('.challenge-row');
         
         function filterChallenges() {
             const minValue = parseFloat(filterMinChallenges.value) || 0;
             const maxValue = parseFloat(filterMaxChallenges.value) || Infinity;
-            const minPourcentage = parseFloat(filterPourcentageChallenges.value) || 0;
             
             challengeRows.forEach(row => {
                 const objectif = parseFloat(row.dataset.objectif);
-                const pourcentage = parseFloat(row.dataset.pourcentage);
                 
                 const matchesMin = objectif >= minValue;
                 const matchesMax = objectif <= maxValue;
-                const matchesPourcentage = pourcentage >= minPourcentage;
                 
-                if (matchesMin && matchesMax && matchesPourcentage) {
+                if (matchesMin && matchesMax) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -704,7 +722,21 @@ while ($row = $assocQuery->fetch_assoc()) {
         
         filterMinChallenges.addEventListener('input', filterChallenges);
         filterMaxChallenges.addEventListener('input', filterChallenges);
-        filterPourcentageChallenges.addEventListener('input', filterChallenges);
+        
+        // Fonction Reset pour les challenges
+        function resetFiltersChallenges() {
+            filterMinChallenges.value = '';
+            filterMaxChallenges.value = '';
+            document.getElementById('sortLabelChallenges').textContent = 'Trier...';
+            filterChallenges();
+            
+            // Animation de reset
+            const btn = event.target;
+            btn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+            }, 500);
+        }
         
         // ===== TRI CHALLENGES =====
         function toggleSortMenuChallenges(event) {
