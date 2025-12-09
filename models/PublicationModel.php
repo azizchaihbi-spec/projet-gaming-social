@@ -78,13 +78,19 @@ class PublicationModel {
         }
     }
 
-    public function updatePublication($idPublication, $titre, $contenu) {
+ /**
+ * Mettre à jour une publication (titre et contenu)
+ * À ajouter dans votre PublicationModel.php si elle n'existe pas déjà
+ */
+public function updatePublication($idPublication, $titre, $contenu) {
     try {
-        $sql = "UPDATE publication SET titre = ?, contenu = ? WHERE id_publication = ?";
+        $sql = "UPDATE publication 
+                SET titre = ?, contenu = ? 
+                WHERE id_publication = ?";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$titre, $contenu, $idPublication]);
     } catch (PDOException $e) {
-        error_log("Erreur update publication: " . $e->getMessage());
+        error_log("Erreur updatePublication: " . $e->getMessage());
         return false;
     }
 }

@@ -48,9 +48,45 @@ switch ($action) {
     case 'delete_post':
         $id = $_POST['id'] ?? 0;
         if ($publicationModel->deletePublication($id)) {
-            echo json_encode(['success' => true]);
+            echo json_encode(['success' => true, 'message' => 'Publication supprimée']);
         } else {
-            echo json_encode(['success' => false]);
+            echo json_encode(['success' => false, 'error' => 'Erreur de suppression']);
+        }
+        break;
+    
+    // === NOUVELLE ACTION : MODIFICATION D'UNE PUBLICATION ===
+    case 'edit_post':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? 0;
+            $titre = $_POST['titre'] ?? '';
+            $contenu = $_POST['contenu'] ?? '';
+            
+            // Validation
+            if (empty($id) || empty($titre) || empty($contenu)) {
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'ID, titre et contenu requis'
+                ]);
+                break;
+            }
+            
+            // Mise à jour
+            if ($publicationModel->updatePublication($id, $titre, $contenu)) {
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'Publication modifiée avec succès'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'Erreur lors de la modification'
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Méthode non autorisée'
+            ]);
         }
         break;
         
@@ -72,20 +108,16 @@ switch ($action) {
         break;
         
     default:
-        echo json_encode(['error' => 'Action non reconnue']);
-
-// Ajoutez ce cas dans le switch statement
-
-case 'edit_post':
-    $id = $_POST['id'] ?? 0;
-    $titre = $_POST['titre'] ?? '';
-    $contenu = $_POST['contenu'] ?? '';
-    
-    if ($publicationModel->updatePublication($id, $titre, $contenu)) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Erreur de modification']);
-    }
-    break;
-    }
+        echo json_encode([
+            'error' => 'Action non reconnue',
+            'available_actions' => [
+                'get_all',
+                'delete_post',
+                'edit_post',
+                'ban_user',
+                'unban_user',
+                'clear_all'
+            ]
+        ]);
+}
 ?>
