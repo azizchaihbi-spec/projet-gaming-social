@@ -35,7 +35,7 @@
             overflow-x: hidden;
         }
 
-        /* Particules animées en arrière-plan */
+        /* ===== PARTICULES GAMING FLOTTANTES ===== */
         body::before {
             content: '';
             position: fixed;
@@ -44,18 +44,53 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(0, 242, 254, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(0, 242, 254, 0.15) 0%, transparent 50%);
             animation: particleFloat 20s ease-in-out infinite;
             pointer-events: none;
             z-index: 0;
         }
 
+        /* Effet de grille cyberpunk */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         @keyframes particleFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            33% { 
+                transform: translate(30px, -30px) scale(1.2);
+                opacity: 0.8;
+            }
+            66% { 
+                transform: translate(-20px, 20px) scale(0.9);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(50px);
+            }
         }
 
         /* ===== HERO BANNER CRÉATIF ===== */
@@ -154,7 +189,7 @@
             text-align: center;
         }
 
-        /* ===== BOUTONS MODERNES ===== */
+        /* ===== BOUTONS GAMING STYLE ===== */
         .btn-donate {
             background: var(--success-gradient);
             border: none;
@@ -168,9 +203,13 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
-            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+            box-shadow: 
+                0 10px 30px rgba(67, 233, 123, 0.4),
+                0 0 0 2px rgba(67, 233, 123, 0.2);
+            cursor: pointer;
         }
 
+        /* Effet de vague au clic */
         .btn-donate::before {
             content: '';
             position: absolute;
@@ -179,7 +218,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
@@ -189,9 +228,51 @@
             height: 300px;
         }
 
+        /* Effet de scan horizontal */
+        .btn-donate::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            animation: scanButton 3s linear infinite;
+        }
+
+        @keyframes scanButton {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
         .btn-donate:hover {
             transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 50px rgba(67, 233, 123, 0.6);
+            box-shadow: 
+                0 15px 50px rgba(67, 233, 123, 0.6),
+                0 0 0 3px rgba(67, 233, 123, 0.4),
+                0 0 0 6px rgba(56, 249, 215, 0.2);
+            animation: buttonPulse 0.5s ease-in-out;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% {
+                transform: translateY(-5px) scale(1.05);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.08);
+            }
+        }
+
+        .btn-donate:active {
+            transform: translateY(-2px) scale(1);
+            box-shadow: 0 5px 20px rgba(67, 233, 123, 0.4);
         }
 
         .btn-challenge {
@@ -207,9 +288,13 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 
+                0 10px 30px rgba(102, 126, 234, 0.4),
+                0 0 0 2px rgba(102, 126, 234, 0.2);
+            cursor: pointer;
         }
 
+        /* Effet de vague au clic */
         .btn-challenge::before {
             content: '';
             position: absolute;
@@ -218,7 +303,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
@@ -228,9 +313,51 @@
             height: 300px;
         }
 
+        /* Effet de scan diagonal */
+        .btn-challenge::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            animation: scanDiagonal 3s linear infinite;
+        }
+
+        @keyframes scanDiagonal {
+            0% {
+                transform: translateX(-100%) translateY(-100%);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%);
+            }
+        }
+
         .btn-challenge:hover {
             transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+            box-shadow: 
+                0 15px 50px rgba(102, 126, 234, 0.6),
+                0 0 0 3px rgba(102, 126, 234, 0.4),
+                0 0 0 6px rgba(118, 75, 162, 0.2);
+            animation: buttonPulseChallenge 0.5s ease-in-out;
+        }
+
+        @keyframes buttonPulseChallenge {
+            0%, 100% {
+                transform: translateY(-5px) scale(1.05);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.08);
+            }
+        }
+
+        .btn-challenge:active {
+            transform: translateY(-2px) scale(1);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
         /* ===== HEADER SECTION ===== */
@@ -266,7 +393,7 @@
             margin-top: 40px;
         }
 
-        /* ===== CARTES DON GLASSMORPHISM ===== */
+        /* ===== CARTES DON GLASSMORPHISM GAMING ===== */
         .don-item {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
@@ -276,8 +403,10 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
         }
 
+        /* Effet de scan laser */
         .don-item::before {
             content: '';
             position: absolute;
@@ -285,18 +414,70 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(67, 233, 123, 0.2), transparent);
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(67, 233, 123, 0.3), 
+                rgba(56, 249, 215, 0.3),
+                transparent);
             transition: left 0.6s;
+            z-index: 1;
         }
 
         .don-item:hover::before {
             left: 100%;
         }
 
+        /* Effet de glitch sur hover */
         .don-item:hover {
             transform: translateY(-15px) scale(1.03);
             border-color: rgba(67, 233, 123, 0.8);
-            box-shadow: 0 20px 60px rgba(67, 233, 123, 0.4), var(--glow-cyan);
+            box-shadow: 
+                0 20px 60px rgba(67, 233, 123, 0.4), 
+                var(--glow-cyan),
+                0 0 0 1px rgba(67, 233, 123, 0.5),
+                0 0 0 3px rgba(56, 249, 215, 0.3);
+            animation: glitchCard 0.3s ease-in-out;
+        }
+
+        @keyframes glitchCard {
+            0%, 100% {
+                transform: translateY(-15px) scale(1.03);
+            }
+            25% {
+                transform: translateY(-15px) scale(1.03) translateX(-2px);
+            }
+            75% {
+                transform: translateY(-15px) scale(1.03) translateX(2px);
+            }
+        }
+
+        /* Coins lumineux */
+        .don-item::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            background: rgba(67, 233, 123, 0.8);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 10px rgba(67, 233, 123, 1),
+                0 0 20px rgba(67, 233, 123, 0.8),
+                0 0 30px rgba(67, 233, 123, 0.6);
+            animation: cornerPulse 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
         }
 
         .don-item .thumb {
@@ -377,7 +558,7 @@
             margin: 0;
         }
 
-        /* ===== CARTES CHALLENGE FUTURISTES ===== */
+        /* ===== CARTES CHALLENGE FUTURISTES GAMING ===== */
         .challenge-card {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
@@ -387,8 +568,10 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
         }
 
+        /* Effet de scan holographique */
         .challenge-card::before {
             content: '';
             position: absolute;
@@ -396,18 +579,70 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(102, 126, 234, 0.3),
+                rgba(118, 75, 162, 0.3),
+                transparent);
             transition: left 0.6s;
+            z-index: 1;
         }
 
         .challenge-card:hover::before {
             left: 100%;
         }
 
+        /* Effet de lévitation avec glitch */
         .challenge-card:hover {
             transform: translateY(-15px) scale(1.03);
             border-color: rgba(102, 126, 234, 0.8);
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4), var(--glow-purple);
+            box-shadow: 
+                0 20px 60px rgba(102, 126, 234, 0.4), 
+                var(--glow-purple),
+                0 0 0 1px rgba(102, 126, 234, 0.5),
+                0 0 0 3px rgba(118, 75, 162, 0.3);
+            animation: glitchChallenge 0.3s ease-in-out;
+        }
+
+        @keyframes glitchChallenge {
+            0%, 100% {
+                transform: translateY(-15px) scale(1.03);
+            }
+            25% {
+                transform: translateY(-15px) scale(1.03) translateX(2px);
+            }
+            75% {
+                transform: translateY(-15px) scale(1.03) translateX(-2px);
+            }
+        }
+
+        /* Indicateur de niveau (coins lumineux) */
+        .challenge-card::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 8px;
+            height: 8px;
+            background: rgba(102, 126, 234, 0.8);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 10px rgba(102, 126, 234, 1),
+                0 0 20px rgba(102, 126, 234, 0.8),
+                0 0 30px rgba(102, 126, 234, 0.6);
+            animation: cornerPulseChallenge 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes cornerPulseChallenge {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
         }
 
         .challenge-card .thumb {
@@ -788,26 +1023,297 @@
             border-color: #43e97b !important;
         }
 
-        /* ===== ANIMATIONS SUPPLÉMENTAIRES ===== */
+        /* ===== ANIMATIONS GAMING SPECTACULAIRES ===== */
+        
+        /* Animation d'entrée explosive */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(50px) scale(0.9) rotateX(20deg);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1) rotateX(0deg);
             }
         }
 
-        .don-item, .challenge-card {
-            animation: fadeInUp 0.6s ease-out backwards;
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px) rotate(-5deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg);
+            }
         }
 
-        .don-item:nth-child(1), .challenge-card:nth-child(1) { animation-delay: 0.1s; }
-        .don-item:nth-child(2), .challenge-card:nth-child(2) { animation-delay: 0.2s; }
-        .don-item:nth-child(3), .challenge-card:nth-child(3) { animation-delay: 0.3s; }
-        .don-item:nth-child(4), .challenge-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) rotate(5deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotate(180deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* Appliquer les animations aux cartes */
+        .don-item {
+            animation: slideInLeft 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+        }
+
+        .challenge-card {
+            animation: slideInRight 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+        }
+
+        .don-item:nth-child(1) { animation-delay: 0.1s; }
+        .don-item:nth-child(2) { animation-delay: 0.2s; }
+        .challenge-card:nth-child(3) { animation-delay: 0.3s; }
+        .challenge-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Animation de pulsation pour les boutons */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 50px rgba(67, 233, 123, 0.7);
+            }
+        }
+
+        .btn-donate, .btn-challenge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Particules flottantes animées */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(-40px) translateX(-10px) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(-20px) translateX(10px) rotate(5deg);
+            }
+        }
+
+        /* Effet de brillance sur les cartes */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .don-item::after, .challenge-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        /* Animation de rotation pour les avatars */
+        @keyframes rotateAvatar {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
+        .don-item:hover .avatar {
+            animation: rotateAvatar 1s ease-in-out;
+        }
+
+        /* Effet de glow pulsant sur les bordures */
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(102, 126, 234, 0.8), 0 0 60px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .challenge-card {
+            animation: slideInRight 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards, glowPulse 3s ease-in-out infinite;
+        }
+
+        /* Animation de texte néon clignotant */
+        @keyframes neonBlink {
+            0%, 100% {
+                text-shadow: 
+                    0 0 10px #fff,
+                    0 0 20px #fff,
+                    0 0 30px #ff1744,
+                    0 0 40px #ff1744;
+            }
+            50% {
+                text-shadow: 
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 15px #ff1744,
+                    0 0 20px #ff1744,
+                    0 0 25px #ff1744,
+                    0 0 30px #ff1744,
+                    0 0 35px #ff1744;
+            }
+        }
+
+        .hero-banner h2 {
+            animation: textShine 3s ease-in-out infinite, neonBlink 2s ease-in-out infinite;
+        }
+
+        /* Animation de vague pour les modals */
+        @keyframes wave {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .modal.show .modal-dialog {
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Effet de rebond sur les inputs focus */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .form-control:focus, .form-select:focus {
+            animation: bounce 0.5s ease;
+        }
+
+        /* Animation de chargement pour les boutons */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner-border {
+            animation: spin 0.75s linear infinite;
+        }
+
+        /* Effet de particules sur hover des cartes */
+        .don-item:hover, .challenge-card:hover {
+            animation: float 2s ease-in-out infinite;
+        }
+
+        /* Animation de progression de la barre */
+        @keyframes fillProgress {
+            from {
+                width: 0%;
+            }
+        }
+
+        .progress-fill {
+            animation: fillProgress 2s ease-out, progressGlow 2s ease-in-out infinite;
+        }
+
+        /* Effet de typing pour le texte du hero */
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        /* Animation de confetti sur succès */
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Effet de shake sur erreur */
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-10px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(10px);
+            }
+        }
+
+        .alert-danger {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Animation de succès avec scale */
+        @keyframes successPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
@@ -1221,6 +1727,180 @@
 
     <!-- STRIPE SDK -->
     <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- ANIMATIONS GAMING AVANCÉES -->
+    <script>
+    // Effet de particules flottantes
+    function createParticles() {
+        const particlesContainer = document.createElement('div');
+        particlesContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        `;
+        document.body.appendChild(particlesContainer);
+
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            const size = Math.random() * 4 + 2;
+            const colors = ['#667eea', '#764ba2', '#00f2fe', '#43e97b', '#f5576c'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            particle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                border-radius: 50%;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                opacity: ${Math.random() * 0.5 + 0.3};
+                box-shadow: 0 0 ${size * 3}px ${color};
+                animation: floatParticle ${Math.random() * 10 + 10}s linear infinite;
+            `;
+            
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Effet de glitch sur les cartes au survol
+    document.addEventListener('DOMContentLoaded', function() {
+        createParticles();
+
+        // Effet de son au hover (simulation visuelle)
+        const cards = document.querySelectorAll('.don-item, .challenge-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.filter = 'brightness(1.1)';
+                
+                // Effet de ripple
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: 20px;
+                    height: 20px;
+                    background: rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) scale(0);
+                    animation: rippleEffect 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.filter = 'brightness(1)';
+            });
+        });
+
+        // Effet de typing sur le hero
+        const heroTitle = document.querySelector('.hero-banner h2');
+        if (heroTitle) {
+            const text = heroTitle.textContent;
+            heroTitle.textContent = '';
+            let i = 0;
+            
+            const typeWriter = setInterval(() => {
+                if (i < text.length) {
+                    heroTitle.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typeWriter);
+                }
+            }, 50);
+        }
+
+        // Effet de parallax sur les cartes
+        document.addEventListener('mousemove', function(e) {
+            const cards = document.querySelectorAll('.don-item, .challenge-card');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            cards.forEach((card, index) => {
+                const speed = (index % 2 === 0) ? 20 : -20;
+                const x = (mouseX - 0.5) * speed;
+                const y = (mouseY - 0.5) * speed;
+                
+                if (!card.matches(':hover')) {
+                    card.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                }
+            });
+        });
+
+        // Effet de confetti sur succès
+        window.createConfetti = function() {
+            const colors = ['#667eea', '#764ba2', '#00f2fe', '#43e97b', '#f5576c'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 10 + 5;
+                
+                confetti.style.cssText = `
+                    position: fixed;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    top: -10px;
+                    left: ${Math.random() * 100}%;
+                    z-index: 9999;
+                    animation: confettiFall ${Math.random() * 3 + 2}s linear forwards;
+                    transform: rotate(${Math.random() * 360}deg);
+                `;
+                
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        };
+    });
+
+    // Animations CSS dynamiques
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-100vh) translateX(${Math.random() * 100 - 50}px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(-200vh) translateX(${Math.random() * 100 - 50}px) rotate(360deg);
+            }
+        }
+
+        @keyframes rippleEffect {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(20);
+                opacity: 0;
+            }
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    </script>
 
     <!-- AJAX POUR LE DON AVEC 2 MODES DE PAIEMENT -->
     <script>
