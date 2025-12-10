@@ -43,6 +43,21 @@ switch ($action) {
             exit;
         }
         exit;
+    case 'ban':
+        $controller->banUser();
+        exit;
+    case 'unban':
+        $controller->unbanUser();
+        exit;
+    case 'getBanStatus':
+        $controller->getBanStatus();
+        exit;
+    case 'getTableData':
+        $controller->getTableData();
+        exit;
+    case 'getUsersByCountry':
+        $controller->getUsersByCountry();
+        exit;
     default:
         // Action par défaut : afficher le dashboard
         $stats = $controller->getUserStats();
@@ -54,6 +69,32 @@ switch ($action) {
         $streamersCount = $stats['streamersCount'];
         $newUsersThisMonth = $stats['newUsersThisMonth'];
         $activeUsers = $stats['activeUsers'];
+        // Corriger le compteur d'utilisateurs actifs en excluant bannis et suspendus
+        $computedActiveUsers = 0;
+        if (isset($users) && is_array($users)) {
+            $nowTs = time();
+            foreach ($users as $u) {
+                $isBanned = isset($u['is_banned']) && (int)$u['is_banned'] === 1;
+                $banType = $u['ban_type'] ?? null;
+                $bannedUntil = $u['banned_until'] ?? null;
+
+                $isSuspended = false;
+                if ($isBanned) {
+                    if ($banType === 'permanent') {
+                        $isSuspended = true;
+                    } elseif ($banType === 'soft' && !empty($bannedUntil)) {
+                        $untilTs = strtotime($bannedUntil);
+                        if ($untilTs !== false && $untilTs > $nowTs) {
+                            $isSuspended = true;
+                        }
+                    }
+                }
+
+                if (!$isBanned && !$isSuspended) {
+                    $computedActiveUsers++;
+                }
+            }
+        }
         break;
 }
 ?>
@@ -67,15 +108,29 @@ switch ($action) {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Space Mono', monospace; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(34, 211, 238, 0.3); }
-        .neon { text-shadow: 0 0 20px #22d3ee, 0 0 40px #22d3ee; }
-        .glow:hover { box-shadow: 0 0 30px rgba(34, 211, 238, 0.6); }
-        .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, transparent, #22d3ee, transparent); animation: scan 6s linear infinite; }
-        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+        /* Tooltip pour la carte */
+        .leaflet-tooltip.map-tooltip {
+            background: rgba(15, 23, 42, 0.95);
+            color: #e2e8f0;
+            border: 1px solid rgba(34, 211, 238, 0.35);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            padding: 8px 10px;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+        .leaflet-tooltip.map-tooltip .title { color: #22d3ee; font-weight: 700; }
+        .leaflet-tooltip.map-tooltip .metric { color: #e2e8f0; }
     </style>
+    <link rel="stylesheet" href="styleback.css">
+    <script src="script.js"></script>
 </head>
 <body class="relative min-h-screen overflow-x-hidden">
 
@@ -149,7 +204,7 @@ switch ($action) {
                 <p class="text-gray-300 mt-3 text-lg">Nouveaux ce mois</p>
             </div>
             <div class="card p-8 rounded-2xl text-center glow transition transform hover:scale-105">
-                <h3 class="text-5xl font-bold text-yellow-400"><?= $activeUsers ?? '0' ?></h3>
+                <h3 class="text-5xl font-bold text-yellow-400"><?= isset($computedActiveUsers) ? $computedActiveUsers : ($activeUsers ?? '0') ?></h3>
                 <p class="text-gray-300 mt-3 text-lg">Utilisateurs Actifs</p>
             </div>
         </div>
@@ -169,129 +224,200 @@ switch ($action) {
             </div>
         </div>
 
+        <!-- CARTE MONDE UTILISATEURS -->
+        <div class="management-container mb-16">
+            <div class="management-header-wrapper">
+                <div class="management-header mb-6">
+                    <h2 class="management-header-title font-orbitron">Répartition géographique</h2>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <select id="mapStatusFilter" class="filter-select">
+                            <option value="all">Tous les statuts</option>
+                            <option value="active">Actifs</option>
+                            <option value="banned">Bannis</option>
+                        </select>
+                        <select id="mapPeriodFilter" class="filter-select">
+                            <option value="all">Toutes périodes</option>
+                            <option value="7d">7 derniers jours</option>
+                            <option value="30d">30 derniers jours</option>
+                            <option value="90d">90 derniers jours</option>
+                        </select>
+                        <button id="refreshMapBtn" class="reset-button">
+                            <i data-feather="refresh-ccw" class="w-4 h-4"></i>
+                            Mettre à jour
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="card p-5 rounded-xl glow">
+                        <p class="text-gray-400 text-sm">Utilisateurs</p>
+                        <p id="mapTotalUsers" class="text-3xl font-bold text-cyan-400">0</p>
+                    </div>
+                    <div class="card p-5 rounded-xl glow">
+                        <p class="text-gray-400 text-sm">Pays couverts</p>
+                        <p id="mapTotalCountries" class="text-3xl font-bold text-emerald-400">0</p>
+                    </div>
+                    <div class="card p-5 rounded-xl glow">
+                        <p class="text-gray-400 text-sm">Nouveaux (30j)</p>
+                        <p id="mapNew30d" class="text-3xl font-bold text-purple-400">0</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                    <div class="lg:col-span-2 card p-4 rounded-xl glow relative">
+                        <div id="worldMap" class="w-full rounded-lg" style="height: 480px; background: #0f172a;"></div>
+                    </div>
+                    <div class="card p-5 rounded-xl glow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-white">Top pays</h3>
+                            <span class="text-gray-500 text-sm">Top 10</span>
+                        </div>
+                        <div id="topCountriesList" class="space-y-3 text-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- TABLEAU DES UTILISATEURS -->
-        <div class="card rounded-3xl p-10 glow">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-                <h2 class="text-4xl font-bold neon font-orbitron">Gestion des Utilisateurs • <?= isset($totalUsers) ? $totalUsers : '0' ?></h2>
-                <a href="index.php?action=create" class="bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-4 rounded-full text-xl font-bold hover:scale-110 transition">
-                    + Nouvel utilisateur
-                </a>
+        <div class="management-container">
+            <!-- Carte encapsulant header et filtres -->
+            <div class="management-header-wrapper">
+                <!-- Header avec Titre, Recherche et CTA -->
+                <div class="management-header">
+                    <h2 class="management-header-title font-orbitron">Gestion des Utilisateurs</h2>
+                    <div class="management-controls">
+                        <div class="search-group">
+                            <input id="userSearch" type="text" placeholder="Rechercher par nom complet..." 
+                                   class="search-input-field" />
+                            <span class="search-icon">
+                                <i data-feather="search" class="w-5 h-5"></i>
+                            </span>
+                        </div>
+                        <a href="index.php?action=create" class="create-button">
+                            + Nouvel utilisateur
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Filtres -->
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <i data-feather="filter" class="w-4 h-4"></i>
+                        Filtrer par :
+                    </label>
+                    
+                    <select id="roleFilter" class="filter-select">
+                        <option value="">Tous les rôles</option>
+                        <option value="viewer">👁️ Viewer</option>
+                        <option value="streamer">🎥 Streamer</option>
+                        <option value="admin">⚙️ Admin</option>
+                    </select>
+
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="active">✅ Actif</option>
+                        <option value="banned">🚫 Banni</option>
+                        <option value="suspended">⏸️ Suspendu</option>
+                    </select>
+
+                    <button id="resetFilters" class="reset-button">
+                        <i data-feather="x-circle" class="w-4 h-4"></i>
+                        Réinitialiser
+                    </button>
+                </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="border-b-2 border-cyan-500 text-cyan-400">
-                            <th class="py-4 px-6">ID</th>
-                            <th class="py-4 px-6">Utilisateur</th>
-                            <th class="py-4 px-6">Email</th>
-                            <th class="py-4 px-6">Rôle</th>
-                            <th class="py-4 px-6">Inscription</th>
-                            <th class="py-4 px-6">Statut</th>
-                            <th class="py-4 px-6 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (isset($users) && is_array($users) && count($users) > 0): ?>
-                            <?php foreach ($users as $user): ?>
-                            <tr class="border-b border-gray-800 hover:bg-gray-900/50 transition">
-                                <td class="py-5 px-6 font-mono text-cyan-400">#<?= htmlspecialchars($user['id'] ?? 'N/A') ?></td>
-                                <td class="py-5 px-6">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center">
-                                            <span class="font-bold"><?= strtoupper(substr($user['first_name'] ?? '?', 0, 1)) ?></span>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-white">
-                                                <?= htmlspecialchars(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?>
-                                            </div>
-                                            <div class="text-gray-400 text-sm">
-                                                @<?= htmlspecialchars($user['username'] ?? 'N/A') ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-5 px-6">
-                                    <div class="text-gray-300"><?= htmlspecialchars($user['email'] ?? 'N/A') ?></div>
-                                    <div class="text-gray-500 text-sm"><?= htmlspecialchars($user['country'] ?? 'N/A') ?></div>
-                                </td>
-                                <td class="py-5 px-6">
-                                    <span class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap
-                                        <?= match($user['role'] ?? '') {
-                                            'streamer' => 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
-                                            'admin'    => 'bg-red-500/20 text-red-400 border border-red-500/30',
-                                            default    => 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-                                        } ?>">
-                                        
-                                        <?= match($user['role'] ?? '') {
-                                            'streamer' => '🎥 Streamer',
-                                            'admin'    => '⚙️ Admin',
-                                            default    => '👁️ Viewer',
-                                        } ?>
-                                    </span>
-
-                                </td>
-                                <td class="py-5 px-6 text-gray-400">
-                                    <?= isset($user['join_date']) ? date('d/m/Y', strtotime($user['join_date'])) : 'N/A' ?>
-                                </td>
-                                <td class="py-5 px-6">
-                                    <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30 whitespace-nowrap">
-                                        ✅ Actif
-                                    </span>
-                                </td>
-                                <td class="py-5 px-6 text-center">
-                                    <div class="flex justify-center gap-4">
-                                        <a href="index.php?action=edit&id=<?= $user['id'] ?? '' ?>" 
-                                           class="text-yellow-400 hover:text-yellow-300 transition transform hover:scale-110" 
-                                           title="Modifier">
-                                            <i data-feather="edit-2" class="w-5 h-5"></i>
-                                        </a>
-                                        <a href="index.php?action=delete&id=<?= $user['id'] ?? '' ?>" 
-                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')"
-                                           class="text-red-500 hover:text-red-400 transition transform hover:scale-110" 
-                                           title="Supprimer">
-                                            <i data-feather="trash-2" class="w-5 h-5"></i>
-                                        </a>
-                                        <a href="index.php?action=view&id=<?= $user['id'] ?? '' ?>" 
-                                           class="text-cyan-400 hover:text-cyan-300 transition transform hover:scale-110" 
-                                           title="Voir profil">
-                                            <i data-feather="eye" class="w-5 h-5"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+            <!-- Tableau -->
+            <div class="table-wrapper">
+                <div id="tableScrollContainer" class="table-scroll-container">
+                    <table class="users-table">
+                        <thead>
                             <tr>
-                                <td colspan="7" class="py-8 text-center text-gray-400">
-                                    <i data-feather="users" class="w-12 h-12 mx-auto mb-4"></i>
-                                    <p>Aucun utilisateur trouvé</p>
+                                <!-- Colonne Sticky Gauche: ID -->
+                                <th class="sticky-left-col" style="min-width: 80px;" onclick="sortTable('id')" title="Cliquez pour trier">
+                                    <div class="flex items-center gap-2">
+                                        ID
+                                        <span class="sort-icon opacity-50" data-column="id">
+                                            <i data-feather="chevrons-up" class="w-4 h-4"></i>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <!-- Colonne Sticky Gauche: Utilisateur -->
+                                <th class="sticky-left-col" style="min-width: 280px;" onclick="sortTable('user')" title="Cliquez pour trier">
+                                    <div class="flex items-center gap-2">
+                                        Utilisateur
+                                        <span class="sort-icon opacity-50" data-column="user">
+                                            <i data-feather="chevrons-up" class="w-4 h-4"></i>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <!-- Colonnes Essentielles (défilent horizontalement) -->
+                                <th onclick="sortTable('email')" title="Cliquez pour trier">
+                                    <div class="flex items-center gap-2">
+                                        Email
+                                        <span class="sort-icon opacity-50" data-column="email">
+                                            <i data-feather="chevrons-up" class="w-4 h-4"></i>
+                                        </span>
+                                    </div>
+                                </th>
+                                <th onclick="sortTable('role')" title="Cliquez pour trier">
+                                    <div class="flex items-center gap-2">
+                                        Rôle
+                                        <span class="sort-icon opacity-50" data-column="role">
+                                            <i data-feather="chevrons-up" class="w-4 h-4"></i>
+                                        </span>
+                                    </div>
+                                </th>
+                                <th onclick="sortTable('status')" title="Cliquez pour trier">
+                                    <div class="flex items-center gap-2">
+                                        Statut
+                                        <span class="sort-icon opacity-50" data-column="status">
+                                            <i data-feather="chevrons-up" class="w-4 h-4"></i>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <!-- Colonne Sticky Droite: Actions -->
+                                <th class="sticky-right-col text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="5" class="text-center py-8">
+                                    <i data-feather="loader" class="w-12 h-12 mx-auto mb-4 animate-spin"></i>
+                                    <p class="text-gray-400">Chargement...</p>
                                 </td>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Scroll Hint Overlay -->
+                <div class="table-scroll-hint left"></div>
+                <div class="table-scroll-hint right"></div>
             </div>
 
             <!-- Pagination -->
-            <?php if (isset($users) && is_array($users) && count($users) > 0): ?>
-            <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-800">
-                <div class="text-gray-400">
-                    Affichage de <span class="text-white">1-<?= count($users) ?></span> sur <span class="text-white"><?= $totalUsers ?? 0 ?></span> utilisateurs
+            <div id="paginationControls" class="pagination-section">
+                <div class="pagination-info">
+                    Affichage de <span id="rangeStart" class="text-white">0</span>-<span id="rangeEnd" class="text-white">0</span> sur <span id="totalVisible" class="text-white">0</span> utilisateurs
                 </div>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-2 bg-gray-800 rounded-lg text-gray-400 cursor-not-allowed">
+                <div class="pagination-buttons">
+                    <button id="prevPage" class="pagination-button prev">
                         <i data-feather="chevron-left" class="w-4 h-4"></i>
+                        Précédent
                     </button>
-                    <button class="px-4 py-2 bg-cyan-600 rounded-lg text-white">1</button>
-                    <button class="px-4 py-2 bg-gray-800 rounded-lg text-gray-300 hover:bg-gray-700">2</button>
-                    <button class="px-4 py-2 bg-gray-800 rounded-lg text-gray-300 hover:bg-gray-700">3</button>
-                    <button class="px-4 py-2 bg-gray-800 rounded-lg text-gray-300 hover:bg-gray-700">
+                    <div id="pageNumbers" class="pagination-numbers">
+                        <!-- Les numéros de page seront insérés ici par JavaScript -->
+                    </div>
+                    <button id="nextPage" class="pagination-button next">
+                        Suivant
                         <i data-feather="chevron-right" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
     </main>
 
@@ -307,11 +433,76 @@ switch ($action) {
         </div>
     </footer>
 
-    <!-- Icônes + Graphiques -->
+    <!-- Icônes Feather et Graphiques -->
     <script>
-        feather.replace({ width: 20, height: 20 });
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace({ width: 20, height: 20 });
 
-        // Graphique des rôles
+            // Charger les données initiales du tableau
+            loadTableData();
+
+            // Wire up search and filter inputs
+            const searchInput = document.getElementById('userSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', applyFilters);
+            }
+
+            const roleFilter = document.getElementById('roleFilter');
+            if (roleFilter) {
+                roleFilter.addEventListener('change', applyFilters);
+            }
+
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', applyFilters);
+            }
+
+            const resetFilters = document.getElementById('resetFilters');
+            if (resetFilters) {
+                resetFilters.addEventListener('click', function() {
+                    if (searchInput) searchInput.value = '';
+                    if (roleFilter) roleFilter.value = '';
+                    if (statusFilter) statusFilter.value = '';
+                    tableState.searchQuery = '';
+                    tableState.roleFilter = '';
+                    tableState.statusFilter = '';
+                    tableState.currentPage = 1;
+                    loadTableData();
+                });
+            }
+
+            // Wire up pagination buttons
+            const prevPageBtn = document.getElementById('prevPage');
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', function() {
+                    if (tableState.currentPage > 1) {
+                        tableState.currentPage--;
+                        loadTableData();
+                    }
+                });
+            }
+
+            const nextPageBtn = document.getElementById('nextPage');
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', function() {
+                    // Le nombre de pages est mis à jour par loadTableData
+                    tableState.currentPage++;
+                    loadTableData();
+                });
+            }
+
+            // Handle window resize to switch between table and card view
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    loadTableData(); // Rerender with appropriate view mode
+                }, 250);
+            });
+        });
+
+        // Chart.js - Doughnut Chart for user roles
         <?php
         $streamers = $streamersCount ?? 0;
         $viewers = isset($totalUsers) ? ($totalUsers - $streamers) : 0;
@@ -343,14 +534,31 @@ switch ($action) {
             }
         });
 
-        // Graphique des inscriptions
+        // Chart.js - Line Chart for monthly subscriptions (from user join_date)
+        <?php
+        $monthlyData = array_fill(0, 12, 0);
+        if (isset($users) && is_array($users)) {
+            foreach ($users as $u) {
+                if (!empty($u['join_date'])) {
+                    $ts = strtotime($u['join_date']);
+                    if ($ts !== false) {
+                        $month = (int)date('n', $ts); // 1..12
+                        $monthlyData[$month - 1]++;
+                    }
+                }
+            }
+        }
+        ?>
+
+        const normalizedSubs = <?= json_encode($monthlyData) ?>;
+
         new Chart(document.getElementById('subscriptionChart'), {
             type: 'line',
             data: {
                 labels: ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'],
                 datasets: [{
                     label: 'Nouveaux utilisateurs',
-                    data: <?= isset($monthlySubscriptions) ? json_encode($monthlySubscriptions) : '[]' ?>,
+                    data: normalizedSubs,
                     borderColor: '#22d3ee',
                     backgroundColor: 'rgba(34, 211, 238, 0.1)',
                     fill: true,
@@ -387,19 +595,200 @@ switch ($action) {
             }
         });
 
-        // Animation au survol des lignes du tableau
-        document.addEventListener('DOMContentLoaded', function() {
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                row.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateX(8px)';
-                    this.style.transition = 'transform 0.2s ease';
-                });
-                row.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateX(0)';
-                });
+        // ------------------------------------------------------------------
+        // Carte mondiale - Leaflet
+        // ------------------------------------------------------------------
+        let worldMap = null;
+        let markersLayer = null;
+        let mapData = [];
+
+        const formatNumber = (n) => Number(n || 0).toLocaleString('fr-FR');
+
+        function initWorldMap() {
+            const mapEl = document.getElementById('worldMap');
+            if (!mapEl) return;
+
+            worldMap = L.map('worldMap', {
+                center: [25, 0],
+                zoom: 2,
+                minZoom: 2,
+                maxZoom: 10,
+                zoomControl: true
             });
-        });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap, &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(worldMap);
+
+            markersLayer = L.markerClusterGroup({
+                maxClusterRadius: 80,
+                spiderfyOnMaxZoom: true,
+                showCoverageOnHover: false,
+                iconCreateFunction: function(cluster) {
+                    const count = cluster.getChildCount();
+                    let size = 'small';
+                    if (count > 50) size = 'large';
+                    else if (count > 10) size = 'medium';
+
+                    return L.divIcon({
+                        html: '<div><span>' + count + '</span></div>',
+                        className: 'marker-cluster marker-cluster-' + size,
+                        iconSize: L.point(40, 40)
+                    });
+                }
+            });
+
+            worldMap.addLayer(markersLayer);
+
+            const statusFilter = document.getElementById('mapStatusFilter');
+            const periodFilter = document.getElementById('mapPeriodFilter');
+            const refreshBtn = document.getElementById('refreshMapBtn');
+
+            if (statusFilter) statusFilter.addEventListener('change', loadMapData);
+            if (periodFilter) periodFilter.addEventListener('change', loadMapData);
+            if (refreshBtn) refreshBtn.addEventListener('click', loadMapData);
+
+            loadMapData();
+        }
+
+        function loadMapData() {
+            const status = document.getElementById('mapStatusFilter')?.value || 'all';
+            const period = document.getElementById('mapPeriodFilter')?.value || 'all';
+
+            fetch(`index.php?action=getUsersByCountry&status=${status}&period=${period}`)
+                .then(res => res.json())
+                .then(payload => {
+                    if (!payload.success) {
+                        console.error('Erreur chargement carte:', payload.message);
+                        return;
+                    }
+                    mapData = payload.data || [];
+                    updateMapMarkers(mapData);
+                    updateMapStats(payload);
+                    updateTopCountries(mapData);
+                })
+                .catch(err => console.error('Erreur fetch carte:', err));
+        }
+
+        function updateMapMarkers(countries) {
+            if (!markersLayer) return;
+            markersLayer.clearLayers();
+
+            countries.forEach(country => {
+                if (!country.lat && !country.lng) return;
+
+                const activeRatio = country.users > 0 ? country.active / country.users : 0;
+                const bannedRatio = country.users > 0 ? country.banned / country.users : 0;
+
+                let markerColor = '#06b6d4'; // neutre
+                if (bannedRatio > 0.5) markerColor = '#dc2626';
+                else if (activeRatio > 0.8) markerColor = '#10b981';
+
+                const radius = Math.min(Math.sqrt(Math.max(country.users, 1)) * 2.5, 30);
+
+                const marker = L.circleMarker([country.lat, country.lng], {
+                    radius,
+                    fillColor: markerColor,
+                    color: '#0ea5e9',
+                    weight: 2.5,
+                    opacity: 0.9,
+                    fillOpacity: 0.7
+                });
+
+                const popup = `
+                    <div style="min-width: 200px; padding: 6px 4px;">
+                        <div style="font-weight:700; color:#06b6d4; margin-bottom:6px; font-size:14px;">
+                            ${country.countryName}
+                        </div>
+                        <div style="display:grid; grid-template-columns:auto 1fr; gap:4px 10px; font-size:13px; color:#e2e8f0;">
+                            <span>Total</span><span>${formatNumber(country.users)}</span>
+                            <span style="color:#10b981;">Actifs</span><span>${formatNumber(country.active)}</span>
+                            <span style="color:#dc2626;">Bannis</span><span>${formatNumber(country.banned)}</span>
+                            <span style="color:#a855f7;">Nouveaux 30j</span><span>${formatNumber(country.new30d)}</span>
+                        </div>
+                    </div>`;
+
+                marker.bindPopup(popup);
+
+                // Tooltip léger au survol
+                marker.bindTooltip(`
+                    <div class="title">${country.countryName}</div>
+                    <div class="metric">Total : ${formatNumber(country.users)}</div>
+                `, {
+                    direction: 'top',
+                    sticky: true,
+                    className: 'map-tooltip',
+                    opacity: 0.95,
+                    offset: [0, -4]
+                });
+
+                // Effet hover doux
+                marker.on('mouseover', () => marker.setStyle({ radius: radius + 3, weight: 3 }));
+                marker.on('mouseout', () => marker.setStyle({ radius, weight: 2.5 }));
+
+                markersLayer.addLayer(marker);
+            });
+
+            const layers = markersLayer.getLayers();
+            if (layers.length > 0) {
+                worldMap.fitBounds(markersLayer.getBounds(), { padding: [30, 30], maxZoom: 5 });
+            } else {
+                worldMap.setView([25, 0], 2);
+            }
+        }
+
+        function updateMapStats(payload) {
+            const totalUsers = payload.total_users ?? 0;
+            const totalCountries = payload.total_countries ?? 0;
+            const new30d = mapData.reduce((sum, c) => sum + (c.new30d || 0), 0);
+
+            const elUsers = document.getElementById('mapTotalUsers');
+            const elCountries = document.getElementById('mapTotalCountries');
+            const elNew30 = document.getElementById('mapNew30d');
+
+            if (elUsers) elUsers.textContent = totalUsers.toLocaleString();
+            if (elCountries) elCountries.textContent = totalCountries;
+            if (elNew30) elNew30.textContent = new30d.toLocaleString();
+        }
+
+        function updateTopCountries(countries) {
+            const container = document.getElementById('topCountriesList');
+            if (!container) return;
+
+            if (!countries || countries.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">Aucune donnée disponible</p>';
+                return;
+            }
+
+            const sorted = [...countries].sort((a, b) => b.users - a.users).slice(0, 10);
+            const maxUsers = sorted[0]?.users || 1;
+
+            container.innerHTML = sorted.map((c, idx) => {
+                const width = (c.users / maxUsers) * 100;
+                return `
+                    <div class="flex items-center gap-3">
+                        <div class="text-gray-500 text-xs font-mono w-6">${idx + 1}.</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-200">${c.countryName}</span>
+                                <span class="text-cyan-400 font-semibold">${c.users}</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                                <div class="h-2 bg-gradient-to-r from-cyan-500 to-emerald-500" style="width:${width}%"></div>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // Boot
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initWorldMap);
+        } else {
+            initWorldMap();
+        }
     </script>
 </body>
 </html>

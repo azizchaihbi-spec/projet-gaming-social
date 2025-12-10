@@ -4,6 +4,7 @@ if (isset($_SESSION['user'])) {
     header('Location: profile.php');
     exit();
 }
+require_once __DIR__ . '/../../config/recaptcha.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -18,6 +19,7 @@ if (isset($_SESSION['user'])) {
     <link rel="stylesheet" href="assets/css/animate.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/css/cookie-banner.css" />
 </head>
 <body>
     <div id="js-preloader" class="js-preloader">
@@ -78,12 +80,12 @@ if (isset($_SESSION['user'])) {
                         <form id="loginForm">
                             <div class="form-group">
                                 <label>Email <span class="required">*</span></label>
-                                <input type="email" id="loginEmail" placeholder="votre@email.com" required>
+                                <input type="email" id="loginEmail" placeholder="votre@email.com">
                             </div>
                             
                             <div class="form-group">
                                 <label>Mot de passe <span class="required">*</span></label>
-                                <input type="password" id="loginPassword" placeholder="••••••••" required>
+                                <input type="password" id="loginPassword" placeholder="••••••••">
                             </div>
                             
                             <div style="text-align: right; margin-bottom: 15px;">
@@ -91,7 +93,11 @@ if (isset($_SESSION['user'])) {
                                     <i class="fa fa-key"></i> Mot de passe oublié ?
                                 </a>
                             </div>
-                            
+
+                            <div class="recaptcha-container">
+                                <div class="g-recaptcha" data-sitekey="<?= htmlspecialchars(RECAPTCHA_SITE_KEY) ?>"></div>
+                            </div>
+
                             <button type="button" class="submit-btn" onclick="handleLogin()">
                                 <i class="fa fa-sign-in"></i> Se connecter
                             </button>
@@ -111,9 +117,13 @@ if (isset($_SESSION['user'])) {
         </div>
     </footer>
 
+    <?php include 'includes/cookie-banner.php'; ?>
+
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/custom.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="script.js"></script>
+    <script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/recaptcha.php';
 require_once __DIR__ . '/../Model/Auth.php';
 
 class AuthController {
@@ -43,8 +44,38 @@ class AuthController {
             $json = file_get_contents('php://input');
             $data = json_decode($json, true);
 
-            $email = $data['email'];
-            $password = $data['password'];
+            $email = $data['email'] ?? '';
+            $password = $data['password'] ?? '';
+            $recaptchaToken = $data['recaptchaToken'] ?? null;
+
+            // reCAPTCHA v2 verification (if enabled)
+            if (defined('RECAPTCHA_ENABLED') && RECAPTCHA_ENABLED) {
+                header('Content-Type: application/json');
+                if (!$recaptchaToken) {
+                    echo json_encode(['success' => false, 'message' => 'Veuillez cocher "Je ne suis pas un robot".']);
+                    exit();
+                }
+                $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
+                $params = http_build_query([
+                    'secret' => RECAPTCHA_SECRET_KEY,
+                    'response' => $recaptchaToken,
+                    'remoteip' => $_SERVER['REMOTE_ADDR'] ?? ''
+                ]);
+                $context = stream_context_create([
+                    'http' => [
+                        'method' => 'POST',
+                        'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'content' => $params,
+                        'timeout' => 5
+                    ]
+                ]);
+                $verifyResponse = @file_get_contents($verifyUrl, false, $context);
+                $verifyData = $verifyResponse ? json_decode($verifyResponse, true) : null;
+                if (!$verifyData || empty($verifyData['success'])) {
+                    echo json_encode(['success' => false, 'message' => 'Échec de la vérification reCAPTCHA. Veuillez réessayer.']);
+                    exit();
+                }
+            }
 
             $result = $this->authModel->login($email, $password);
             
@@ -68,7 +99,63 @@ class AuthController {
             }
 
             $userId = $_SESSION['user']['id'];
-            $profileImage = $_POST['profile_image'];
+            $profileImage = null;
+
+            // Vérifier si un fichier est uploadé
+            if (isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['avatar_file'];
+                
+                // Validations
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!in_array($file['type'], $allowedMimes)) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'message' => 'Format d\'image non supporté (JPEG, PNG, GIF, WebP)']);
+                    exit();
+                }
+
+                // Taille max 5MB
+                if ($file['size'] > 5 * 1024 * 1024) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'message' => 'La taille de l\'image ne doit pas dépasser 5MB']);
+                    exit();
+                }
+
+                // Créer le dossier s'il n'existe pas
+                $uploadDir = __DIR__ . '/../View/FrontOffice/assets/images/avatars/uploaded/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                // Générer un nom de fichier unique
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $filename = 'avatar_' . $userId . '_' . time() . '.' . $ext;
+                $uploadPath = $uploadDir . $filename;
+
+                // Déplacer le fichier
+                if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                    // Chemin relatif pour la base de données
+                    $profileImage = 'assets/images/avatars/uploaded/' . $filename;
+
+                    // Supprimer l'ancien avatar uploadé s'il existe
+                    if (!empty($_SESSION['user']['profile_image']) && strpos($_SESSION['user']['profile_image'], 'uploaded/') !== false) {
+                        $oldPath = __DIR__ . '/../View/FrontOffice/' . $_SESSION['user']['profile_image'];
+                        if (file_exists($oldPath)) {
+                            @unlink($oldPath);
+                        }
+                    }
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'upload du fichier']);
+                    exit();
+                }
+            } elseif (isset($_POST['profile_image'])) {
+                // Avatar prédéfini
+                $profileImage = $_POST['profile_image'];
+            } else {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Aucun avatar fourni']);
+                exit();
+            }
 
             $result = $this->authModel->updateProfile($userId, $profileImage);
             
@@ -188,44 +275,9 @@ class AuthController {
                     // Contenu de l'email
                     $mail->isHTML(true);
                     $mail->Subject = 'Play to Help - Réinitialisation de mot de passe';
-                    $mail->Body = "
-                        <html>
-                        <head>
-                            <style>
-                                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                                .header { background: linear-gradient(135deg, #e75e8d 0%, #c74375 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                                .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; }
-                                .button { display: inline-block; padding: 12px 30px; background: #e75e8d; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-                                .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
-                            </style>
-                        </head>
-                        <body>
-                            <div class='container'>
-                                <div class='header'>
-                                    <h2>🎮 Play to Help</h2>
-                                </div>
-                                <div class='content'>
-                                    <h3>Réinitialisation de votre mot de passe</h3>
-                                    <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
-                                    <p>Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
-                                    <p style='text-align: center;'>
-                                        <a href='" . $resetLink . "' class='button'>Réinitialiser mon mot de passe</a>
-                                    </p>
-                                    <p><strong>Ce lien est valide pendant 1 heure.</strong></p>
-                                    <p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
-                                    <p style='font-size: 12px; color: #666; margin-top: 20px;'>
-                                        Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>
-                                        <a href='" . $resetLink . "'>" . $resetLink . "</a>
-                                    </p>
-                                </div>
-                                <div class='footer'>
-                                    <p>© 2025 Play to Help - Gaming pour l'Humanitaire</p>
-                                </div>
-                            </div>
-                        </body>
-                        </html>
-                    ";
+                    ob_start();
+                    include __DIR__ . '/../View/EmailTemplates/resetPasswordEmail.php';
+                    $mail->Body = ob_get_clean();
                     $mail->AltBody = "Réinitialisez votre mot de passe en cliquant sur ce lien : " . $resetLink . " (valide 1 heure)";
 
                     $mail->send();

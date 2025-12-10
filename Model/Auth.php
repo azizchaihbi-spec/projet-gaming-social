@@ -66,7 +66,55 @@ class Auth {
     public function __construct() {
         $this->pdo = config::getConnexion();
     }
+    
+    public function login($email, $password) {
+        try {
+            $stmt = $this->pdo->prepare("\n                SELECT id, first_name, last_name, username, email, birthdate, gender, country, city, \n                       role, stream_link, stream_description, stream_platform, password, \n                       profile_image, join_date, created_at, is_banned, ban_type, banned_until, \n                       ban_reason, banned_by\n                FROM users WHERE email = ?\n            ");
+            $stmt->execute([$email]);
+            $userData = $stmt->fetch();
 
+            if ($userData && password_verify($password, $userData['password'])) {
+                $isBanned = isset($userData['is_banned']) && (int)$userData['is_banned'] === 1;
+                if ($isBanned) {
+                    $banType = $userData['ban_type'] ?? null;
+                    $bannedUntil = $userData['banned_until'] ?? null;
+                    $banReason = $userData['ban_reason'] ?? null;
+
+                    if ($banType === 'permanent') {
+                        $reasonText = $banReason ? (" Raison: " . $banReason) : "";
+                        return ['success' => false, 'message' => 'Votre compte a été banni définitivement.' . $reasonText];
+                    }
+
+                    if ($banType === 'soft' && $bannedUntil) {
+                        $until = new DateTime($bannedUntil);
+                        $now = new DateTime();
+                        if ($now < $until) {
+                            $remaining = $now->diff($until);
+                            $timeMsg = '';
+                            if ($remaining->d > 0) {
+                                $timeMsg = $remaining->d . ' jour(s)';
+                            } elseif ($remaining->h > 0) {
+                                $timeMsg = $remaining->h . ' heure(s)';
+                            } else {
+                                $timeMsg = $remaining->i . ' minute(s)';
+                            }
+                            $reasonText = $banReason ? (" Raison: " . $banReason) : "";
+                            return ['success' => false, 'message' => "Votre compte est suspendu pour encore $timeMsg. Expiration: " . $until->format('d/m/Y H:i') . ($reasonText ? (". " . $reasonText) : "")];
+                        } else {
+                            $this->clearBan($userData['id']);
+                        }
+                    }
+                }
+
+                unset($userData['password'], $userData['is_banned'], $userData['ban_type'], $userData['banned_until'], $userData['ban_reason'], $userData['banned_by']);
+                return ['success' => true, 'user' => $userData, 'message' => 'Connexion réussie!'];
+            }
+
+            return ['success' => false, 'message' => 'Email ou mot de passe incorrect'];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Erreur base de données: ' . $e->getMessage()];
+        }
+    }
     private function validateUser(User $user) {
         $errors = [];
 
@@ -114,11 +162,6 @@ class Auth {
             }
         }
 
-        // Pays
-        if ($country === '') {
-            $errors[] = "Pays obligatoire";
-        }
-
         // Rôle (viewer/streamer)
         if ($role === '' || !in_array($role, ['viewer','streamer'], true)) {
             $errors[] = "Rôle invalide";
@@ -128,7 +171,6 @@ class Auth {
         if (!(strlen($password) >= 6 && preg_match('/[a-z]/', $password) && preg_match('/[A-Z]/', $password) && preg_match('/[0-9]/', $password))) {
             $errors[] = "Mot de passe faible (min 6, 1 maj, 1 min, 1 chiffre)";
         }
-
         // Lien de stream optionnel mais valide si fourni
         if ($streamLink !== '') {
             if (!filter_var($streamLink, FILTER_VALIDATE_URL)) {
@@ -202,27 +244,22 @@ class Auth {
             return ['success' => false, 'message' => 'Erreur base de données: ' . $e->getMessage()];
         }
     }
+                            
 
-    public function login($email, $password) {
+    /**
+     * Nettoyer le bannissement (débannir automatiquement)
+     */
+    private function clearBan($userId) {
         try {
             $stmt = $this->pdo->prepare("
-                SELECT id, first_name, last_name, username, email, birthdate, gender, country, city, 
-                       role, stream_link, stream_description, stream_platform, password, 
-                       profile_image, join_date, created_at 
-                FROM users WHERE email = ?
+                UPDATE users 
+                SET is_banned = 0, ban_type = NULL, ban_reason = NULL, 
+                    banned_at = NULL, banned_until = NULL, banned_by = NULL 
+                WHERE id = ?
             ");
-            $stmt->execute([$email]);
-            $userData = $stmt->fetch();
-
-            if ($userData && password_verify($password, $userData['password'])) {
-                // Ne pas renvoyer le mot de passe
-                unset($userData['password']);
-                return ['success' => true, 'user' => $userData, 'message' => 'Connexion réussie!'];
-            } else {
-                return ['success' => false, 'message' => 'Email ou mot de passe incorrect'];
-            }
+            $stmt->execute([$userId]);
         } catch (PDOException $e) {
-            return ['success' => false, 'message' => 'Erreur base de données: ' . $e->getMessage()];
+            // Ignorer l'erreur silencieusement
         }
     }
 
@@ -279,7 +316,7 @@ class Auth {
         }
     }
 
-    // Créer un token de réinitialisation de mot de passe
+    // Créer un token de réinitialisation de mot de passe (SÉCURISÉ)
     public function createResetToken($email) {
         try {
             // Vérifier si l'email existe
@@ -291,22 +328,27 @@ class Auth {
                 return ['success' => false, 'message' => 'Aucun compte associé à cet email'];
             }
 
-            // Générer un token unique et sécurisé
-            $token = bin2hex(random_bytes(32)); // 64 caractères hexadécimaux
-            $expires = date('Y-m-d H:i:s', strtotime('+1 hour')); // Expire dans 1 heure
+            // 1. Générer un token unique et aléatoire (envoyé par email)
+            $tokenRaw = bin2hex(random_bytes(32)); // 64 caractères hexadécimaux
+            
+            // 2. Hasher le token avant stockage (double-hashing pour sécurité)
+            $tokenHash = hash('sha256', $tokenRaw);
+            
+            // 3. Expiration : 1 heure
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-            // Stocker le token dans la base de données
+            // 4. Stocker le hash du token + expiration + used=false
             $stmt = $this->pdo->prepare("
                 UPDATE users 
-                SET reset_token = ?, reset_token_expires = ? 
+                SET reset_token = ?, reset_token_expires = ?, reset_token_used = 0
                 WHERE email = ?
             ");
-            $result = $stmt->execute([$token, $expires, $email]);
+            $result = $stmt->execute([$tokenHash, $expires, $email]);
 
             if ($result) {
                 return [
                     'success' => true, 
-                    'token' => $token,
+                    'token' => $tokenRaw,  // Envoyer le token RAW par email
                     'email' => $email,
                     'message' => 'Token créé avec succès'
                 ];
@@ -318,29 +360,39 @@ class Auth {
         }
     }
 
-    // Valider un token de réinitialisation
+    // Valider un token de réinitialisation (SÉCURISÉ)
     public function validateResetToken($token) {
         try {
+            // 1. Hasher le token reçu
+            $tokenHash = hash('sha256', $token);
+            
+            // 2. Chercher le hash en base de données
             $stmt = $this->pdo->prepare("
-                SELECT id, email, reset_token_expires 
+                SELECT id, email, reset_token_expires, reset_token_used
                 FROM users 
                 WHERE reset_token = ? 
                 AND reset_token IS NOT NULL
             ");
-            $stmt->execute([$token]);
+            $stmt->execute([$tokenHash]);
             $user = $stmt->fetch();
 
+            // 3. Token introuvable
             if (!$user) {
                 return ['success' => false, 'message' => 'Token invalide ou expiré'];
             }
 
-            // Vérifier si le token n'a pas expiré
+            // 4. Vérifier si le token a déjà été utilisé
+            if ((int)$user['reset_token_used'] === 1) {
+                return ['success' => false, 'message' => 'Ce token a déjà été utilisé. Faites une nouvelle demande'];
+            }
+
+            // 5. Vérifier l'expiration
             $now = new DateTime();
             $expires = new DateTime($user['reset_token_expires']);
 
             if ($now > $expires) {
-                // Token expiré, le supprimer
-                $this->clearResetToken($user['id']);
+                // Token expiré, le marquer comme utilisé pour éviter la réutilisation
+                $this->markResetTokenUsed($user['id']);
                 return ['success' => false, 'message' => 'Le lien a expiré. Veuillez faire une nouvelle demande'];
             }
 
@@ -354,10 +406,10 @@ class Auth {
         }
     }
 
-    // Réinitialiser le mot de passe avec un token valide
+    // Réinitialiser le mot de passe avec un token valide (SÉCURISÉ)
     public function resetPasswordByToken($token, $newPassword) {
         try {
-            // Valider le token
+            // 1. Valider le token
             $validation = $this->validateResetToken($token);
             if (!$validation['success']) {
                 return $validation;
@@ -365,16 +417,18 @@ class Auth {
 
             $userId = $validation['userId'];
 
-            // Hasher le nouveau mot de passe
+            // 2. Hasher le nouveau mot de passe
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            // Mettre à jour le mot de passe
-            $stmt = $this->pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+            // 3. Mettre à jour le mot de passe et marquer le token comme utilisé
+            $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET password = ?, reset_token_used = 1
+                WHERE id = ?
+            ");
             $result = $stmt->execute([$hashedPassword, $userId]);
 
             if ($result) {
-                // Supprimer le token après utilisation
-                $this->clearResetToken($userId);
                 return ['success' => true, 'message' => 'Mot de passe réinitialisé avec succès!'];
             } else {
                 return ['success' => false, 'message' => 'Erreur lors de la mise à jour du mot de passe'];
@@ -384,18 +438,17 @@ class Auth {
         }
     }
 
-    // Supprimer le token de réinitialisation
-    private function clearResetToken($userId) {
+    // Marquer un token comme utilisé (pour audit trail)
+    private function markResetTokenUsed($userId) {
         try {
             $stmt = $this->pdo->prepare("
                 UPDATE users 
-                SET reset_token = NULL, reset_token_expires = NULL 
+                SET reset_token_used = 1
                 WHERE id = ?
             ");
             $stmt->execute([$userId]);
         } catch (PDOException $e) {
-            // Log l'erreur mais ne pas bloquer le processus
-            error_log('Erreur clearResetToken: ' . $e->getMessage());
+            error_log('Erreur markResetTokenUsed: ' . $e->getMessage());
         }
     }
 }

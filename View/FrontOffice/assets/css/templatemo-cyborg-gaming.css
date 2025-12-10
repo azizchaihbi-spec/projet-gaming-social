@@ -86,6 +86,16 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Theme CSS Variables (non-breaking: map existing palette) */
+:root {
+  --tm-bg-dark: #1f2122;
+  --tm-bg-panel: #27292a;
+  --tm-accent: #e75e8d; /* main pink accent used across theme */
+  --tm-accent-strong: #ec6090; /* border/text accent */
+  --tm-text-muted: #666;
+  --tm-overlay: rgba(0,0,0,0.5);
+}
+
 a {
 	color: #CCC;
   text-decoration: none !important;

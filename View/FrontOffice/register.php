@@ -18,6 +18,7 @@ if (isset($_SESSION['user'])) {
     <link rel="stylesheet" href="assets/css/animate.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/css/cookie-banner.css" />
 </head>
 <body>
     <div id="js-preloader" class="js-preloader">
@@ -79,29 +80,29 @@ if (isset($_SESSION['user'])) {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Prénom <span class="required">*</span></label>
-                                    <input type="text" id="signupFirstName" placeholder="Votre prénom" required>
+                                    <input type="text" id="signupFirstName" placeholder="Votre prénom">
                                 </div>
                                 
                                 <div class="form-group">
                                     <label>Nom <span class="required">*</span></label>
-                                    <input type="text" id="signupLastName" placeholder="Votre nom" required>
+                                    <input type="text" id="signupLastName" placeholder="Votre nom">
                                 </div>
                             </div>
                             
                             <div class="form-group">
                                 <label>Nom d'utilisateur <span class="required">*</span></label>
-                                <input type="text" id="signupUsername" placeholder="Votre pseudo gaming" required>
+                                <input type="text" id="signupUsername" placeholder="Votre pseudo gaming">
                             </div>
                             
                             <div class="form-group">
                                 <label>Email <span class="required">*</span></label>
-                                <input type="email" id="signupEmail" placeholder="votre@email.com" required>
+                                <input type="email" id="signupEmail" placeholder="votre@email.com">
                             </div>
                             
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Date de naissance <span class="required">*</span></label>
-                                    <input type="date" id="signupBirthdate" required>
+                                    <input type="date" id="signupBirthdate">
                                 </div>
                                 
                                 <div class="form-group">
@@ -118,7 +119,7 @@ if (isset($_SESSION['user'])) {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Pays <span class="required">*</span></label>
-                                    <select id="signupCountry" required>
+                                    <select id="signupCountry">
                                         <option value="">Sélectionner...</option>
                                         <option value="FR">France</option>
                                         <option value="TN">Tunisie</option>
@@ -140,7 +141,7 @@ if (isset($_SESSION['user'])) {
                             
                             <div class="form-group">
                                 <label>Rôle <span class="required">*</span></label>
-                                <select id="signupRole" required onchange="toggleStreamerFields()">
+                                <select id="signupRole" onchange="toggleStreamerFields()">
                                     <option value="">Sélectionner...</option>
                                     <option value="viewer">Viewer</option>
                                     <option value="streamer">Streamer</option>
@@ -173,12 +174,28 @@ if (isset($_SESSION['user'])) {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Mot de passe <span class="required">*</span></label>
-                                    <input type="password" id="signupPassword" placeholder="••••••••" required>
+                                    <input type="password" id="signupPassword" placeholder="••••••••" oninput="checkPasswordStrength()">
+                                    <div class="password-strength-container">
+                                        <div class="password-strength-bar">
+                                            <div class="password-strength-fill" id="passwordStrengthFill"></div>
+                                        </div>
+                                        <div class="password-strength-text" id="passwordStrengthText">
+                                            <span id="strengthLabel">Saisissez un mot de passe</span>
+                                            <span id="strengthScore"></span>
+                                        </div>
+                                        <div class="password-requirements">
+                                            <div id="req-length">Au moins 8 caractères</div>
+                                            <div id="req-uppercase">Une lettre majuscule</div>
+                                            <div id="req-lowercase">Une lettre minuscule</div>
+                                            <div id="req-number">Un chiffre</div>
+                                            <div id="req-special">Un caractère spécial (!@#$%^&*)</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label>Confirmer <span class="required">*</span></label>
-                                    <input type="password" id="signupConfirmPassword" placeholder="••••••••" required>
+                                    <input type="password" id="signupConfirmPassword" placeholder="••••••••">
                                 </div>
                             </div>
                             
@@ -201,9 +218,12 @@ if (isset($_SESSION['user'])) {
         </div>
     </footer>
 
+    <?php include 'includes/cookie-banner.php'; ?>
+
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/custom.js"></script>
     <script src="script.js"></script>
+    <script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>

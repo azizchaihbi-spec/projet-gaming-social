@@ -19,6 +19,8 @@ $user = $_SESSION['user'];
     <link rel="stylesheet" href="assets/css/animate.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/css/cookie-banner.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div id="js-preloader" class="js-preloader">
@@ -78,9 +80,14 @@ $user = $_SESSION['user'];
                     <div class="profile-section active">
                         <div class="profile-header-top">
                             <h2>Mon Profil</h2>
-                            <a href="?logout=1" class="logout-btn" onclick="return confirm('Êtes-vous sûr de vouloir vous déconnecter?')">
-                                <i class="fa fa-sign-out"></i> Déconnexion
-                            </a>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <button class="btn-primary" onclick="exportProfileToPDF()" style="padding: 8px 15px; font-size: 14px;">
+                                    <i class="fa fa-file-pdf-o"></i> Exporter en PDF
+                                </button>
+                                <a href="?logout=1" class="logout-btn" onclick="return confirm('Êtes-vous sûr de vouloir vous déconnecter?')">
+                                    <i class="fa fa-sign-out"></i> Déconnexion
+                                </a>
+                            </div>
                         </div>
                         
                         <div class="profile-card">
@@ -130,7 +137,7 @@ $user = $_SESSION['user'];
                                             </span></span>
                                         </div>
                                         <div class="detail-item">
-                                            <i class="fa fa-clock-o"></i>
+                                            <i class="fa fa-star"></i>
                                             <span><strong>Membre depuis:</strong> <span id="profileJoinDate"><?php echo date('d/m/Y', strtotime($user['join_date'])); ?></span></span>
                                         </div>
                                         <div class="detail-item">
@@ -181,6 +188,9 @@ $user = $_SESSION['user'];
                                         <button class="btn-primary" onclick="openEditProfileModal()">
                                             <i class="fa fa-edit"></i> Modifier l'avatar
                                         </button>
+                                        <button class="btn-primary" onclick="openFriendsModal()">
+                                            <i class="fa fa-users"></i> Mes amis <span id="friendsCount" class="badge">0</span>
+                                        </button>
                                         <?php if ($user['role'] === 'streamer'): ?>
                                         <button id="editStreamerButton" class="btn-primary" onclick="openEditStreamerModal()">
                                             <i class="fa fa-edit"></i> Modifier infos streamer
@@ -201,7 +211,7 @@ $user = $_SESSION['user'];
                                 <h3 id="statGames">0</h3>
                                 <p>Jeux Téléchargés</p>
                             </div>
-                            <div class="stat-card">
+                            <div class="stat-card clickable" onclick="openFriendsModal()">
                                 <h3 id="statFriends">0</h3>
                                 <p>Amis en ligne</p>
                             </div>
@@ -224,15 +234,47 @@ $user = $_SESSION['user'];
     <div id="editProfileModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeEditProfileModal()">&times;</span>
-            <h2>Choisir un avatar</h2>
-            <div class="avatar-options">
-                <img class="avatar-option" src="assets/images/avatars/avatar1.png" alt="Avatar 1" onclick="selectAvatar(this)">
-                <img class="avatar-option" src="assets/images/avatars/avatar2.png" alt="Avatar 2" onclick="selectAvatar(this)">
-                <img class="avatar-option" src="assets/images/avatars/avatar3.png" alt="Avatar 3" onclick="selectAvatar(this)">
-                <img class="avatar-option" src="assets/images/avatars/avatar4.png" alt="Avatar 4" onclick="selectAvatar(this)">
-                <img class="avatar-option" src="assets/images/avatars/avatar5.png" alt="Avatar 5" onclick="selectAvatar(this)">
+            <h2>Choisir ou télécharger un avatar</h2>
+            
+            <!-- Onglets -->
+            <div class="avatar-tabs">
+                <button class="tab-btn active" onclick="switchAvatarTab('preset')">
+                    <i class="fa fa-image"></i> Avatars prédéfinis
+                </button>
+                <button class="tab-btn" onclick="switchAvatarTab('upload')">
+                    <i class="fa fa-upload"></i> Télécharger une photo
+                </button>
             </div>
-            <button class="submit-btn" onclick="handleSaveAvatar()">
+            
+            <!-- Tab 1: Avatars prédéfinis -->
+            <div id="presetAvatarTab" class="avatar-tab active">
+                <div class="avatar-options">
+                    <img class="avatar-option" src="assets/images/avatars/avatar1.png" alt="Avatar 1" onclick="selectAvatar(this)">
+                    <img class="avatar-option" src="assets/images/avatars/avatar2.png" alt="Avatar 2" onclick="selectAvatar(this)">
+                    <img class="avatar-option" src="assets/images/avatars/avatar3.png" alt="Avatar 3" onclick="selectAvatar(this)">
+                    <img class="avatar-option" src="assets/images/avatars/avatar4.png" alt="Avatar 4" onclick="selectAvatar(this)">
+                    <img class="avatar-option" src="assets/images/avatars/avatar5.png" alt="Avatar 5" onclick="selectAvatar(this)">
+                </div>
+            </div>
+            
+            <!-- Tab 2: Upload personnalisé -->
+            <div id="uploadAvatarTab" class="avatar-tab">
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                        <i class="fa fa-cloud-upload"></i>
+                        <p>Glissez votre photo ici ou cliquez pour sélectionner</p>
+                        <input type="file" id="avatarInput" accept="image/*" onchange="handleFileSelect(event)" style="display: none;">
+                    </div>
+                    <div id="uploadPreview" style="display: none; margin-top: 20px; text-align: center;">
+                        <img id="previewImage" src="" alt="Aperçu" style="max-width: 200px; max-height: 200px; border-radius: 10px;">
+                        <button type="button" class="submit-btn" onclick="document.getElementById('avatarInput').click()" style="margin-top: 10px;">
+                            <i class="fa fa-refresh"></i> Changer la photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="submit-btn" onclick="handleSaveAvatar()" style="margin-top: 20px;">
                 <i class="fa fa-save"></i> Enregistrer
             </button>
             <div class="error-message" id="editError"></div>
@@ -278,15 +320,79 @@ $user = $_SESSION['user'];
     </div>
     <?php endif; ?>
 
+    <!-- Modal des Amis -->
+    <div id="friendsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close-modal" onclick="closeFriendsModal()">&times;</span>
+            <h2>Mes Amis</h2>
+            
+            <!-- Onglets -->
+            <div class="friends-tabs">
+                <button class="friends-tab-btn active" onclick="switchFriendsTab('all')">
+                    <i class="fa fa-users"></i> Tous (<span id="allFriendsCount">0</span>)
+                </button>
+                <button class="friends-tab-btn" onclick="switchFriendsTab('online')">
+                    <i class="fa fa-circle" style="color: #51cf66;"></i> En ligne (<span id="onlineFriendsCount">0</span>)
+                </button>
+                <button class="friends-tab-btn" onclick="switchFriendsTab('requests')">
+                    <i class="fa fa-envelope"></i> Demandes (<span id="requestsCount">0</span>)
+                </button>
+                <button class="friends-tab-btn" onclick="switchFriendsTab('search')">
+                    <i class="fa fa-search"></i> Rechercher
+                </button>
+            </div>
+            
+            <!-- Tab: Tous les amis -->
+            <div id="allFriendsTab" class="friends-tab-content active">
+                <div id="allFriendsList" class="friends-list">
+                    <p class="loading-text"><i class="fa fa-spinner fa-spin"></i> Chargement...</p>
+                </div>
+            </div>
+            
+            <!-- Tab: Amis en ligne -->
+            <div id="onlineFriendsTab" class="friends-tab-content">
+                <div id="onlineFriendsList" class="friends-list">
+                    <p class="loading-text"><i class="fa fa-spinner fa-spin"></i> Chargement...</p>
+                </div>
+            </div>
+            
+            <!-- Tab: Demandes d'amis -->
+            <div id="requestsTab" class="friends-tab-content">
+                <div id="requestsList" class="friends-list">
+                    <p class="loading-text"><i class="fa fa-spinner fa-spin"></i> Chargement...</p>
+                </div>
+            </div>
+            
+            <!-- Tab: Recherche -->
+            <div id="searchTab" class="friends-tab-content">
+                <div class="search-box">
+                    <input type="text" id="friendSearchInput" placeholder="Rechercher un utilisateur..." onkeyup="searchFriends(this.value)">
+                    <i class="fa fa-search"></i>
+                </div>
+                <div id="searchResults" class="friends-list">
+                    <p class="placeholder-text">Tapez pour rechercher des utilisateurs</p>
+                </div>
+            </div>
+            
+            <div class="error-message" id="friendsError"></div>
+            <div class="success-message" id="friendsSuccess"></div>
+        </div>
+    </div>
+
     <footer>
         <div class="container">
             <p>Copyright © 2025 <a href="#">Play to Help</a> - Gaming pour l'Humanitaire. Tous droits réservés.</p>
         </div>
     </footer>
 
+    <?php include 'includes/cookie-banner.php'; ?>
+
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/custom.js"></script>
     <script src="script.js"></script>
+    <script src="assets/js/cookie-consent.js"></script>
+    <script src="assets/js/friends.js"></script>
+    <script src="assets/js/profile-export.js"></script>
 </body>
 </html>
