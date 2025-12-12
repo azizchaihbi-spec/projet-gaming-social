@@ -136,6 +136,9 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
       <h2 class="text-3xl font-bold text-center mb-8 neon font-orbitron">Filtrer par Forum</h2>
       
       <form method="GET" action="" id="filterForm" class="flex flex-col md:flex-row gap-4">
+        <?php if (isset($_GET['page'])): ?>
+          <input type="hidden" name="page" value="<?= htmlspecialchars($_GET['page']) ?>">
+        <?php endif; ?>
         <select name="id_forum" id="forumSelect" 
                 class="flex-1 bg-gray-800 border-2 border-cyan-500 rounded-full px-6 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
           <option value="">-- Tous les forums --</option>
@@ -405,12 +408,29 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
 
     // === FONCTION POUR FILTRER PAR FORUM (depuis les cartes stats) ===
     function filterByForum(forumId) {
-      window.location.href = window.location.pathname + '?id_forum=' + forumId;
+      // Vérifier si on est sur index.php avec page=admin
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPage = urlParams.get('page');
+      
+      if (currentPage === 'admin') {
+        // On est sur index.php?page=admin
+        window.location.href = window.location.pathname + '?page=admin&id_forum=' + forumId;
+      } else {
+        // Accès direct à admin.php
+        window.location.href = window.location.pathname + '?id_forum=' + forumId;
+      }
     }
 
     // === RÉINITIALISER LE FILTRE ===
     function resetFilter() {
-      window.location.href = window.location.pathname;
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPage = urlParams.get('page');
+      
+      if (currentPage === 'admin') {
+        window.location.href = window.location.pathname + '?page=admin';
+      } else {
+        window.location.href = window.location.pathname;
+      }
     }
 
     // === SUPPRESSION D'UNE PUBLICATION ===

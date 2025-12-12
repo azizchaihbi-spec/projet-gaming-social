@@ -18,7 +18,11 @@ function loadPosts() {
 
                     answersHTML += `
                         <div class="answer" style="position:relative; margin:15px 0; padding:15px; background:rgba(20,20,40,0.9); border-radius:12px; border-left:5px solid ${isMyReply ? '#6e6eff' : '#ff69b4'};">
-                            <strong style="color:${isMyReply ? '#6e6eff' : '#ff69b4'};">${a.prenom || 'Anonyme'} :</strong><br>
+                            <strong style="color:${isMyReply ? '#6e6eff' : '#ff69b4'};">${a.prenom || 'Anonyme'} :</strong>
+                            <span class="sentiment-badge" data-text="${a.contenu.replace(/"/g, '&quot;')}" style="display:inline-block; margin-left:10px; padding:4px 12px; border-radius:15px; font-size:0.85em; font-weight:bold;">
+                                <span class="sentiment-loading">🔄 Analyse...</span>
+                            </span>
+                            <br>
                             <div id="replyContent-${a.id_reponse}" style="margin:10px 0; color:#ddd;">${a.contenu.replace(/\n/g, '<br>')}</div>
 
                             ${isMyReply ? `
@@ -42,22 +46,66 @@ function loadPosts() {
 
                 const card = document.createElement('div');
                 card.className = 'question-card';
+                
+                // Préparer le contenu avec les médias
+                let contentHtml = p.contenu.replace(/\n/g,'<br>');
+                
+                // Ajouter les emojis si présents
+                let emojisHtml = '';
+                if (p.emojis) {
+                    try {
+                        const emojis = JSON.parse(p.emojis);
+                        if (emojis.length > 0) {
+                            emojisHtml = `<div class="emojis-display" style="margin: 10px 0; font-size: 1.5em;">${emojis.join(' ')}</div>`;
+                        }
+                    } catch (e) {
+                        console.log('Erreur parsing emojis:', e);
+                    }
+                }
+                
+                // Ajouter le GIF si présent
+                let gifHtml = '';
+                if (p.gif_url) {
+                    gifHtml = `<div class="gif-display" style="margin: 15px 0;"><img src="${p.gif_url}" alt="GIF" style="max-width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"></div>`;
+                }
+                
+                // Ajouter le sticker si présent
+                let stickerHtml = '';
+                if (p.sticker_url) {
+                    stickerHtml = `<div class="sticker-display" style="margin: 15px 0;"><img src="${p.sticker_url}" alt="Sticker" style="max-width: 200px; border-radius: 8px;"></div>`;
+                }
+                
                 card.innerHTML = `
-                    <div class="question-title">${p.titre} <span class="community-badge">${p.forum_nom}</span></div>
+                    <div class="question-title">
+                        ${p.titre} 
+                        <span class="community-badge">${p.forum_nom}</span>
+                    </div>
                     <div class="question-author">par ${p.prenom || 'Anonyme'} • ${new Date(p.date_publication).toLocaleString('fr-FR')}</div>
-                    <div class="question-content">${p.contenu.replace(/\n/g,'<br>')}</div>
+                    <div class="question-content">${contentHtml}</div>
+                    ${emojisHtml}
+                    ${gifHtml}
+                    ${stickerHtml}
 
                     <div class="actions">
-                        <button class="like-btn" onclick="vote(${p.id_publication}, 'like')">Like ${p.likes || 0}</button>
-                        <button class="dislike-btn" onclick="vote(${p.id_publication}, 'dislike')">Dislike ${p.dislikes || 0}</button>
-                        <button class="reply-btn" onclick="toggleReply(${p.id_publication})">Répondre</button>
-                        ${isMyPost ? `<button class="edit-btn" onclick="editPost(${p.id_publication})">Modifier Question</button>
-                                       <button class="delete-btn" onclick="deletePost(${p.id_publication})">Supprimer Question</button>` : ''}
+                        <span class="sentiment-badge" data-text="${p.contenu.replace(/"/g, '&quot;')}" style="display:inline-block; padding:6px 16px; border-radius:50px; font-size:0.9em; font-weight:bold;">
+                            <span class="sentiment-loading">🔄 Analyse...</span>
+                        </span>
+                        <button class="like-btn" onclick="vote(${p.id_publication}, 'like')">👍 ${p.likes || 0}</button>
+                        <button class="dislike-btn" onclick="vote(${p.id_publication}, 'dislike')">👎 ${p.dislikes || 0}</button>
+                        <button class="reply-btn" onclick="toggleReply(${p.id_publication})">💬 Répondre</button>
+                        ${isMyPost ? `<button class="edit-btn" onclick="editPost(${p.id_publication})">✏️ Modifier</button>
+                                       <button class="delete-btn" onclick="deletePost(${p.id_publication})">🗑️ Supprimer</button>` : ''}
                     </div>
 
                     <div class="reply-form" id="replyForm-${p.id_publication}" style="display:none; margin-top:15px;">
-                        <textarea rows="3" placeholder="Ta réponse..."></textarea>
-                        <button onclick="addReply(${p.id_publication})">Envoyer</button>
+                        <textarea rows="3" placeholder="Ta réponse..." id="replyTextarea-${p.id_publication}"></textarea>
+                        <div style="margin: 10px 0;">
+                            <button type="button" onclick="generateReplyAI(${p.id_publication}, '${p.titre.replace(/'/g, "\\'")}', '${p.contenu.replace(/'/g, "\\'").replace(/\n/g, ' ')}')" 
+                                    style="background: linear-gradient(135deg, #ff6b6b, #feca57); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-right: 10px;">
+                                🤖 Générer avec AI
+                            </button>
+                            <button onclick="addReply(${p.id_publication})">Envoyer</button>
+                        </div>
                     </div>
 
                     <div class="answers">
@@ -66,6 +114,9 @@ function loadPosts() {
                 `;
                 container.appendChild(card);
             });
+            
+            // Analyser le sentiment de tous les messages après le chargement
+            analyzeSentiments();
         });
 }
 
@@ -109,7 +160,7 @@ function toggleReply(id) {
 }
 
 function addReply(id) {
-    const textarea = document.querySelector(`#replyForm-${id} textarea`);
+    const textarea = document.getElementById(`replyTextarea-${id}`);
     const contenu = textarea.value.trim();
     if (!contenu) return alert("Écris une réponse !");
     fetch(API_URL + '?action=add_reply', {
@@ -119,6 +170,65 @@ function addReply(id) {
     }).then(() => { textarea.value = ''; toggleReply(id); loadPosts(); });
 }
 
+// === GÉNÉRER UNE RÉPONSE AVEC L'IA ===
+async function generateReplyAI(postId, questionTitle, questionContent) {
+    const textarea = document.getElementById(`replyTextarea-${postId}`);
+    const btn = event.target;
+    
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Génération...';
+    
+    try {
+        const HF_API_KEY = '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';
+        
+        const prompt = `Question: ${questionTitle}
+${questionContent}
+
+Génère une réponse utile et amicale à cette question en 2-3 phrases.`;
+
+        const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${HF_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                inputs: prompt,
+                parameters: {
+                    max_new_tokens: 150,
+                    temperature: 0.7,
+                    top_p: 0.9,
+                    return_full_text: false
+                }
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data[0] && data[0].generated_text) {
+            textarea.value = data[0].generated_text.trim();
+            alert('✅ Réponse générée par l\'IA ! Vous pouvez la modifier avant d\'envoyer.');
+        } else {
+            throw new Error('Pas de réponse de l\'IA');
+        }
+    } catch (error) {
+        console.error('Erreur IA:', error);
+        // Fallback avec des réponses prédéfinies
+        const replies = [
+            'Super question! D\'après mon expérience, je te conseille de commencer par les bases et de pratiquer régulièrement. N\'hésite pas si tu as d\'autres questions! 😊',
+            'Salut! Je pense que la meilleure approche est de tester différentes stratégies et de voir ce qui fonctionne pour toi. Bon courage! 💪',
+            'Hey! J\'ai eu le même problème au début. Ce qui m\'a aidé c\'est de regarder des tutoriels et de m\'entraîner. Tu vas y arriver! 🎮',
+            'Bonne question! Je te recommande de rejoindre une communauté active où tu pourras échanger des astuces. Ça aide beaucoup! 🤝'
+        ];
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        textarea.value = randomReply;
+        alert('✅ Réponse générée ! (Mode hors ligne)');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🤖 Générer avec AI';
+    }
+}
+
 function vote(id, type) {
     fetch(API_URL + `?action=${type}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
         .then(() => loadPosts());
@@ -126,6 +236,115 @@ function vote(id, type) {
 
 function editPost(id) { /* ton code existant */ }
 function deletePost(id) { /* ton code existant */ }
+
+// === ANALYSE DE SENTIMENT ===
+async function analyzeSentiments() {
+    const badges = document.querySelectorAll('.sentiment-badge');
+    
+    badges.forEach(async (badge) => {
+        const text = badge.dataset.text;
+        if (!text) return;
+        
+        try {
+            // Analyser le sentiment avec l'API Hugging Face
+            const sentiment = await analyzeSentimentAPI(text);
+            updateSentimentBadge(badge, sentiment);
+        } catch (error) {
+            // Fallback: analyse locale simple
+            const sentiment = analyzeSentimentLocal(text);
+            updateSentimentBadge(badge, sentiment);
+        }
+    });
+}
+
+// === ANALYSE DE SENTIMENT VIA API ===
+async function analyzeSentimentAPI(text) {
+    const HF_API_KEY = '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';
+    
+    const response = await fetch('https://api-inference.huggingface.co/models/cardiffnlp/twitter-xlm-roberta-base-sentiment', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${HF_API_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            inputs: text.substring(0, 500) // Limiter à 500 caractères
+        })
+    });
+    
+    const data = await response.json();
+    
+    if (data && data[0]) {
+        // Trouver le sentiment avec le score le plus élevé
+        const result = data[0].reduce((max, item) => item.score > max.score ? item : max);
+        return {
+            label: result.label.toLowerCase(),
+            score: result.score
+        };
+    }
+    
+    throw new Error('Pas de résultat');
+}
+
+// === ANALYSE DE SENTIMENT LOCALE (FALLBACK) ===
+function analyzeSentimentLocal(text) {
+    const textLower = text.toLowerCase();
+    
+    // Mots positifs
+    const positiveWords = ['merci', 'super', 'génial', 'excellent', 'parfait', 'top', 'cool', 'bien', 'bon', 'bravo', 'love', 'adore', 'content', 'heureux', 'satisfait', '😊', '😀', '😃', '👍', '❤️', '💚', '🎉', '✅'];
+    
+    // Mots négatifs
+    const negativeWords = ['nul', 'mauvais', 'horrible', 'problème', 'bug', 'erreur', 'pas', 'jamais', 'rien', 'déçu', 'triste', 'frustré', 'mécontent', '😢', '😭', '😡', '😠', '👎', '❌'];
+    
+    let positiveCount = 0;
+    let negativeCount = 0;
+    
+    positiveWords.forEach(word => {
+        if (textLower.includes(word)) positiveCount++;
+    });
+    
+    negativeWords.forEach(word => {
+        if (textLower.includes(word)) negativeCount++;
+    });
+    
+    if (positiveCount > negativeCount) {
+        return { label: 'positive', score: 0.8 };
+    } else if (negativeCount > positiveCount) {
+        return { label: 'negative', score: 0.8 };
+    } else {
+        return { label: 'neutral', score: 0.7 };
+    }
+}
+
+// === METTRE À JOUR LE BADGE DE SENTIMENT ===
+function updateSentimentBadge(badge, sentiment) {
+    let emoji, text, color, bgColor;
+    
+    if (sentiment.label.includes('positive') || sentiment.label === 'positive') {
+        emoji = '😊';
+        text = 'Positif';
+        color = '#10b981';
+        bgColor = 'rgba(16, 185, 129, 0.2)';
+    } else if (sentiment.label.includes('negative') || sentiment.label === 'negative') {
+        emoji = '😔';
+        text = 'Négatif';
+        color = '#ef4444';
+        bgColor = 'rgba(239, 68, 68, 0.2)';
+    } else {
+        emoji = '😐';
+        text = 'Neutre';
+        color = '#6b7280';
+        bgColor = 'rgba(107, 114, 128, 0.2)';
+    }
+    
+    badge.style.backgroundColor = bgColor;
+    badge.style.color = color;
+    badge.style.border = `1px solid ${color}`;
+    badge.innerHTML = `${emoji} ${text}`;
+    
+    // Ajouter un tooltip avec le score
+    badge.title = `Confiance: ${(sentiment.score * 100).toFixed(0)}%`;
+}
 
 loadPosts();
 document.getElementById('filterCommunity').onchange = loadPosts;

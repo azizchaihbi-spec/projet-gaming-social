@@ -68,6 +68,25 @@ switch ($action) {
         }
         break;
 
+    case 'create_publication':
+        $input = json_decode(file_get_contents('php://input'), true);
+        $titre = $input['titre'] ?? '';
+        $contenu = $input['contenu'] ?? '';
+        $idForum = $input['id_forum'] ?? 1;
+        $idAuteur = 1; // À remplacer par $_SESSION['id_user']
+        
+        // Nouvelles données pour emojis, GIFs et stickers
+        $emojis = $input['emojis'] ?? null;
+        $gifUrl = $input['gif_url'] ?? null;
+        $stickerUrl = $input['sticker_url'] ?? null;
+        
+        if ($publicationModel->createPublicationWithMedia($idAuteur, $titre, $contenu, $idForum, null, $emojis, $gifUrl, $stickerUrl)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false]);
+        }
+        break;
+
     case 'edit_post':
         $input = json_decode(file_get_contents('php://input'), true);
         $id = $input['id'] ?? 0;

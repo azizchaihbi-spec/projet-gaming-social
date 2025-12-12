@@ -56,6 +56,22 @@ class PublicationModel {
         }
     }
 
+    public function createPublicationWithMedia($idAuteur, $titre, $contenu, $idForum, $image = null, $emojis = null, $gifUrl = null, $stickerUrl = null) {
+        try {
+            $sql = "INSERT INTO publication (id_auteur, id_forum, titre, contenu, image, emojis, gif_url, sticker_url, date_publication) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+            $stmt = $this->pdo->prepare($sql);
+            
+            // Convertir les emojis en JSON si c'est un array
+            $emojisJson = is_array($emojis) ? json_encode($emojis) : $emojis;
+            
+            return $stmt->execute([$idAuteur, $idForum, $titre, $contenu, $image, $emojisJson, $gifUrl, $stickerUrl]);
+        } catch (PDOException $e) {
+            error_log("Erreur création publication avec média: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function likePublication($idPublication) {
         try {
             $sql = "UPDATE publication SET likes = likes + 1 WHERE id_publication = ?";
