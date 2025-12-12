@@ -197,7 +197,7 @@ $user = $_SESSION['user'];
                                         </button>
                                         <?php endif; ?>
                                         <?php if ($user['role'] === 'admin'): ?>
-                                        <a href="../../view/BackOffice/index.php" class="btn-primary">
+                                        <a href="../../views/backoffice/index.php" class="btn-primary">
                                             <i class="fa fa-cog"></i> Back-Office Admin
                                         </a>
                                         <?php endif; ?>

@@ -37,7 +37,7 @@ window.addEventListener('beforeunload', function() {
 async function loadFriendsData() {
     try {
         // Charger tous les amis
-        const friendsResponse = await fetch('../../Controller/friendsController.php?action=getFriends');
+        const friendsResponse = await fetch('../../controllers/friendsController.php?action=getFriends');
         const friendsResult = await friendsResponse.json();
         
         if (friendsResult.success) {
@@ -46,7 +46,7 @@ async function loadFriendsData() {
         }
         
         // Charger amis en ligne
-        const onlineResponse = await fetch('../../Controller/friendsController.php?action=getOnlineFriends');
+        const onlineResponse = await fetch('../../controllers/friendsController.php?action=getOnlineFriends');
         const onlineResult = await onlineResponse.json();
         
         if (onlineResult.success) {
@@ -56,7 +56,7 @@ async function loadFriendsData() {
         }
         
         // Charger demandes en attente
-        const requestsResponse = await fetch('../../Controller/friendsController.php?action=getPendingRequests');
+        const requestsResponse = await fetch('../../controllers/friendsController.php?action=getPendingRequests');
         const requestsResult = await requestsResponse.json();
         
         if (requestsResult.success) {
@@ -248,7 +248,7 @@ async function searchFriends(query) {
     
     searchTimeout = setTimeout(async () => {
         try {
-            const response = await fetch(`../../Controller/friendsController.php?action=searchUsers&q=${encodeURIComponent(query)}`);
+            const response = await fetch(`../../controllers/friendsController.php?action=searchUsers&q=${encodeURIComponent(query)}`);
             const result = await response.json();
             
             if (result.success) {
@@ -280,7 +280,7 @@ async function sendRequest(friendId, username) {
         const formData = new FormData();
         formData.append('friend_id', friendId);
         
-        const response = await fetch('../../Controller/friendsController.php?action=sendRequest', {
+        const response = await fetch('../../controllers/friendsController.php?action=sendRequest', {
             method: 'POST',
             body: formData
         });
@@ -311,7 +311,7 @@ async function acceptRequest(friendId, username) {
         const formData = new FormData();
         formData.append('friend_id', friendId);
         
-        const response = await fetch('../../Controller/friendsController.php?action=acceptRequest', {
+        const response = await fetch('../../controllers/friendsController.php?action=acceptRequest', {
             method: 'POST',
             body: formData
         });
@@ -338,7 +338,7 @@ async function rejectRequest(friendId) {
         const formData = new FormData();
         formData.append('friend_id', friendId);
         
-        const response = await fetch('../../Controller/friendsController.php?action=rejectRequest', {
+        const response = await fetch('../../controllers/friendsController.php?action=rejectRequest', {
             method: 'POST',
             body: formData
         });
@@ -369,7 +369,7 @@ async function removeFriend(friendId, username) {
         const formData = new FormData();
         formData.append('friend_id', friendId);
         
-        const response = await fetch('../../Controller/friendsController.php?action=removeFriend', {
+        const response = await fetch('../../controllers/friendsController.php?action=removeFriend', {
             method: 'POST',
             body: formData
         });
@@ -399,7 +399,7 @@ async function updateUserStatus(status, statusMessage = null) {
             formData.append('status_message', statusMessage);
         }
         
-        await fetch('../../Controller/friendsController.php?action=updateStatus', {
+        await fetch('../../controllers/friendsController.php?action=updateStatus', {
             method: 'POST',
             body: formData
         });

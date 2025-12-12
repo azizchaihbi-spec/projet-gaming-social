@@ -40,7 +40,7 @@ function hasRole($role) {
  */
 function requireAuth() {
     if (!isAuthenticated()) {
-        header('Location: ../View/FrontOffice/login.php');
+        header('Location: ../views/frontoffice/login.php');
         exit();
     }
 }
@@ -53,7 +53,7 @@ function requireAdmin() {
     if (!isAdmin()) {
         header('HTTP/1.1 403 Forbidden');
         $_SESSION['errors'] = ['Accès refusé : vous n\'avez pas les droits admin'];
-        header('Location: ../View/FrontOffice/login.php');
+        header('Location: ../views/frontoffice/login.php');
         exit();
     }
 }
@@ -87,7 +87,7 @@ function getUserInfo() {
 function logoutUser() {
     session_destroy();
     session_unset();
-    header('Location: ../View/FrontOffice/login.php');
+    header('Location: ../views/frontoffice/login.php');
     exit();
 }
 

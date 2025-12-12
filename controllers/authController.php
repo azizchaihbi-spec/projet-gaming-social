@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/recaptcha.php';
-require_once __DIR__ . '/../Model/Auth.php';
+require_once __DIR__ . '/../models/Auth.php';
 
 class AuthController {
     private $authModel;
@@ -121,7 +121,7 @@ class AuthController {
                 }
 
                 // Créer le dossier s'il n'existe pas
-                $uploadDir = __DIR__ . '/../View/FrontOffice/assets/images/avatars/uploaded/';
+                $uploadDir = __DIR__ . '/../views/frontoffice/assets/images/avatars/uploaded/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
                 }
@@ -138,7 +138,7 @@ class AuthController {
 
                     // Supprimer l'ancien avatar uploadé s'il existe
                     if (!empty($_SESSION['user']['profile_image']) && strpos($_SESSION['user']['profile_image'], 'uploaded/') !== false) {
-                        $oldPath = __DIR__ . '/../View/FrontOffice/' . $_SESSION['user']['profile_image'];
+                        $oldPath = __DIR__ . '/../views/frontoffice/' . $_SESSION['user']['profile_image'];
                         if (file_exists($oldPath)) {
                             @unlink($oldPath);
                         }
@@ -197,7 +197,7 @@ class AuthController {
     public function logout() {
         session_start();
         session_destroy();
-        header('Location: ../View/FrontOffice/login.php');
+        header('Location: ../views/frontoffice/login.php');
         exit();
     }
 
@@ -241,13 +241,13 @@ class AuthController {
 
             if ($result['success']) {
                 // Charger PHPMailer
-                require_once __DIR__ . '/../View/FrontOffice/vendor/PHPMailer-master/src/PHPMailer.php';
-                require_once __DIR__ . '/../View/FrontOffice/vendor/PHPMailer-master/src/SMTP.php';
-                require_once __DIR__ . '/../View/FrontOffice/vendor/PHPMailer-master/src/Exception.php';
+                require_once __DIR__ . '/../views/frontoffice/vendor/PHPMailer-master/src/PHPMailer.php';
+                require_once __DIR__ . '/../views/frontoffice/vendor/PHPMailer-master/src/SMTP.php';
+                require_once __DIR__ . '/../views/frontoffice/vendor/PHPMailer-master/src/Exception.php';
                 require_once __DIR__ . '/../config/email_config.php';
 
                 $token = $result['token'];
-                $resetLink = "http://" . $_SERVER['HTTP_HOST'] . dirname(dirname($_SERVER['PHP_SELF'])) . "/View/FrontOffice/reset_password.php?token=" . $token;
+                $resetLink = "http://" . $_SERVER['HTTP_HOST'] . dirname(dirname($_SERVER['PHP_SELF'])) . "/views/frontoffice/reset_password.php?token=" . $token;
                 
                 try {
                     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
@@ -276,7 +276,7 @@ class AuthController {
                     $mail->isHTML(true);
                     $mail->Subject = 'Play to Help - Réinitialisation de mot de passe';
                     ob_start();
-                    include __DIR__ . '/../View/EmailTemplates/resetPasswordEmail.php';
+                    include __DIR__ . '/../views/emailtemplates/resetPasswordEmail.php';
                     $mail->Body = ob_get_clean();
                     $mail->AltBody = "Réinitialisez votre mot de passe en cliquant sur ce lien : " . $resetLink . " (valide 1 heure)";
 

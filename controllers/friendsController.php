@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../Model/Friends.php';
+require_once __DIR__ . '/../models/Friends.php';
 
 class FriendsController {
     private $friendsModel;

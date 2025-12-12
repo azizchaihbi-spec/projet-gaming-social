@@ -182,7 +182,7 @@ async function handleSignup() {
     };
     
     try {
-        const response = await fetch('../../Controller/authController.php?action=register', {
+        const response = await fetch('../../controllers/authController.php?action=register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ async function handleLogin() {
     }
     
     try {
-        const response = await fetch('../../Controller/authController.php?action=login', {
+        const response = await fetch('../../controllers/authController.php?action=login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -592,7 +592,7 @@ async function handleSaveStreamer() {
         formData.append('stream_description', streamDescription); 
         formData.append('stream_platform', streamPlatform);
         
-        const response = await fetch('../../Controller/authController.php?action=updateStreamerInfo', {
+        const response = await fetch('../../controllers/authController.php?action=updateStreamerInfo', {
             method: 'POST',
             body: formData
         });
@@ -640,7 +640,7 @@ async function handleForgotPassword() {
     }
     
     try {
-        const response = await fetch('../../Controller/authController.php?action=requestPasswordReset', {
+        const response = await fetch('../../controllers/authController.php?action=requestPasswordReset', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -692,7 +692,7 @@ async function handleResetPassword() {
     }
     
     try {
-        const response = await fetch('../../Controller/authController.php?action=resetPassword', {
+        const response = await fetch('../../controllers/authController.php?action=resetPassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -747,7 +747,7 @@ async function handleSaveAvatar() {
             formData.append('profile_image', selectedAvatarSrc);
         }
 
-        const response = await fetch('../../Controller/authController.php?action=updateProfile', {
+        const response = await fetch('../../controllers/authController.php?action=updateProfile', {
             method: 'POST',
             body: formData
         });
@@ -808,7 +808,7 @@ async function handleSaveStreamer() {
         formData.append('stream_description', streamDescription);
         formData.append('stream_platform', streamPlatform);
 
-        const response = await fetch('../../Controller/authController.php?action=updateStreamerInfo', {
+        const response = await fetch('../../controllers/authController.php?action=updateStreamerInfo', {
             method: 'POST',
             body: formData
         });

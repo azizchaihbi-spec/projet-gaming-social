@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Inclure le contrôleur
-include_once(__DIR__ . '/../../Controller/usercontroller.php');
+include_once(__DIR__ . '/../../controllers/usercontroller.php');
 
 // Gestion du routing
 $action = $_GET['action'] ?? 'index';
@@ -145,7 +145,7 @@ switch ($action) {
                 <span class="text-gray-300">Admin Dashboard</span>
             </div>
             <div class="flex items-center space-x-6">
-                <a href="../../View/FrontOffice/login.php" class="text-cyan-400 hover:text-cyan-300 transition">Site Principal</a>
+                <a href="../../views/frontoffice/login.php" class="text-cyan-400 hover:text-cyan-300 transition">Site Principal</a>
                
             </div>
         </div>

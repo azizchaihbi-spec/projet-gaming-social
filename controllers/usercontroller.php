@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Inclure les dépendances
 include_once(__DIR__ . '/../config/config.php');
-include_once(__DIR__ . '/../Model/User.php');
+include_once(__DIR__ . '/../models/User.php');
 
 class UserController {
     
@@ -27,7 +27,7 @@ class UserController {
         $activeUsers = $stats['activeUsers'];
         
         // Inclure la vue
-        include(__DIR__ . '/../View/BackOffice/index.php');
+        include(__DIR__ . '/../views/backoffice/index.php');
     }
 
     public function create() {
@@ -46,7 +46,7 @@ class UserController {
         }
         
         // Afficher le formulaire de création
-        include(__DIR__ . '/../View/BackOffice/createuser.php');
+        include(__DIR__ . '/../views/backoffice/createuser.php');
     }
 
     public function edit($id) {
@@ -70,7 +70,7 @@ class UserController {
         }
         
         if ($user) {
-            include(__DIR__ . '/../View/BackOffice/modifuser.php');
+            include(__DIR__ . '/../views/backoffice/modifuser.php');
         } else {
             header('Location: index.php');
             exit;
@@ -92,7 +92,7 @@ class UserController {
     public function view($id) {
         $user = $this->showUser($id);
         if ($user) {
-            include(__DIR__ . '/../View/BackOffice/viewuser.php');
+            include(__DIR__ . '/../views/backoffice/viewuser.php');
         } else {
             header('Location: index.php');
             exit;

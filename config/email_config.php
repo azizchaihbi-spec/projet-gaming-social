@@ -82,9 +82,9 @@ define('SMTP_DEBUG', false);
  * 
  * <?php
  * require_once 'config/email_config.php';
- * require_once 'View/FrontOffice/vendor/PHPMailer-master/src/PHPMailer.php';
- * require_once 'View/FrontOffice/vendor/PHPMailer-master/src/SMTP.php';
- * require_once 'View/FrontOffice/vendor/PHPMailer-master/src/Exception.php';
+ * require_once 'views/frontoffice/vendor/PHPMailer-master/src/PHPMailer.php';
+ * require_once 'views/frontoffice/vendor/PHPMailer-master/src/SMTP.php';
+ * require_once 'views/frontoffice/vendor/PHPMailer-master/src/Exception.php';
  * 
  * $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
  * try {
