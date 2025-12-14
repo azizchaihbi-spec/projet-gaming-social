@@ -406,7 +406,7 @@ function renderTable(users) {
                 <a href="index.php?action=edit&id=${user.id}" title="Modifier">
                     <i data-feather="edit-2" class="w-5 h-5"></i>
                 </a>
-                <button onclick="openBanModal(${user.id}, '${user.username.replace(/'/g, "\\'")}'" title="Bannir">
+                <button onclick="openBanModal(${user.id}, '${user.username.replace(/'/g, "\\'")}')" title="Bannir">
                     <i data-feather="shield-off" class="w-5 h-5"></i>
                 </button>
                 <a href="index.php?action=delete&id=${user.id}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')" title="Supprimer">
@@ -768,24 +768,31 @@ function toggleDateField() {
 function submitBan(event, userId) {
     event.preventDefault();
     
-    const formData = new FormData();
-    formData.append('user_id', userId);
-    formData.append('ban_type', document.getElementById('banType').value);
-    formData.append('ban_reason', document.getElementById('banReason').value);
-    
+    // On encode les données en x-www-form-urlencoded pour que PHP les lise dans $_POST
     const banType = document.getElementById('banType').value;
+    const banReason = document.getElementById('banReason').value;
+    let bannedUntil = '';
     if (banType === 'soft') {
-        const bannedUntil = document.getElementById('bannedUntil').value;
+        bannedUntil = document.getElementById('bannedUntil').value;
         if (!bannedUntil) {
             alert('Veuillez sélectionner une date d\'expiration pour la suspension temporaire');
             return false;
         }
-        formData.append('banned_until', bannedUntil);
+    }
+    const params = new URLSearchParams();
+    params.append('user_id', userId);
+    params.append('ban_type', banType);
+    params.append('ban_reason', banReason);
+    if (banType === 'soft') {
+        params.append('banned_until', bannedUntil);
     }
 
     fetch('index.php?action=ban', {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
     })
     .then(response => response.json())
     .then(data => {

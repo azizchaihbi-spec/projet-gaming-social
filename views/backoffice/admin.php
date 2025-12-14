@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../models/PublicationModel.php';
 require_once __DIR__ . '/../../models/ReponseModel.php';
 
@@ -63,6 +63,9 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
 </head>
 <body class="relative min-h-screen overflow-x-hidden smooth-scroll">
   <div class="scanline"></div>
+
+  <!-- Header commun -->
+  <?php include __DIR__ . '/includes/header.php'; ?>
 
   <main class="container mx-auto px-6 py-12 max-w-7xl">
     <!-- TITRE FUTURISTE -->
@@ -194,7 +197,7 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
                 <?= nl2br(htmlspecialchars($pub['contenu'])) ?>
               </div>
               <?php if (!empty($pub['image'])): ?>
-                <img src="/play-to-help/<?= htmlspecialchars($pub['image']) ?>" alt="Image" class="max-w-full rounded-xl mb-4 shadow-lg">
+                <img src="/projet-gaming-social-maya/<?= htmlspecialchars($pub['image']) ?>" alt="Image" class="max-w-full rounded-xl mb-4 shadow-lg">
               <?php endif; ?>
               <!-- Zone d'édition (cachée par défaut) -->
               <div id="editForm-<?= $pub['id_publication'] ?>" class="hidden mt-6 p-6 bg-gray-900 rounded-xl border-2 border-cyan-500">
@@ -427,7 +430,7 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
     function deletePublication(id) {
       if (!confirm("⚠️ Supprimer cette publication et toutes ses réponses ?")) return;
       
-      fetch('/play-to-help/api_admin.php?action=delete_post', {
+      fetch('/projet-gaming-social-maya/api_admin.php?action=delete_post', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'id=' + id
@@ -480,7 +483,7 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
       saveBtn.disabled = true;
       saveBtn.innerHTML = '<i data-feather="loader"></i> Enregistrement...';
 
-      fetch('/play-to-help/api_admin.php?action=edit_post', {
+      fetch('/projet-gaming-social-maya/api_admin.php?action=edit_post', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'id=' + id + '&titre=' + encodeURIComponent(titre) + '&contenu=' + encodeURIComponent(contenu)

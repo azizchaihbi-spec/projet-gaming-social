@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once 'config/config.php';
 
 $pdo = config::getConnexion();
 
@@ -109,10 +109,7 @@ switch ($action) {
     }
     break;
         
-    default:
-        echo json_encode(['error' => 'Action non reconnue']); 
-    
-        case 'edit_reply':
+    case 'edit_reply':
         $input = json_decode(file_get_contents('php://input'), true);
         $id_reponse = $input['id'] ?? 0;
         $nouveau_contenu = $input['contenu'] ?? '';
@@ -148,6 +145,10 @@ switch ($action) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Pas ta réponse']);
         }
+        break;
+        
+    default:
+        echo json_encode(['error' => 'Action non reconnue']);
         break;
 }
 ?>

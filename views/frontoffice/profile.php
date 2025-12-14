@@ -50,12 +50,18 @@ $user = $_SESSION['user'];
                         </div>
                         <ul class="nav d-flex align-items-center mb-0">
                             <li><a href="index.html">Accueil</a></li>
+                            <li><a href="index.php">Forum</a></li>
                             <li><a href="browse.html">Événements</a></li>
                             <li><a href="streams.html">Streams Solidaires</a></li>
                             <li><a href="association.html">Associations</a></li>
                             <li><a href="don.html">Dons & Challenges</a></li>
-                            <li><a href="backoffice.html">Back-Office</a></li>
-                            <li><a href="?logout=1">Déconnexion</a></li>
+                            <?php if (isset($_SESSION['user'])): ?>
+                                <li><a href="profile.php" class="active">Profil</a></li>
+                                <li><a href="logout.php">Déconnexion</a></li>
+                            <?php else: ?>
+                                <li><a href="login.php">Connexion</a></li>
+                                <li><a href="register.php">Inscription</a></li>
+                            <?php endif; ?>
                         </ul>
                         <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
                     </nav>
@@ -63,6 +69,7 @@ $user = $_SESSION['user'];
             </div>
         </div>
     </header>
+
 
     <?php
     // Gérer la déconnexion

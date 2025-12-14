@@ -136,20 +136,8 @@ switch ($action) {
 
     <div class="scanline"></div>
 
-    <!-- Navigation Personnalisée -->
-    <nav class="bg-gray-900/80 backdrop-blur-lg border-b border-cyan-500/30 py-4 px-6">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <h1 class="🎥 Streamer	ext-2xl font-bold text-cyan-400 font-orbitron">PLAY2HELP</h1>
-                <span class="text-gray-400">|</span>
-                <span class="text-gray-300">Admin Dashboard</span>
-            </div>
-            <div class="flex items-center space-x-6">
-                <a href="../../views/frontoffice/login.php" class="text-cyan-400 hover:text-cyan-300 transition">Site Principal</a>
-               
-            </div>
-        </div>
-    </nav>
+    <!-- Header commun -->
+    <?php include __DIR__ . '/includes/header.php'; ?>
 
     <!-- Messages de notification -->
     <?php if (isset($_SESSION['message'])): ?>

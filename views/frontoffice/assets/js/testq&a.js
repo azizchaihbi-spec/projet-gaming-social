@@ -1,13 +1,42 @@
-const API_URL = '/play-to-help/api.php';
+// Utiliser le chemin correct avec le nom du projet
+const API_URL = '/projet-gaming-social-maya/api.php';
 const MY_USER_ID = 1; // ← plus tard : $_SESSION['id']
 
 function loadPosts() {
     const filter = document.getElementById('filterCommunity').value;
+    
+    console.log('🔍 Tentative de chargement des posts...');
+    console.log('📡 URL API:', `${API_URL}?action=get_all&filter=${filter}`);
+    
     fetch(`${API_URL}?action=get_all&filter=${filter}`)
-        .then(r => r.json())
+        .then(response => {
+            console.log('📊 Réponse reçue:', response.status, response.statusText);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(posts => {
+            console.log('✅ Posts récupérés:', posts.length, 'publications');
+            console.log('📝 Premier post:', posts[0]);
+            
             const container = document.getElementById('postsList');
+            
+            // Debug: vérifier que le container existe
+            if (!container) {
+                console.error('❌ Container postsList introuvable !');
+                alert('❌ Erreur: Container postsList introuvable dans la page !');
+                return;
+            }
+            
+            console.log('📦 Container trouvé:', container);
             container.innerHTML = '';
+            
+            // Debug: afficher un message si aucun post
+            if (!posts || posts.length === 0) {
+                container.innerHTML = '<div style="background: orange; color: white; padding: 20px; border-radius: 10px;">⚠️ Aucune publication reçue de l\'API</div>';
+                return;
+            }
 
             posts.forEach(p => {
                 const isMyPost = p.id_auteur == MY_USER_ID;
@@ -117,6 +146,21 @@ function loadPosts() {
             
             // Analyser le sentiment de tous les messages après le chargement
             analyzeSentiments();
+        })
+        .catch(error => {
+            console.error('❌ Erreur lors du chargement des posts:', error);
+            const container = document.getElementById('postsList');
+            container.innerHTML = `
+                <div style="background: #ff4444; color: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h3>❌ Erreur de chargement</h3>
+                    <p><strong>Erreur:</strong> ${error.message}</p>
+                    <p><strong>URL tentée:</strong> ${API_URL}?action=get_all&filter=${document.getElementById('filterCommunity').value}</p>
+                    <p>Vérifiez la console du navigateur (F12) pour plus de détails.</p>
+                    <button onclick="loadPosts()" style="background: white; color: #ff4444; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                        🔄 Réessayer
+                    </button>
+                </div>
+            `;
         });
 }
 

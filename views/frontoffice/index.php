@@ -2,7 +2,7 @@
 // Routes front depuis le dossier frontoffice
 $basePath = dirname(__DIR__, 2);
 
-require_once $basePath . '/config/database.php';
+require_once $basePath . '/config/config.php';
 require_once $basePath . '/models/PublicationModel.php';
 require_once $basePath . '/models/ReponseModel.php';
 

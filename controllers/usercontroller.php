@@ -243,7 +243,17 @@ class UserController {
     }
 
     public function addUser(User $user) {
-        $sql = "INSERT INTO users VALUES (NULL, :first_name, :last_name, :username, :email, :birthdate, :gender, :country, :city, :role, :stream_link, :stream_description, :stream_platform, :password, :profile_image, NOW(), NOW(), NOW())";
+        $sql = "INSERT INTO users (
+            first_name, last_name, username, email, birthdate, gender, 
+            country, city, role, stream_link, stream_description, stream_platform, 
+            password, profile_image, join_date, created_at, updated_at, 
+            is_banned, ban_type, ban_reason, banned_at, banned_until, banned_by
+        ) VALUES (
+            :first_name, :last_name, :username, :email, :birthdate, :gender,
+            :country, :city, :role, :stream_link, :stream_description, :stream_platform,
+            :password, :profile_image, NOW(), NOW(), NOW(),
+            0, NULL, NULL, NULL, NULL, NULL
+        )";
         $db = config::getConnexion();
         try {
             $query = $db->prepare($sql);

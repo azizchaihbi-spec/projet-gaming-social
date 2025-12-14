@@ -1,20 +1,21 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Q&A Communauté</title>
   <link rel="stylesheet" href="assets/css/styleq&a.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Play to Help - Connexion</title>
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/css/fontawesome.css" />
-    <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css" />
-    <link rel="stylesheet" href="assets/css/owl.css" />
-    <link rel="stylesheet" href="assets/css/animate.css" />
-    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="assets/css/cookie-banner.css" />
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/fontawesome.css" />
+  <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css" />
+  <link rel="stylesheet" href="assets/css/owl.css" />
+  <link rel="stylesheet" href="assets/css/animate.css" />
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="assets/css/cookie-banner.css" />
   <style>
     /* Styles pour les sélecteurs de médias */
     .media-btn {
@@ -119,13 +120,12 @@
 </head>
 <body>
 
-
-        <!-- HEADER -->
+    <!-- HEADER -->
     <header id="mainHeader" class="header-area header-sticky">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-12">
-                    <nav class="main-nav">
+                    <nav class="main-nav d-flex align-items-center justify-content-between">
                         <a href="index.html" class="logo">
                             <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
                         </a>
@@ -140,12 +140,18 @@
                         </div>
                         <ul class="nav d-flex align-items-center mb-0">
                             <li><a href="index.html">Accueil</a></li>
+                            <li><a href="index.php" class="active">Forum</a></li>
                             <li><a href="browse.html">Événements</a></li>
                             <li><a href="streams.html">Streams Solidaires</a></li>
                             <li><a href="association.html">Associations</a></li>
                             <li><a href="don.html">Dons & Challenges</a></li>
-                            <li><a href="backoffice.html">Back-Office</a></li>
-                            <li><a href="register.php">Inscription</a></li>
+                            <?php if (isset($_SESSION['user'])): ?>
+                                <li><a href="profile.php">Profil</a></li>
+                                <li><a href="logout.php">Déconnexion</a></li>
+                            <?php else: ?>
+                                <li><a href="login.php">Connexion</a></li>
+                                <li><a href="register.php">Inscription</a></li>
+                            <?php endif; ?>
                         </ul>
                         <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
                     </nav>
@@ -153,6 +159,7 @@
             </div>
         </div>
     </header>
+
   <div class="container">
     <div class="header">
       <h1>Q&A Communauté</h1>
@@ -168,6 +175,7 @@
         <option value="D&D / Jeux de rôle">D&D / Jeux de rôle</option>
         <option value="Minecraft">Minecraft</option>
         <option value="Valorant">Valorant</option>
+        <option value="League of Legends">League of Legends</option>
       </select>
     </div>
 
@@ -256,7 +264,7 @@
         }
         
         try {
-          const response = await fetch('/play-to-help/api.php?action=create_publication', {
+          const response = await fetch('/projet-gaming-social-maya/api.php?action=create_publication', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -294,6 +302,8 @@
 
   <!-- Inclure votre fichier JavaScript externe -->
   <script src="assets/js/testq&a.js"></script>
+  
+
   
   <script>
     // === GIPHY API KEY (gratuite) ===
@@ -716,6 +726,8 @@ Génère une réponse utile et amicale à cette question en 2-3 phrases.`;
       contentInput.value = randomReply;
       alert('✅ Réponse générée ! (Mode hors ligne)');
     }
+
+
 
     // === AJOUTER LE BOUTON AI AUX FORMULAIRES DE RÉPONSE ===
     // Cette fonction sera appelée quand un formulaire de réponse est créé
