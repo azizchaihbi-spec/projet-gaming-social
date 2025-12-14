@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Play to Help - Streams Solidaires</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css">
+    <link rel="stylesheet" href="assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="assets/css/dons-assoc.css">
+    <link rel="stylesheet" href="assets/css/event.css">
+    <style>
+      @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      .hero-streams { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #c44569 50%, #f8b500 75%, #ff6b6b 100%); background-size: 400% 400%; animation: gradientShift 8s ease infinite; border-radius: 20px; padding: 60px 30px; margin-bottom: 40px; position: relative; overflow: hidden; }
+      .hero-streams h1 { font-weight: 800; color: #11cc4c; }
+      .hero-streams p { color: rgba(255,255,255,0.9); }
+      .filters-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 15px; margin-bottom: 25px; }
+      .section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+      .badge-live { background: #28a745; color: #fff; padding: 6px 12px; border-radius: 50px; font-weight: 700; }
+      .empty-state { display: none; color: #999; padding: 15px; text-align: center; border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+    <header class="header-area header-sticky">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <a href="Accueil.html" class="logo">
+                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire">
+                        </a>
+                        <div class="search-input">
+                            <form id="search" action="search.html">
+                                <input type="text" placeholder="Rechercher association, don ou challenge..." name="q" />
+                                <i class="fa fa-search"></i>
+                            </form>
+                        </div>
+                        <ul class="nav">
+                            <li><a href="Accueil.html">Accueil</a></li>
+                            <li><a href="browse.html">Événements</a></li>
+                            <li><a href="streams.html" class="active">Streams Solidaires</a></li>
+                        </ul>
+                        <a class='menu-trigger'><span>Menu</span></a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="page-content">
+
+            <div class="hero-streams text-center">
+              <h1>Streams Solidaires</h1>
+              <p>Suivez les créateurs engagés, soutenez les associations et partagez le live.</p>
+              <div class="d-flex flex-wrap justify-content-center gap-3 mt-3">
+                <span class="badge-live">🔴 <span id="live-count">0</span> en direct</span>
+                <a href="browse.html" class="main-button">Voir les événements</a>
+              </div>
+            </div>
+
+            <div class="filters-card">
+              <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label text-white-50" for="filterPlatform">Plateforme</label>
+                  <select id="filterPlatform" class="form-select">
+                    <option value="">Toutes</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label text-white-50" for="filterStatus">Statut</label>
+                  <select id="filterStatus" class="form-select">
+                    <option value="">Tous</option>
+                    <option value="en_cours">En direct</option>
+                    <option value="scheduled">Programmé</option>
+                    <option value="termine">Terminé</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label text-white-50" for="filterSort">Trier par</label>
+                  <select id="filterSort" class="form-select">
+                    <option value="recent">Récents</option>
+                    <option value="views">Vues</option>
+                    <option value="likes">Likes</option>
+                  </select>
+                </div>
+                <div class="col-md-3 d-flex justify-content-md-end">
+                  <button id="resetFilters" class="btn btn-outline-danger w-100">Réinitialiser</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-title">
+              <h4 class="text-danger mb-0">Top streamers</h4>
+              <span class="text-white-50">Classement par engagement</span>
+            </div>
+            <div id="top-streamers" class="d-flex flex-wrap gap-3 mb-4"></div>
+
+            <div class="section-title">
+              <h4 class="text-danger mb-0">🎬 Meilleur Clips</h4>
+              <span class="text-white-50">Les clips les plus regardés</span>
+            </div>
+            <div class="row" id="top-clips"></div>
+
+            <div class="section-title">
+              <h4 class="text-danger mb-0">En direct maintenant</h4>
+              <span id="no-live" class="text-white-50" style="display:none;">Pas de live pour le moment.</span>
+            </div>
+            <div class="row" id="live-streams"></div>
+
+            <div class="section-title mt-4">
+              <h4 class="text-danger mb-0">Tous les streams</h4>
+              <span class="text-white-50">Replays et programmés</span>
+            </div>
+            <div class="row" id="streams-grid"></div>
+            <div id="streams-empty" class="empty-state">Aucun stream à afficher.</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <p>Copyright © 2025 Play to Help • Tous droits réservés.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/owl-carousel.js"></script>
+  <script src="assets/js/tabs.js"></script>
+  <script src="assets/js/path-utils.js"></script>
+  <script src="assets/js/popup.js"></script>
+  <script src="assets/js/custom.js"></script>
+  <script src="assets/js/streams.js"></script>
+  <script src="assets/js/clips.js"></script>
+
+
+  </body>
+
+</html>
