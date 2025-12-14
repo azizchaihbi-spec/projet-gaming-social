@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Q&A Communauté</title>
-  <link rel="stylesheet" href="/play-to-help/assets/css/styleq&a.css">
+  <link rel="stylesheet" href="assets/css/styleq&a.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Play to Help - Connexion</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/fontawesome.css" />
+    <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css" />
+    <link rel="stylesheet" href="assets/css/owl.css" />
+    <link rel="stylesheet" href="assets/css/animate.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/css/cookie-banner.css" />
   <style>
     /* Styles pour les sélecteurs de médias */
     .media-btn {
@@ -70,10 +80,79 @@
       object-fit: cover;
       display: block;
     }
+    
+    /* Alignement du header avec le contenu */
+    .header-area {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    
+    .header-area .container {
+
+
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin: 0 auto;
+    }
+    
+    .header-area .row {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .header-area .col-12 {
+      padding: 0 !important;
+    }
+    
+    .main-nav {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-top: 5000    !important;
+      padding-bottom: 5000 !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
   </style>
 </head>
 <body>
 
+
+        <!-- HEADER -->
+    <header id="mainHeader" class="header-area header-sticky">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <a href="index.html" class="logo">
+                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
+                        </a>
+                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
+                            <form id="search" action="search.html" class="d-flex align-items-center">
+                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
+                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                    <span class="sr-only">Rechercher</span>
+                                </button>
+                            </form>
+                        </div>
+                        <ul class="nav d-flex align-items-center mb-0">
+                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="browse.html">Événements</a></li>
+                            <li><a href="streams.html">Streams Solidaires</a></li>
+                            <li><a href="association.html">Associations</a></li>
+                            <li><a href="don.html">Dons & Challenges</a></li>
+                            <li><a href="backoffice.html">Back-Office</a></li>
+                            <li><a href="register.php">Inscription</a></li>
+                        </ul>
+                        <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
   <div class="container">
     <div class="header">
       <h1>Q&A Communauté</h1>
@@ -214,7 +293,7 @@
   </div>
 
   <!-- Inclure votre fichier JavaScript externe -->
-  <script src="/play-to-help/assets/js/testq&a.js"></script>
+  <script src="assets/js/testq&a.js"></script>
   
   <script>
     // === GIPHY API KEY (gratuite) ===
@@ -658,4 +737,9 @@ Génère une réponse utile et amicale à cette question en 2-3 phrases.`;
     };
   </script>
 </body>
+    <footer>
+        <div class="container">
+            <p>Copyright © 2025 <a href="#">Play to Help</a> - Gaming pour l'Humanitaire. Tous droits réservés.</p>
+        </div>
+    </footer>
 </html>

@@ -17,7 +17,7 @@ class QAController {
             $publication['reponses'] = $this->reponseModel->getReponsesByPublication($publication['id_publication']);
         }
         
-        require 'views/frontoffice/q&a.php';
+        require __DIR__ . '/../views/frontoffice/q&a.php';
     }
 
     public function createPublication() {

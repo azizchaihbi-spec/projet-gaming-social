@@ -1,17 +1,7 @@
 <?php
 require_once 'config/database.php';
 
-// Connexion BDD
-try {
-    $pdo = new PDO(
-        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8",
-        DB_USER, 
-        DB_PASS
-    );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die(json_encode(['error' => 'Database connection failed']));
-}
+$pdo = config::getConnexion();
 
 require_once 'models/PublicationModel.php';
 require_once 'models/ReponseModel.php';

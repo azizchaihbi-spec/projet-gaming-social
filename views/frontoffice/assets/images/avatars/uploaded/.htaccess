@@ -1,0 +1,9 @@
+# Sécuriser le dossier d'upload
+<FilesMatch "\.(php|phtml|php3|php4|php5|phps|php7|pht|phar|phpt|pgif|shtml|htaccess|phtml|html)$">
+    Deny from all
+</FilesMatch>
+
+# Autoriser uniquement les fichiers image
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+    Allow from all
+</FilesMatch>
