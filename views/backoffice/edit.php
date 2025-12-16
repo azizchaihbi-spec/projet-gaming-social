@@ -7,7 +7,7 @@ $controller = new DonController();
 $error = $success = "";
 
 if (!isset($_GET['id'])) { 
-    header('Location: index.php'); 
+    header('Location: indexsinda.php'); 
     exit; 
 }
 
@@ -127,7 +127,7 @@ $associations = config::getConnexion()->query("SELECT id_association, name FROM 
                     <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-4 px-12 rounded-lg transition transform hover:scale-105 shadow-lg">
                         Sauvegarder les modifications
                     </button>
-                    <a href="index.php" class="inline-block mt-6 ml-6 text-gray-400 hover:text-green-400 underline">Annuler</a>
+                    <a href="indexsinda.php" class="inline-block mt-6 ml-6 text-gray-400 hover:text-green-400 underline">Annuler</a>
                 </div>
             </form>
         </div>

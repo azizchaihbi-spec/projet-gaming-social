@@ -8,5 +8,5 @@ if (isset($_GET['id'])) {
     $challengeC->delete($_GET['id']);
 }
 
-header("Location: ../../views/backoffice/index.php?success=challenge_deleted");
+header("Location: ../../views/backoffice/indexsinda.php?success=challenge_deleted");
 exit;

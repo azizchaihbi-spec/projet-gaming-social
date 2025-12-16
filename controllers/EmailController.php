@@ -9,7 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 class EmailController {
     
     public static function sendDonationReceipt($donData, $pdfPath = null) {
-        $config = require __DIR__ . '/../config/email_config.php';
+        $config = require __DIR__ . '/../config/email_configsinda.php';
         
         $mail = new PHPMailer(true);
         
@@ -48,7 +48,7 @@ class EmailController {
     }
     
     public static function sendDonationReceiptToPlayToHelp($donData) {
-        $config = require __DIR__ . '/../config/email_config.php';
+        $config = require __DIR__ . '/../config/email_configsinda.php';
         
         $mail = new PHPMailer(true);
         
@@ -168,7 +168,7 @@ class EmailController {
                     </div>
                     
                     <p style="text-align: center; margin-top: 20px;">
-                        <a href="' . BASE_URL . '/views/backoffice/index.php" style="display: inline-block; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px;">
+                        <a href="' . BASE_URL . '/views/backoffice/indexsinda.php" style="display: inline-block; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px;">
                             Voir dans le dashboard
                         </a>
                     </p>

@@ -23,7 +23,7 @@ if ($_POST) {
             if ($result) {
                 $success = "Association créée avec succès !";
                 // Optionnel: redirection après succès
-                // header('Location: index.php');
+                // header('Location: indexsinda.php');
             } else {
                 $error = "Erreur lors de la création de l'association.";
             }
@@ -168,7 +168,7 @@ if ($_POST) {
                         </button>
                         
                         <a 
-                            href="index.php" 
+                            href="indexsinda.php" 
                             class="btn-secondary flex-1 px-8 py-4 rounded-xl text-xl font-bold text-white text-center inline-flex items-center justify-center"
                         >
                             <i data-feather="arrow-left" class="inline w-6 h-6 mr-2"></i>
@@ -214,7 +214,7 @@ if ($_POST) {
         <?php if ($success): ?>
         setTimeout(() => {
             if (confirm('Association créée avec succès ! Voulez-vous retourner au tableau de bord ?')) {
-                window.location.href = 'index.php';
+                window.location.href = 'indexsinda.php';
             }
         }, 2000);
         <?php endif; ?>

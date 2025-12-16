@@ -26,6 +26,17 @@ font & reset css
 --------------------------------------------- 
 */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900");
+
+/* Theme CSS Variables (non-breaking: map existing palette) */
+:root {
+  --tm-bg-dark: #1f2122;
+  --tm-bg-panel: #27292a;
+  --tm-accent: #e75e8d; /* main pink accent used across theme */
+  --tm-accent-strong: #ec6090; /* border/text accent */
+  --tm-text-muted: #666;
+  --tm-overlay: rgba(0,0,0,0.5);
+}
+
 /* 
 ---------------------------------------------
 reset
@@ -125,6 +136,8 @@ html,
 body {
   background: #1f2122;
   font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  padding-top: 80px; /* height of header */
 }
 
 body .page-content {
@@ -224,6 +237,23 @@ section {
   color: #fff;
   font-style: normal;
   text-decoration: underline;
+}
+
+.content{ 
+  color: white;
+}
+
+small{
+  color: red;
+}
+
+.logooo{
+  width: 10px;
+  height: 75px;
+  display: flex;
+  margin: 0 auto;
+  margin-bottom: 50px;
+  margin-right: 30px;
 }
 
 /* 
@@ -326,8 +356,6 @@ Pre-loader Style
   border-radius: 50%;
 }
 
-
-
 /* 
 ---------------------------------------------
 Header Style
@@ -335,7 +363,7 @@ Header Style
 */
 
 .background-header {
-  background-color: #1a1a2e !important; /* Corrigé : fond gris au lieu de blanc */
+  background-color: #1a1a2e !important;
   height: 70px!important;
   position: fixed!important;
   top: 0!important;
@@ -347,12 +375,11 @@ Header Style
   -o-transition: all .5s ease 0s;
   transition: all .5s ease 0s;
   display: none;
-  /* Surcharge pour garder le fond gris même en sticky/scrolled */
-  backdrop-filter: blur(10px); /* Optionnel : effet flou pour modernité */
+  backdrop-filter: blur(10px);
 }
 
 .header-area {
-  background-color: #1a1a2e; /* Corrigé : fond gris par défaut */
+  background-color: #1a1a2e;
   position: absolute;
   height: 70px;
   top: 15px;
@@ -363,11 +390,11 @@ Header Style
   -moz-transition: all .5s ease 0s;
   -o-transition: all .5s ease 0s;
   transition: all .5s ease 0s;
-  width: 100%; /* Assure la pleine largeur */
+  width: 100%;
 }
 
 .header-area .container {
-  max-width: none; /* Corrigé : pleine largeur du conteneur header */
+  max-width: none;
   width: 100%;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -632,12 +659,11 @@ Header Style
   color: #fff;
 }
 
-/* Surcharge pour header sticky et scrolled (si JS ajoute .scrolled) */
 .header-area.header-sticky,
 .header-area.header-sticky.scrolled,
 .header-area.scrolled {
     background-color: #1a1a2e !important;
-    backdrop-filter: blur(10px); /* Effet flou optionnel pour modernité sans blanc */
+    backdrop-filter: blur(10px);
 }
 
 @media (max-width: 1200px) {
@@ -648,6 +674,13 @@ Header Style
   .header-area .main-nav:before {
     display: none;
   }
+  .header-area .main-nav .logooo {
+    margin-right: 30px;
+    border-right: none;
+  }
+  .gaming-library .item ul li {
+    width: 16%;
+  }
 }
 
 @media (max-width: 992px) {
@@ -655,7 +688,7 @@ Header Style
     top: 0;
   }
   .header-area .main-nav {
-    background-color: #1a1a2e; /* Corrigé : fond gris en mobile */
+    background-color: #1a1a2e;
     border-radius: 0px;
   }
   .header-area .main-nav .nav {
@@ -687,7 +720,7 @@ Header Style
     width: 100%;
   }
   .header-area {
-    background-color: #1a1a2e; /* Corrigé : fond gris en mobile */
+    background-color: #1a1a2e;
     padding: 0px 15px;
     height: 80px;
     box-shadow: none;
@@ -781,6 +814,33 @@ Header Style
   }
   .header-area .main-nav .nav li.submenu:hover ul, .header-area .main-nav .nav li.submenu:focus ul {
     height: 0px;
+  }
+  .background-header {
+    display: inline-block;
+  }
+  .header-area .main-nav #search {
+    display: none;
+  }
+  .heading-section h4 {
+    font-size: 20px;
+  }
+  .gaming-library .item ul li {
+    width: 48% !important;
+  }
+  .gaming-library .item ul li:last-child {
+    text-align: left;
+  }
+  .featured-games {
+    margin-bottom: 60px;
+  }
+  .start-stream .item {
+    margin: 15px 0px;
+  }
+  .feature-banner .thumb {
+    margin-top: 30px;
+  }
+  .main-profile .main-info {
+    margin: 45px 0px;
   }
 }
 
@@ -886,6 +946,10 @@ Most Popular Style
   margin-bottom: -53px;
 }
 
+.most-popular .item .inner-item {
+  margin-bottom: 20px;
+}
+
 /* 
 ---------------------------------------------
 Gaming Library Style
@@ -950,28 +1014,6 @@ Gaming Library Style
 .gaming-library .main-button {
   text-align: center;
   margin-bottom: -53px;
-}
-
-/* 
----------------------------------------------
-Footer Style
---------------------------------------------- 
-*/
-
-footer p {
-  text-align: center;
-  padding: 30px 0px;
-  color: #fff;
-  font-weight: 300;
-}
-
-footer p a {
-  color: #fff;
-  transition: all .3s;
-}
-
-footer p a:hover {
-  color: #ec6090;
 }
 
 /* 
@@ -1488,6 +1530,8 @@ Top Streamers Style
   border-bottom: 1px solid #353637;
   margin-bottom: 25px;
   padding-bottom: 25px;
+  margin-top: 0;
+  padding: 15px 0;
 }
 
 .top-streamers ul li:last-child {
@@ -1651,14 +1695,158 @@ Profile Style
 
 /* 
 ---------------------------------------------
-Responsive Style
+Events Section - Big Posters Grid
+--------------------------------------------- 
+*/
+.events-section {
+  padding: 60px 0;
+  background-color: #1f2122;
+  border-radius: 23px;
+  margin: 60px 0;
+}
+
+.events-section .heading-section h4 {
+  color: #e75e8d;
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.events-section p {
+  color: #ccc;
+  font-size: 16px;
+}
+
+.events-grid {
+  margin-bottom: 40px;
+}
+
+.event-card {
+  background: #27292a;
+  border-radius: 23px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.event-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(231, 94, 141, 0.2);
+}
+
+.event-poster {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.event-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.event-card:hover .event-overlay {
+  opacity: 1;
+}
+
+.live-badge {
+  background: #e75e8d;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px;
+  align-self: flex-start;
+}
+
+.event-content {
+  padding: 25px;
+}
+
+.event-title {
+  color: #fff;
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.event-meta span i {
+  color: #e75e8d;
+  margin-right: 5px;
+}
+
+.event-desc {
+  color: #999;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.events-section .main-button a {
+  background: #e75e8d;
+  color: #fff;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.events-section .main-button a:hover {
+  background: #fff;
+  color: #e75e8d;
+  transform: translateY(-2px);
+}
+
+/* 
+---------------------------------------------
+Footer Style
 --------------------------------------------- 
 */
 
-body {
-  overflow-x: hidden;
-  padding-top: 80px; /* height of header - conservé de votre ajout */
+footer p {
+  text-align: center;
+  padding: 30px 0px;
+  color: #fff;
+  font-weight: 300;
 }
+
+footer p a {
+  color: #fff;
+  transition: all .3s;
+}
+
+footer p a:hover {
+  color: #ec6090;
+}
+
+/* 
+---------------------------------------------
+Responsive Style
+--------------------------------------------- 
+*/
 
 @media (max-width: 767px) {
   body .page-content {
@@ -1704,68 +1892,10 @@ body {
     max-height: 100%;
     min-height: 100%;
   }
-  .most-popular .item .inner-item {
-    margin-bottom: 20px;
+  .event-poster { 
+    height: 220px; 
+  }
+  .event-meta { 
+    justify-content: center; 
   }
 }
-
-@media (max-width: 992px) {
-  .background-header {
-  display: inline-block;
-  }
-  .header-area .main-nav #search {
-    display: none;
-  }
-  .heading-section h4 {
-    font-size: 20px;
-  }
-  .gaming-library .item ul li {
-    width: 48% !important;
-  }
-  .gaming-library .item ul li:last-child {
-    text-align: left;
-  }
-  .featured-games {
-    margin-bottom: 60px;
-  }
-  .start-stream .item {
-    margin: 15px 0px;
-  }
-  .feature-banner .thumb {
-    margin-top: 30px;
-  }
-  .main-profile .main-info {
-    margin: 45px 0px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .header-area .main-nav .nav li {
-    padding-right: 5px;
-    padding-left: 5px;
-  }
-  .header-area .main-nav .logooo {
-    margin-right: 30px;
-    border-right: none;
-  }
-  .gaming-library .item ul li {
-    width: 16%;
-  }
-}
-.logooo{
-  width: 10px;
-  height: 75px;
-  display: flex;
-  margin: 0 auto;
-  margin-bottom: 50px;
-  margin-right: 30px;
-
-}
-small{
-  color: red;
-}
-.content{ 
-  color: white;
-}
-
-/* Keep header fixed at the top - conservé de votre ajout, mais déjà géré par .header-sticky */

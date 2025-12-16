@@ -40,7 +40,7 @@ if ($_POST) {
 
             // Sinon, redirection classique (si accès direct)
             $success = "Don ajouté avec succès !";
-            // header('Location: index.php');
+            // header('Location: indexsinda.php');
         } else {
             $error = "Montant et association sont obligatoires.";
         }
@@ -110,7 +110,7 @@ $associations = config::getConnexion()->query("SELECT id_association, name FROM 
 
             <div class="text-center">
                 <button type="submit" class="btn btn-success btn-lg">Ajouter le Don</button>
-                <a href="index.php" class="btn btn-secondary btn-lg ms-3">Retour</a>
+                <a href="indexsinda.php" class="btn btn-secondary btn-lg ms-3">Retour</a>
             </div>
         </form>
     </div>

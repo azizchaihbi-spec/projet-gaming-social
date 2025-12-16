@@ -6,7 +6,7 @@ require_once '../../models/Challenge.php';
 $challengeC = new ChallengeController();
 
 if (!isset($_GET['id'])) {
-    header("Location: ../../views/backoffice/index.php");
+    header("Location: ../../views/backoffice/indexsinda.php");
     exit;
 }
 
@@ -171,7 +171,7 @@ try {
         
         <!-- HEADER AVEC RETOUR -->
         <div class="mb-8 flex items-center justify-between">
-            <a href="index.php" class="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition group">
+            <a href="indexsinda.php" class="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition group">
                 <i data-feather="arrow-left" class="group-hover:-translate-x-1 transition"></i>
                 <span class="font-medium">Retour au Dashboard</span>
             </a>
@@ -335,7 +335,7 @@ try {
                     </button>
                     
                     <a 
-                        href="index.php" 
+                        href="indexsinda.php" 
                         class="flex-1 btn-secondary text-white font-bold py-4 px-8 rounded-xl text-lg flex items-center justify-center gap-3 text-center">
                         <i data-feather="x-circle" class="w-5 h-5"></i>
                         <span>Annuler</span>
@@ -510,7 +510,7 @@ try {
                     
                     // Redirection après 2 secondes
                     setTimeout(() => {
-                        window.location.href = 'index.php?success=challenge_updated';
+                        window.location.href = 'indexsinda.php?success=challenge_updated';
                     }, 2000);
                 } else {
                     showMessage('error', data.message);

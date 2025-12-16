@@ -101,7 +101,7 @@ if ($selectedAssoc) {
         
         <!-- HEADER -->
         <div class="mb-8 flex items-center justify-between">
-            <a href="index.php" class="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition group">
+            <a href="indexsinda.php" class="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition group">
                 <i data-feather="arrow-left" class="group-hover:-translate-x-1 transition"></i>
                 <span class="font-medium">Retour au Dashboard</span>
             </a>

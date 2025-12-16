@@ -79,7 +79,7 @@ try {
                             <li><a href="streams.html">Streams Solidaires</a></li>
                             <li><a href="association.php" class="active">Associations</a></li>
                             <li><a href="don.php">Dons & Challenges</a></li>
-                            <li><a href="../backoffice/index.php">Back-Office</a></li>
+                            <li><a href="../backoffice/indexsinda.php">Back-Office</a></li>
                             <li><a href="profile.html">Profil</a></li>
                         </ul>
                         <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>

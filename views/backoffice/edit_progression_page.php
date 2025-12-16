@@ -8,7 +8,7 @@ $progression = floatval($_GET['progression'] ?? 0);
 $objectif = floatval($_GET['objectif'] ?? 0);
 
 if ($id <= 0) {
-    header('Location: index.php');
+    header('Location: indexsinda.php');
     exit;
 }
 
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pourcentage = $objectif > 0 ? min(100, round(($progression / $objectif) * 100, 2)) : 0;
             
             // Redirection après 2 secondes
-            header("refresh:2;url=index.php");
+            header("refresh:2;url=indexsinda.php");
         } else {
             $message = 'Erreur lors de la mise à jour';
             $messageType = 'error';
@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn btn-save flex-1">
                     💾 Sauvegarder
                 </button>
-                <a href="index.php" class="btn btn-cancel flex-1 text-center">
+                <a href="indexsinda.php" class="btn btn-cancel flex-1 text-center">
                     ❌ Annuler
                 </a>
             </div>
