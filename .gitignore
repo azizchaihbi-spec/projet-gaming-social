@@ -1,5 +1,5 @@
-# Dépendances
-vendor/
+# Dépendances (commenté pour push vendor/)
+# vendor/
 
 # Fichiers de configuration sensibles
 .env
