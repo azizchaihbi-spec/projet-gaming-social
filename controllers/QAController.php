@@ -9,6 +9,11 @@ class QAController {
     }
 
     public function index() {
+        // S'assurer que la session est démarrée
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         $filter = $_GET['filter'] ?? 'all';
         $publications = $this->publicationModel->getAllPublications($filter);
         $forums = $this->publicationModel->getForums();

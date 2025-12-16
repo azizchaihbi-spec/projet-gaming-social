@@ -1,6 +1,11 @@
-// Utiliser le chemin correct avec le nom du projet
-const API_URL = '/projet-gaming-social-maya/api.php';
-const MY_USER_ID = 1; // ← plus tard : $_SESSION['id']
+// Utiliser le chemin relatif correct
+const API_URL = '../../api.php';
+const MY_USER_ID = window.CURRENT_USER_ID || 1; // Récupéré depuis PHP
+
+// Debug pour vérifier l'ID utilisateur
+console.log('MY_USER_ID:', MY_USER_ID);
+console.log('CURRENT_USER_ID from window:', window.CURRENT_USER_ID);
+console.log('CURRENT_USER_NAME from window:', window.CURRENT_USER_NAME);
 
 function loadPosts() {
     const filter = document.getElementById('filterCommunity').value;
@@ -40,6 +45,11 @@ function loadPosts() {
 
             posts.forEach(p => {
                 const isMyPost = p.id_auteur == MY_USER_ID;
+                
+                // Debug pour vérifier les IDs (seulement pour les 3 premiers posts)
+                if (posts.indexOf(p) < 3) {
+                    console.log(`Post ${p.id_publication}: auteur=${p.id_auteur}, current_user=${MY_USER_ID}, isMyPost=${isMyPost}`);
+                }
 
                 let answersHTML = '';
                 p.answers.forEach(a => {
@@ -104,6 +114,14 @@ function loadPosts() {
                     stickerHtml = `<div class="sticker-display" style="margin: 15px 0;"><img src="${p.sticker_url}" alt="Sticker" style="max-width: 200px; border-radius: 8px;"></div>`;
                 }
                 
+                // Ajouter l'image uploadée si présente
+                let imageHtml = '';
+                if (p.image) {
+                    // Corriger le chemin de l'image depuis views/frontoffice/
+                    const imagePath = p.image.startsWith('views/') ? '../../' + p.image : p.image;
+                    imageHtml = `<div class="image-display" style="margin: 15px 0;"><img src="${imagePath}" alt="Image" style="max-width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" onerror="this.style.display='none'; console.log('Image non trouvée: ${imagePath}');"></div>`;
+                }
+                
                 card.innerHTML = `
                     <div class="question-title">
                         ${p.titre} 
@@ -112,6 +130,7 @@ function loadPosts() {
                     <div class="question-author">par ${p.prenom || 'Anonyme'} • ${new Date(p.date_publication).toLocaleString('fr-FR')}</div>
                     <div class="question-content">${contentHtml}</div>
                     ${emojisHtml}
+                    ${imageHtml}
                     ${gifHtml}
                     ${stickerHtml}
 
@@ -278,8 +297,111 @@ function vote(id, type) {
         .then(() => loadPosts());
 }
 
-function editPost(id) { /* ton code existant */ }
-function deletePost(id) { /* ton code existant */ }
+function editPost(id) {
+    // Récupérer les données actuelles du post
+    const postCard = document.querySelector(`[onclick*="editPost(${id})"]`).closest('.question-card');
+    const titleElement = postCard.querySelector('.question-title');
+    const contentElement = postCard.querySelector('.question-content');
+    
+    // Extraire le titre (sans le badge de communauté)
+    const currentTitle = titleElement.textContent.split('\n')[0].trim();
+    const currentContent = contentElement.textContent.trim();
+    
+    // Créer le formulaire d'édition
+    const editForm = document.createElement('div');
+    editForm.id = `editForm-${id}`;
+    editForm.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(10,10,30,0.98); border: 2px solid #6e6eff; border-radius: 15px; padding: 30px; z-index: 1000; width: 90%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);';
+    
+    editForm.innerHTML = `
+        <h3 style="color: #6e6eff; margin-bottom: 20px;">✏️ Modifier la publication</h3>
+        <input type="text" id="editTitle-${id}" value="${currentTitle}" 
+               style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #6e6eff; border-radius: 8px;" 
+               placeholder="Titre de la publication">
+        <textarea id="editContent-${id}" rows="6" 
+                  style="width: 100%; padding: 12px; margin-bottom: 20px; background: #111; color: white; border: 1px solid #6e6eff; border-radius: 8px;" 
+                  placeholder="Contenu de la publication">${currentContent}</textarea>
+        <div style="text-align: right;">
+            <button onclick="saveEditPost(${id})" 
+                    style="background: #6e6eff; color: white; padding: 12px 24px; border: none; border-radius: 25px; margin-right: 10px; cursor: pointer; font-weight: bold;">
+                💾 Sauvegarder
+            </button>
+            <button onclick="cancelEditPost(${id})" 
+                    style="background: #666; color: white; padding: 12px 20px; border: none; border-radius: 25px; cursor: pointer;">
+                ❌ Annuler
+            </button>
+        </div>
+    `;
+    
+    // Ajouter un overlay sombre
+    const overlay = document.createElement('div');
+    overlay.id = `overlay-${id}`;
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999;';
+    overlay.onclick = () => cancelEditPost(id);
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(editForm);
+}
+
+function saveEditPost(id) {
+    const titre = document.getElementById(`editTitle-${id}`).value.trim();
+    const contenu = document.getElementById(`editContent-${id}`).value.trim();
+    
+    if (!titre || !contenu) {
+        alert('❌ Le titre et le contenu sont obligatoires !');
+        return;
+    }
+    
+    fetch(API_URL + '?action=edit_post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, titre: titre, contenu: contenu })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('✅ Publication modifiée avec succès !');
+            cancelEditPost(id);
+            loadPosts(); // Recharger les posts
+        } else {
+            alert('❌ Erreur lors de la modification: ' + (result.error || 'Erreur inconnue'));
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('❌ Erreur réseau lors de la modification');
+    });
+}
+
+function cancelEditPost(id) {
+    const overlay = document.getElementById(`overlay-${id}`);
+    const editForm = document.getElementById(`editForm-${id}`);
+    
+    if (overlay) overlay.remove();
+    if (editForm) editForm.remove();
+}
+
+function deletePost(id) {
+    if (confirm('🗑️ Êtes-vous sûr de vouloir supprimer cette publication ?\n\nCette action est irréversible et supprimera également toutes les réponses associées.')) {
+        fetch(API_URL + '?action=delete_post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert('✅ Publication supprimée avec succès !');
+                loadPosts(); // Recharger les posts
+            } else {
+                alert('❌ Erreur lors de la suppression: ' + (result.error || 'Erreur inconnue'));
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('❌ Erreur réseau lors de la suppression');
+        });
+    }
+}
 
 // === ANALYSE DE SENTIMENT ===
 async function analyzeSentiments() {
@@ -289,15 +411,9 @@ async function analyzeSentiments() {
         const text = badge.dataset.text;
         if (!text) return;
         
-        try {
-            // Analyser le sentiment avec l'API Hugging Face
-            const sentiment = await analyzeSentimentAPI(text);
-            updateSentimentBadge(badge, sentiment);
-        } catch (error) {
-            // Fallback: analyse locale simple
-            const sentiment = analyzeSentimentLocal(text);
-            updateSentimentBadge(badge, sentiment);
-        }
+        // Utiliser seulement l'analyse locale pour éviter les erreurs CORS
+        const sentiment = analyzeSentimentLocal(text);
+        updateSentimentBadge(badge, sentiment);
     });
 }
 

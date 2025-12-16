@@ -1,22 +1,41 @@
 <?php
 // Header commun FrontOffice
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
-<nav class="bg-gray-900/80 backdrop-blur-lg border-b border-cyan-500/30 py-4 px-6">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-            <span class="text-cyan-400 font-bold text-2xl font-orbitron">PLAY2HELP</span>
-            <span class="text-gray-400">|</span>
-            <a href="index.php" class="px-4 py-2 rounded-lg font-semibold bg-cyan-700 hover:bg-cyan-600 text-white transition">Accueil</a>
-            <a href="index.php?page=front" class="px-4 py-2 rounded-lg font-semibold bg-purple-700 hover:bg-purple-600 text-white transition">Forum Q&A</a>
-        </div>
-        <div class="flex items-center space-x-4">
-            <?php if (isset($_SESSION['user'])): ?>
-                <a href="profile.php" class="px-4 py-2 rounded-lg font-semibold bg-emerald-700 hover:bg-emerald-600 text-white transition">Profil</a>
-                <a href="logout.php" class="px-4 py-2 rounded-lg font-semibold bg-red-700 hover:bg-red-600 text-white transition">Déconnexion</a>
-            <?php else: ?>
-                <a href="register.php" class="px-4 py-2 rounded-lg font-semibold bg-emerald-700 hover:bg-emerald-600 text-white transition">Inscription</a>
-                <a href="login.php" class="px-4 py-2 rounded-lg font-semibold bg-cyan-700 hover:bg-cyan-600 text-white transition">Connexion</a>
-            <?php endif; ?>
+<header id="mainHeader" class="header-area header-sticky">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-12">
+                <nav class="main-nav d-flex align-items-center justify-content-between">
+                    <a href="Accueil.php" class="logo">
+                        <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
+                    </a>
+                    <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
+                        <form id="search" action="search.html" class="d-flex align-items-center">
+                            <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
+                            <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <ul class="nav d-flex align-items-center mb-0">
+                        <li><a href="Accueil.php">Accueil</a></li>
+                        <li><a href="index.php">Forum</a></li>
+                        <li><a href="browse.php">Événements</a></li>
+                        <li><a href="streams.php">Streams Solidaires</a></li>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <li><a href="profile.php">Profil</a></li>
+                            <li><a href="logout.php">Déconnexion</a></li>
+                        <?php else: ?>
+                            <li><a href="register.php">Inscription</a></li>
+                            <li><a href="login.php">Connexion</a></li>
+                        <?php endif; ?>
+                    </ul>
+                    <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
+                </nav>
+            </div>
         </div>
     </div>
-</nav>
+</header>

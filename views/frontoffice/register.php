@@ -34,7 +34,7 @@ if (isset($_SESSION['user'])) {
             <div class="row align-items-center">
                 <div class="col-12">
                     <nav class="main-nav d-flex align-items-center justify-content-between">
-                        <a href="index.html" class="logo">
+                        <a href="Accueil.php" class="logo">
                             <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
                         </a>
                         <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
@@ -47,10 +47,10 @@ if (isset($_SESSION['user'])) {
                             </form>
                         </div>
                         <ul class="nav d-flex align-items-center mb-0">
-                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="Accueil.php">Accueil</a></li>
                             <li><a href="index.php">Forum</a></li>
-                            <li><a href="browse.html">Événements</a></li>
-                            <li><a href="streams.html">Streams Solidaires</a></li>
+                            <li><a href="browse.php">Événements</a></li>
+                            <li><a href="streams.php">Streams Solidaires</a></li>
                             <li><a href="association.html">Associations</a></li>
                             <li><a href="don.html">Dons & Challenges</a></li>
                             <?php if (isset($_SESSION['user'])): ?>
@@ -58,6 +58,7 @@ if (isset($_SESSION['user'])) {
                                 <li><a href="logout.php">Déconnexion</a></li>
                             <?php else: ?>
                                 <li><a href="login.php">Connexion</a></li>
+                                <li><a href="register.php" class="active">Inscription</a></li>
                             <?php endif; ?>
                         </ul>
                         <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>

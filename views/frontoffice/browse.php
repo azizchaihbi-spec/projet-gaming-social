@@ -1,3 +1,8 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,32 +17,55 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/cookie-banner.css">
     <link rel="stylesheet" href="assets/css/dons-assoc.css">
     <link rel="stylesheet" href="assets/css/event.css">
     <link rel="stylesheet" href="assets/css/browse.css">
 </head>
 <body>
 
-    <header class="header-area header-sticky">
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header id="mainHeader" class="header-area header-sticky">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-12">
-                    <nav class="main-nav">
-                        <a href="Accueil.html" class="logo">
-                            <img src="assets/images/logooo.png" alt="Play to Help">
+                    <nav class="main-nav d-flex align-items-center justify-content-between">
+                        <a href="Accueil.php" class="logo">
+                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
                         </a>
-                        <div class="search-input">
-                            <form id="search" action="search.html">
-                                <input type="text" placeholder="Rechercher association, don ou challenge..." name="q" />
-                                <i class="fa fa-search"></i>
+                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
+                            <form id="search" action="search.html" class="d-flex align-items-center">
+                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
+                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                    <span class="sr-only">Rechercher</span>
+                                </button>
                             </form>
                         </div>
-                        <ul class="nav">
-                            <li><a href="Accueil.html">Accueil</a></li>
-                            <li><a href="browse.html" class="active">Événements</a></li>
-                            <li><a href="streams.html">Streams Solidaires</a></li>
+                        <ul class="nav d-flex align-items-center mb-0">
+                            <li><a href="Accueil.php">Accueil</a></li>
+                            <li><a href="index.php">Forum</a></li>
+                            <li><a href="browse.php" class="active">Événements</a></li>
+                            <li><a href="streams.php">Streams Solidaires</a></li>
+                            <li><a href="association.html">Associations</a></li>
+                            <li><a href="don.html">Dons & Challenges</a></li>
+                            <?php if (isset($_SESSION['user'])): ?>
+                                <li><a href="profile.php">Profil</a></li>
+                                <li><a href="logout.php">Déconnexion</a></li>
+                            <?php else: ?>
+                                <li><a href="login.php">Connexion</a></li>
+                                <li><a href="register.php">Inscription</a></li>
+                            <?php endif; ?>
                         </ul>
-                        <a class='menu-trigger'><span>Menu</span></a>
+                        <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
                     </nav>
                 </div>
             </div>
@@ -70,6 +98,7 @@
                                     <option value="">Tous les jeux</option>
                                 </select>
                             </div>
+
                             <div class="col-md-3">
                                 <label class="form-label text-white-50" for="filterStatus">Statut</label>
                                 <select id="filterStatus" class="form-select">
@@ -116,34 +145,34 @@
         </div>
     </footer>
 
-        <!-- Event Details Modal -->
-        <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content bg-dark text-white">
-                    <div class="modal-header border-secondary">
-                        <h5 class="modal-title" id="eventModalTitle">Événement</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-md-5">
-                                <img id="eventModalImg" src="" alt="visuel" class="img-fluid rounded" style="object-fit: cover; width: 100%; height: 100%; min-height: 220px;">
+    <!-- Event Details Modal -->
+    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="eventModalTitle">Événement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <img id="eventModalImg" src="" alt="visuel" class="img-fluid rounded" style="object-fit: cover; width: 100%; height: 100%; min-height: 220px;">
+                        </div>
+                        <div class="col-md-7 d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-2 text-uppercase text-secondary small">
+                                <span id="eventModalTheme" class="badge bg-gradient">Thème</span>
+                                <span id="eventModalDate"></span>
                             </div>
-                            <div class="col-md-7 d-flex flex-column gap-2">
-                                <div class="d-flex align-items-center gap-2 text-uppercase text-secondary small">
-                                    <span id="eventModalTheme" class="badge bg-gradient">Thème</span>
-                                    <span id="eventModalDate"></span>
-                                </div>
-                                <div class="text-white-50" id="eventModalDescription" style="white-space: pre-wrap;"></div>
-                            </div>
+                            <div class="text-white-50" id="eventModalDescription" style="white-space: pre-wrap;"></div>
                         </div>
                     </div>
-                    <div class="modal-footer border-secondary">
-                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Fermer</button>
-                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
+    </div>
 
     <!-- Registration Modal -->
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
@@ -214,9 +243,23 @@
     <script src="assets/js/popup.js"></script>
     <script src="assets/js/custom.js"></script>
     <script src="assets/js/events.js"></script>
-
-    <!-- Swiper + Events Carousel (clean & correct order) -->
     <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
     <script src="assets/js/event.js"></script>
+    <script>
+      // Cacher le preloader dès que la page est prête (max 1.5s)
+      window.addEventListener('load', function() {
+        var preloader = document.getElementById('js-preloader');
+        if (preloader) {
+          preloader.classList.add('loaded');
+        }
+      });
+      // Fallback rapide si le load prend trop de temps
+      setTimeout(function() {
+        var preloader = document.getElementById('js-preloader');
+        if (preloader) {
+          preloader.classList.add('loaded');
+        }
+      }, 1500);
+    </script>
 </body>
 </html>

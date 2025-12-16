@@ -38,20 +38,8 @@ try {
 
     <div class="scanline"></div>
 
-    <!-- Navigation -->
-    <nav class="bg-gray-900/80 backdrop-blur-lg border-b border-cyan-500/30 py-4 px-6">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <a href="../dashboard.php" class="text-2xl font-bold text-cyan-400 font-orbitron hover:text-cyan-300 transition">PLAY2HELP</a>
-                <span class="text-gray-400">|</span>
-                <span class="text-gray-300">Gestion Streams</span>
-            </div>
-            <div class="flex items-center space-x-6">
-                <a href="../events/browse.php" class="text-cyan-400 hover:text-cyan-300 transition">Événements</a>
-                <a href="../../../frontoffice/browse.html" class="text-cyan-400 hover:text-cyan-300 transition">Site Principal</a>
-            </div>
-        </div>
-    </nav>
+    <!-- Header commun -->
+    <?php include __DIR__ . '/../includes/header.php'; ?>
 
     <?php if (isset($error)): ?>
         <div class="container mx-auto px-6 py-4">

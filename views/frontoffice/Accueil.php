@@ -1,3 +1,8 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,32 +25,46 @@
             <div class="dots"><span></span><span></span><span></span></div>
         </div>
     </div>
-    <header class="header-area header-sticky">
+
+    <!-- HEADER -->
+    <header id="mainHeader" class="header-area header-sticky">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-12">
-                    <nav class="main-nav">
-                        <a href="Accueil.html" class="logo">
-                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire">
+                    <nav class="main-nav d-flex align-items-center justify-content-between">
+                        <a href="Accueil.php" class="logo">
+                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
                         </a>
-                        <div class="search-input">
-                            <form id="search" action="search.html">
-                                <input type="text" placeholder="Rechercher association, don ou challenge..." name="q" />
-                                <i class="fa fa-search"></i>
+                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
+                            <form id="search" action="search.html" class="d-flex align-items-center">
+                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
+                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                    <span class="sr-only">Rechercher</span>
+                                </button>
                             </form>
                         </div>
-                        <ul class="nav">
-                            <li><a href="Accueil.html">Accueil</a></li>
-                            <li><a href="browse.html">Événements</a></li>
-                            <li><a href="streams.html">Streams Solidaires</a></li>
+                        <ul class="nav d-flex align-items-center mb-0">
+                            <li><a href="Accueil.php" class="active">Accueil</a></li>
+                            <li><a href="index.php">Forum</a></li>
+                            <li><a href="browse.php">Événements</a></li>
+                            <li><a href="streams.php">Streams Solidaires</a></li>
+                            <li><a href="association.html">Associations</a></li>
+                            <li><a href="don.html">Dons & Challenges</a></li>
+                            <?php if (isset($_SESSION['user'])): ?>
+                                <li><a href="profile.php">Profil</a></li>
+                                <li><a href="logout.php">Déconnexion</a></li>
+                            <?php else: ?>
+                                <li><a href="login.php">Connexion</a></li>
+                                <li><a href="register.php">Inscription</a></li>
+                            <?php endif; ?>
                         </ul>
-                        <a class='menu-trigger'><span>Menu</span></a>
+                        <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
                     </nav>
                 </div>
             </div>
         </div>
     </header>
-
 
   <div class="container">
     <div class="row">
@@ -60,7 +79,7 @@
                   <h6>Welcome To Play to Help</h6>
                   <h4><em>Browse</em> Our Popular Games Here</h4>
                   <div class="main-button">
-                    <a href="browse.html">Browse Now</a>
+                    <a href="browse.php">Browse Now</a>
                   </div>
                 </div>
               </div>
@@ -164,7 +183,7 @@
                   </div>
                   <div class="col-lg-12">
                     <div class="main-button">
-                      <a href="browse.html">Discover Popular</a>
+                      <a href="browse.php">Discover Popular</a>
                     </div>
                   </div>
                 </div>
@@ -212,7 +231,7 @@
             </div>
             <div class="col-lg-12">
               <div class="main-button">
-                <a href="streams.html">Voir les Streams</a>
+                <a href="streams.php">Voir les Streams</a>
               </div>
             </div>
           </div>
@@ -227,26 +246,35 @@
       <div class="row">
         <div class="col-lg-12">
           <p>Copyright © 2036 <a href="#">Cyborg Gaming</a> Company. All rights reserved. 
-          
           <br>Design: <a href="https://templatemo.com" target="_blank" title="free CSS templates">TemplateMo</a>  Distributed By <a href="https://themewagon.com" target="_blank" >ThemeWagon</a></p>
         </div>
       </div>
     </div>
   </footer>
 
-
   <!-- Scripts -->
-  <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-
   <script src="assets/js/isotope.min.js"></script>
   <script src="assets/js/owl-carousel.js"></script>
   <script src="assets/js/tabs.js"></script>
   <script src="assets/js/popup.js"></script>
   <script src="assets/js/custom.js"></script>
-
-
-  </body>
-
+  <script>
+    // Cacher le preloader dès que la page est prête (max 1.5s)
+    window.addEventListener('load', function() {
+      var preloader = document.getElementById('js-preloader');
+      if (preloader) {
+        preloader.classList.add('loaded');
+      }
+    });
+    // Fallback rapide
+    setTimeout(function() {
+      var preloader = document.getElementById('js-preloader');
+      if (preloader) {
+        preloader.classList.add('loaded');
+      }
+    }, 1500);
+  </script>
+</body>
 </html>

@@ -58,20 +58,8 @@ if (isset($_GET['deleted']) && $_GET['deleted'] === 'success') {
 
     <div class="scanline"></div>
 
-    <!-- Navigation -->
-    <nav class="bg-gray-900/80 backdrop-blur-lg border-b border-cyan-500/30 py-4 px-6">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <a href="dashboard.php" class="text-2xl font-bold text-cyan-400 font-orbitron hover:text-cyan-300 transition">PLAY2HELP</a>
-                <span class="text-gray-400">|</span>
-                <span class="text-gray-300">Backoffice Unifié</span>
-            </div>
-            <div class="flex items-center space-x-6">
-                <a href="stream/streamer_streams.php" class="text-purple-400 hover:text-purple-300 transition">📊 Statistiques Streamers</a>
-                <a href="../frontoffice/browse.html" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition">🌐 Frontoffice</a>
-            </div>
-        </div>
-    </nav>
+    <!-- Header commun -->
+    <?php include __DIR__ . '/includes/header.php'; ?>
 
     <?php if (isset($deleteMsg)): ?>
         <div class="container mx-auto px-6 py-4">

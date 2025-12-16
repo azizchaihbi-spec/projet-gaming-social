@@ -29,12 +29,25 @@ session_start();
             <div class="row align-items-center">
                 <div class="col-12">
                     <nav class="main-nav d-flex align-items-center justify-content-between">
-                        <a href="index.html" class="logo">
+                        <a href="Accueil.php" class="logo">
                             <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
                         </a>
+                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
+                            <form id="search" action="search.html" class="d-flex align-items-center">
+                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
+                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                    <span class="sr-only">Rechercher</span>
+                                </button>
+                            </form>
+                        </div>
                         <ul class="nav d-flex align-items-center mb-0">
-                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="Accueil.php">Accueil</a></li>
                             <li><a href="index.php">Forum</a></li>
+                            <li><a href="browse.php">Événements</a></li>
+                            <li><a href="streams.php">Streams Solidaires</a></li>
+                            <li><a href="association.html">Associations</a></li>
+                            <li><a href="don.html">Dons & Challenges</a></li>
                             <?php if (isset($_SESSION['user'])): ?>
                                 <li><a href="profile.php">Profil</a></li>
                                 <li><a href="logout.php">Déconnexion</a></li>

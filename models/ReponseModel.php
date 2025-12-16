@@ -8,9 +8,9 @@ class ReponseModel {
 
     public function getReponsesByPublication($idPublication) {
         try {
-            $sql = "SELECT r.*, u.prenom 
+            $sql = "SELECT r.*, u.first_name as prenom 
                     FROM reponse r 
-                    JOIN utilisateur u ON r.id_auteur = u.id_user 
+                    JOIN users u ON r.id_auteur = u.id 
                     WHERE r.id_publication = ? AND r.supprimee = 0 
                     ORDER BY r.date_reponse ASC";
             $stmt = $this->pdo->prepare($sql);

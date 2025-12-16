@@ -1,4 +1,13 @@
 <?php
+// Vérification de la session - redirection si non connecté
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
+
 // Routes front depuis le dossier frontoffice
 $basePath = dirname(__DIR__, 2);
 

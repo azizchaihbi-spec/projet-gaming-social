@@ -9,18 +9,18 @@ class PublicationModel {
     public function getAllPublications($filter = 'all') {
         try {
             if ($filter === 'all') {
-                $sql = "SELECT p.*, f.nom as forum_nom, u.prenom 
+                $sql = "SELECT p.*, f.nom as forum_nom, u.first_name as prenom 
                         FROM publication p 
                         JOIN forum f ON p.id_forum = f.id_forum 
-                        JOIN utilisateur u ON p.id_auteur = u.id_user 
+                        JOIN users u ON p.id_auteur = u.id 
                         WHERE p.supprimee = 0 
                         ORDER BY p.date_publication DESC";
                 $stmt = $this->pdo->query($sql);
             } else {
-                $sql = "SELECT p.*, f.nom as forum_nom, u.prenom 
+                $sql = "SELECT p.*, f.nom as forum_nom, u.first_name as prenom 
                         FROM publication p 
                         JOIN forum f ON p.id_forum = f.id_forum 
-                        JOIN utilisateur u ON p.id_auteur = u.id_user 
+                        JOIN users u ON p.id_auteur = u.id 
                         WHERE f.nom = ? AND p.supprimee = 0 
                         ORDER BY p.date_publication DESC";
                 $stmt = $this->pdo->prepare($sql);
@@ -143,15 +143,15 @@ public function getTotalPublications() {
 
 public function getAllPublicationsForAdmin($search = '') {
     try {
-        $sql = "SELECT p.*, f.nom as forum_nom, u.prenom, u.nom as auteur_nom,
+        $sql = "SELECT p.*, f.nom as forum_nom, u.first_name as prenom, u.last_name as auteur_nom,
                        (SELECT COUNT(*) FROM reponse r WHERE r.id_publication = p.id_publication AND r.supprimee = 0) as nb_reponses
                 FROM publication p 
                 JOIN forum f ON p.id_forum = f.id_forum 
-                JOIN utilisateur u ON p.id_auteur = u.id_user 
+                JOIN users u ON p.id_auteur = u.id 
                 WHERE p.supprimee = 0";
         
         if (!empty($search)) {
-            $sql .= " AND (p.titre LIKE ? OR p.contenu LIKE ? OR u.prenom LIKE ? OR u.nom LIKE ?)";
+            $sql .= " AND (p.titre LIKE ? OR p.contenu LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?)";
             $searchTerm = "%$search%";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
@@ -176,15 +176,15 @@ public function afficherPublicationsParForum($idForum) {
                        f.nom as forum_nom,
                        f.description as forum_description,
                        f.couleur as forum_couleur,
-                       u.prenom,
-                       u.nom as auteur_nom,
+                       u.first_name as prenom,
+                       u.last_name as auteur_nom,
                        (SELECT COUNT(*) 
                         FROM reponse r 
                         WHERE r.id_publication = p.id_publication 
                           AND r.supprimee = 0) as nb_reponses
                 FROM publication p
                 INNER JOIN forum f ON p.id_forum = f.id_forum
-                INNER JOIN utilisateur u ON p.id_auteur = u.id_user
+                INNER JOIN users u ON p.id_auteur = u.id
                 WHERE p.id_forum = ? 
                   AND p.supprimee = 0
                 ORDER BY p.date_publication DESC";

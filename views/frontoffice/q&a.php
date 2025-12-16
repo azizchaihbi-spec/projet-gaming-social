@@ -1,5 +1,17 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Charger les forums pour le select (seulement si pas déjà défini par le contrôleur)
+if (!isset($forums)) {
+    require_once __DIR__ . '/../../config/config.php';
+    require_once __DIR__ . '/../../models/PublicationModel.php';
+
+    $pdo = config::getConnexion();
+    $publicationModel = new PublicationModel($pdo);
+    $forums = $publicationModel->getForums();
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -126,7 +138,7 @@ session_start();
             <div class="row align-items-center">
                 <div class="col-12">
                     <nav class="main-nav d-flex align-items-center justify-content-between">
-                        <a href="index.html" class="logo">
+                        <a href="Accueil.php" class="logo">
                             <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
                         </a>
                         <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
@@ -139,10 +151,10 @@ session_start();
                             </form>
                         </div>
                         <ul class="nav d-flex align-items-center mb-0">
-                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="Accueil.php">Accueil</a></li>
                             <li><a href="index.php" class="active">Forum</a></li>
-                            <li><a href="browse.html">Événements</a></li>
-                            <li><a href="streams.html">Streams Solidaires</a></li>
+                            <li><a href="browse.php">Événements</a></li>
+                            <li><a href="streams.php">Streams Solidaires</a></li>
                             <li><a href="association.html">Associations</a></li>
                             <li><a href="don.html">Dons & Challenges</a></li>
                             <?php if (isset($_SESSION['user'])): ?>
@@ -183,7 +195,6 @@ session_start();
     <div class="ask-section">
       <h2>Poser une question</h2>
       <form id="newPost">
-        <input type="text" id="author" placeholder="Ton pseudo" >
         <input type="text" id="title" placeholder="Titre de la question" >
         <textarea id="content" rows="4" placeholder="Ta question..." ></textarea>
 
@@ -235,7 +246,7 @@ session_start();
         </select>
 
         <p><strong>Image (optionnel) :</strong></p>
-        <input type="file" id="imageInput" accept="image/*">
+        <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
         <label for="imageInput">Choisir une image</label>
         <!-- ZONE DE PRÉVISUALISATION -->
         <div id="preview" style="margin:15px 0; text-align:center;"></div>
@@ -249,25 +260,33 @@ session_start();
       document.getElementById('newPost').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const formData = {
-          titre: document.getElementById('title').value.trim(),
-          contenu: document.getElementById('content').value.trim(),
-          id_forum: document.getElementById('community').value,
-          emojis: window.usedEmojis || [],
-          gif_url: window.selectedGifUrl || null,
-          sticker_url: window.selectedStickerUrl || null
-        };
+        const titre = document.getElementById('title').value.trim();
+        const contenu = document.getElementById('content').value.trim();
+        const id_forum = document.getElementById('community').value;
+        const imageFile = document.getElementById('imageInput').files[0];
         
-        if (!formData.titre || !formData.contenu) {
+        if (!titre || !contenu) {
           alert('❌ Veuillez remplir le titre et le contenu !');
           return;
         }
         
+        // Utiliser FormData pour gérer l'upload d'image
+        const formData = new FormData();
+        formData.append('titre', titre);
+        formData.append('contenu', contenu);
+        formData.append('id_forum', id_forum);
+        formData.append('emojis', JSON.stringify(window.usedEmojis || []));
+        formData.append('gif_url', window.selectedGifUrl || '');
+        formData.append('sticker_url', window.selectedStickerUrl || '');
+        
+        if (imageFile) {
+          formData.append('image', imageFile);
+        }
+        
         try {
-          const response = await fetch('/projet-gaming-social-maya/api.php?action=create_publication', {
+          const response = await fetch('../../api.php?action=create_publication', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: formData // Pas de Content-Type header avec FormData
           });
           
           const result = await response.json();
@@ -300,6 +319,28 @@ session_start();
     </div>
   </div>
 
+  <!-- Passer l'ID utilisateur à JavaScript -->
+  <script>
+    // Debug session complet
+    <?php 
+    echo "console.log('=== DEBUG SESSION ===');";
+    echo "console.log('SESSION exists:', " . (isset($_SESSION) ? 'true' : 'false') . ");";
+    echo "console.log('SESSION user exists:', " . (isset($_SESSION['user']) ? 'true' : 'false') . ");";
+    if (isset($_SESSION['user'])) {
+        echo "console.log('SESSION user keys:', " . json_encode(array_keys($_SESSION['user'])) . ");";
+        echo "console.log('SESSION user:', " . json_encode($_SESSION['user']) . ");";
+    }
+    echo "console.log('=== FIN DEBUG ===');";
+    ?>
+    
+    // Récupérer l'ID utilisateur depuis la session PHP et les rendre globales
+    window.CURRENT_USER_ID = <?php echo isset($_SESSION['user']['id']) ? $_SESSION['user']['id'] : 'null'; ?>;
+    window.CURRENT_USER_NAME = "<?php echo isset($_SESSION['user']['username']) ? htmlspecialchars($_SESSION['user']['username']) : 'Anonyme'; ?>";
+    
+    console.log('CURRENT_USER_ID final:', window.CURRENT_USER_ID);
+    console.log('CURRENT_USER_NAME final:', window.CURRENT_USER_NAME);
+  </script>
+  
   <!-- Inclure votre fichier JavaScript externe -->
   <script src="assets/js/testq&a.js"></script>
   
@@ -727,7 +768,42 @@ Génère une réponse utile et amicale à cette question en 2-3 phrases.`;
       alert('✅ Réponse générée ! (Mode hors ligne)');
     }
 
-
+    // === PRÉVISUALISATION D'IMAGE ===
+    function previewImage(input) {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+      
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Vérifier la taille (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('❌ L\'image est trop lourde (max 5MB)');
+          input.value = '';
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.cssText = 'max-width: 300px; max-height: 200px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.innerHTML = '❌ Supprimer';
+          removeBtn.style.cssText = 'display: block; margin: 10px auto; padding: 5px 10px; background: #ff4757; color: white; border: none; border-radius: 5px; cursor: pointer;';
+          removeBtn.onclick = function() {
+            input.value = '';
+            preview.innerHTML = '';
+          };
+          
+          preview.appendChild(img);
+          preview.appendChild(removeBtn);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
 
     // === AJOUTER LE BOUTON AI AUX FORMULAIRES DE RÉPONSE ===
     // Cette fonction sera appelée quand un formulaire de réponse est créé
