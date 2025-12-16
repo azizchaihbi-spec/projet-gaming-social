@@ -5,7 +5,7 @@ ini_set('display_errors', 0); // Ne pas afficher les erreurs dans la réponse JS
 
 try {
     require_once __DIR__ . '/../../controllers/PaymentController.php';
-    require_once __DIR__ . '/../../config/db.php';
+    require_once __DIR__ . '/../../config/config.php';
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Erreur de chargement: ' . $e->getMessage()]);
     exit;

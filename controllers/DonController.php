@@ -1,5 +1,5 @@
 <?php
-require_once '../../config/db.php';        // Chemin correct depuis controllers/
+require_once '../../config/config.php';        // Chemin correct depuis controllers/
 require_once '../../models/Don.php';
 
 class DonController {

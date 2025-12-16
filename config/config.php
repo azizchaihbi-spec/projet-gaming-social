@@ -9,7 +9,7 @@ class config
             $servername="localhost";
             $username="root";
             $password ="";
-            $dbname="play-to-help";
+            $dbname="playtohelp_merged";
             try {
                 self::$pdo = new PDO("mysql:host=$servername;dbname=$dbname",
                         $username,
@@ -29,7 +29,7 @@ class config
 $pdo = config::getConnexion();
 
 // Créer aussi une connexion MySQLi pour compatibilité
-$conn = new mysqli("localhost", "root", "", "play-to-help");
+$conn = new mysqli("localhost", "root", "", "playtohelp_merged");
 if ($conn->connect_error) {
     die("Erreur de connexion: " . $conn->connect_error);
 }

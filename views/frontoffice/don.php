@@ -1,4 +1,36 @@
-<?php require_once '../../config/db.php'; ?>
+<?php 
+require_once '../../config/config.php'; 
+
+// Récupérer les dons récents depuis la base de données
+try {
+    $stmt = $pdo->query("
+        SELECT d.*, a.name as association_name 
+        FROM don d 
+        JOIN association a ON d.id_association = a.id_association 
+        ORDER BY d.date_don DESC 
+        LIMIT 10
+    ");
+    $dons_recents = $stmt->fetchAll();
+} catch (Exception $e) {
+    $dons_recents = [];
+    error_log("Erreur lors de la récupération des dons récents: " . $e->getMessage());
+}
+
+// Récupérer les 3 derniers challenges
+try {
+    $stmt = $pdo->query("
+        SELECT c.*, a.name as association_name 
+        FROM challenge c 
+        JOIN association a ON c.id_association = a.id_association 
+        ORDER BY c.id_challenge DESC 
+        LIMIT 3
+    ");
+    $challenges_epiques = $stmt->fetchAll();
+} catch (Exception $e) {
+    $challenges_epiques = [];
+    error_log("Erreur lors de la récupération des challenges épiques: " . $e->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -385,15 +417,94 @@
             box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
         }
 
-        /* ===== GRID CRÉATIF ===== */
-        .challenge-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+        /* ===== SECTIONS CRÉATIVES ===== */
+        .section-header-creative {
+            text-align: center;
+            margin: 60px 0 40px;
+            position: relative;
         }
 
-        /* ===== CARTES DON GLASSMORPHISM GAMING ===== */
+        .section-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            animation: iconFloat 3s ease-in-out infinite;
+            display: inline-block;
+            filter: drop-shadow(0 0 20px rgba(67, 233, 123, 0.6));
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #43e97b, #38f9d7, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(67, 233, 123, 0.5);
+        }
+
+        .section-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .section-line {
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #43e97b, #38f9d7, transparent);
+            margin: 0 auto;
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(67, 233, 123, 0.6);
+            animation: lineGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lineGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(67, 233, 123, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(67, 233, 123, 1);
+            }
+        }
+
+        /* ===== GRIDS CRÉATIVES ===== */
+        .dons-carousel-wrapper {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .dons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            perspective: 1000px;
+        }
+
+        .challenges-carousel-wrapper {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            perspective: 1000px;
+        }
+
+        /* ===== CARTES DON GLASSMORPHISM GAMING 3D ===== */
         .don-item {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
@@ -404,6 +515,8 @@
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         /* Effet de scan laser */
@@ -558,7 +671,7 @@
             margin: 0;
         }
 
-        /* ===== CARTES CHALLENGE FUTURISTES GAMING ===== */
+        /* ===== CARTES CHALLENGE FUTURISTES GAMING 3D ===== */
         .challenge-card {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
@@ -569,6 +682,8 @@
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         /* Effet de scan holographique */
@@ -1315,6 +1430,111 @@
             animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* ===== CARTES D'ACTIONS RAPIDES ===== */
+        .action-buttons-creative {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .action-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid;
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .action-card-don {
+            border-color: rgba(67, 233, 123, 0.5);
+            box-shadow: 0 20px 60px rgba(67, 233, 123, 0.2);
+        }
+
+        .action-card-challenge {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent 30%);
+            animation: rotate 6s linear infinite;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        .action-card:hover {
+            transform: translateY(-20px) scale(1.05);
+        }
+
+        .action-card-don:hover {
+            border-color: rgba(67, 233, 123, 1);
+            box-shadow: 
+                0 30px 80px rgba(67, 233, 123, 0.4),
+                0 0 60px rgba(67, 233, 123, 0.3),
+                inset 0 0 40px rgba(67, 233, 123, 0.1);
+        }
+
+        .action-card-challenge:hover {
+            border-color: rgba(102, 126, 234, 1);
+            box-shadow: 
+                0 30px 80px rgba(102, 126, 234, 0.4),
+                0 0 60px rgba(102, 126, 234, 0.3),
+                inset 0 0 40px rgba(102, 126, 234, 0.1);
+        }
+
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            animation: iconBounce 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-15px) scale(1.1);
+            }
+        }
+
+        .action-card h4 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .action-card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .action-card .btn {
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .hero-banner h2 {
@@ -1325,14 +1545,31 @@
                 font-size: 1rem;
             }
             
-            .challenge-grid {
+            .dons-grid, .challenges-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
+            }
+
+            .action-buttons-creative {
+                grid-template-columns: 1fr;
+                gap: 30px;
             }
             
             .btn-donate, .btn-challenge {
                 padding: 12px 30px;
                 font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section-icon {
+                font-size: 2rem;
+            }
+
+            .action-icon {
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -1368,9 +1605,9 @@
                             <li><a href="index.html">Accueil</a></li>
                             <li><a href="browse.html">Événements</a></li>
                             <li><a href="streams.html">Streams Solidaires</a></li>
-                            <li><a href="association.html">Associations</a></li>
+                            <li><a href="association.php">Associations</a></li>
                             <li><a href="don.php" class="active">Dons & Challenges</a></li>
-                            <li><a href="../../../play to help/views/backoffice/index.php">Back-Office</a></li>
+                            <li><a href="../backoffice/index.php">Back-Office</a></li>
                             <li><a href="profile.html">Profil</a></li>
                         </ul>
                         <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
@@ -1395,103 +1632,155 @@
         </div>
     </div>
 
-    <!-- GRID DE DONATIONS ET CHALLENGES -->
+    <!-- SECTIONS SÉPARÉES CRÉATIVES -->
     <div class="container">
-        <div class="row">
+        <!-- SECTION DONS RÉCENTS -->
+        <div class="row mb-5">
             <div class="col-lg-12">
-                <div class="page-content">
-                    <div class="live-stream">
-                        <div>
-                            <div class="header-section mb-4">
-                                <h4><em>Derniers</em> Dons & Challenges Solidaires</h4>
-                            </div>
-                        </div>
-                        <div class="challenge-grid" id="liste-dons">
-                            <!-- Tes dons statiques exactement comme tu les avais -->
+                <div class="section-header-creative">
+                    <div class="section-icon">💚</div>
+                    <h3 class="section-title">DONS RÉCENTS</h3>
+                    <div class="section-subtitle">Les héros qui changent le monde</div>
+                    <div class="section-line"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="dons-carousel-wrapper">
+                    <div class="dons-grid" id="liste-dons">
+                        <?php if (!empty($dons_recents)): ?>
+                            <?php foreach ($dons_recents as $index => $don): ?>
+                                <div class="item don-item">
+                                    <div class="thumb position-relative">
+                                        <img src="assets/images/challenge-1.png" alt="Don <?= htmlspecialchars($don['association_name']) ?>">
+                                        <div class="hover-effect">
+                                            <ul style="list-style:none; padding:0; margin:0;">
+                                                <li><?= number_format($don['montant'], 2, ',', ' ') ?>€</li>
+                                                <li><?= date('d/m/Y', strtotime($don['date_don'])) ?></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="down-content">
+                                        <div class="avatar">
+                                            <img src="assets/images/avatar-<?= sprintf('%02d', ($index % 4) + 1) ?>.jpg" alt="<?= htmlspecialchars($don['prenom'] ?: 'Anonyme') ?>">
+                                        </div>
+                                        <span><?= htmlspecialchars($don['prenom'] ?: 'Anonyme') ?> <?= htmlspecialchars($don['nom'] ?: '') ?></span>
+                                        <h4>Pour <?= htmlspecialchars($don['association_name']) ?></h4>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <!-- Affichage par défaut si aucun don -->
                             <div class="item don-item">
                                 <div class="thumb position-relative">
-                                    <img src="assets/images/challenge-1.png" alt="Don UNICEF">
+                                    <img src="assets/images/challenge-1.png" alt="Aucun don">
                                     <div class="hover-effect">
                                         <ul style="list-style:none; padding:0; margin:0;">
-                                            <li>50€</li>
-                                            <li>2025-11-09</li>
+                                            <li>Aucun don</li>
+                                            <li>pour le moment</li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="down-content">
                                     <div class="avatar">
-                                        <img src="assets/images/avatar-01.jpg" alt="Test User">
+                                        <img src="assets/images/avatar-01.jpg" alt="Soyez le premier">
                                     </div>
-                                    <span>Test User</span>
-                                    <h4>Pour UNICEF</h4>
+                                    <span>Soyez le premier !</span>
+                                    <h4>À faire un don</h4>
                                 </div>
                             </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <div class="item don-item">
-                                <div class="thumb position-relative">
-                                    <img src="assets/images/challenge-1.png" alt="Don WWF">
-                                    <div class="hover-effect">
-                                        <ul style="list-style:none; padding:0; margin:0;">
-                                            <li>30€</li>
-                                            <li>2025-11-08</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="down-content">
-                                    <div class="avatar">
-                                        <img src="assets/images/avatar-02.jpg" alt="Gamer Pro">
-                                    </div>
-                                    <span>Gamer Pro</span>
-                                    <h4>Pour WWF</h4>
-                                </div>
-                            </div>
+        <!-- SECTION CHALLENGES ÉPIQUES -->
+        <div class="row mb-5 mt-5">
+            <div class="col-lg-12">
+                <div class="section-header-creative">
+                    <div class="section-icon">🎮</div>
+                    <h3 class="section-title" style="background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CHALLENGES ÉPIQUES</h3>
+                    <div class="section-subtitle">Relevez le défi et changez des vies</div>
+                    <div class="section-line" style="background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);"></div>
+                </div>
+            </div>
+        </div>
 
-                            <!-- Tes challenges exactement comme avant -->
-                            <div class="item challenge-card">
-                                <div class="thumb position-relative">
-                                    <img src="assets/images/feature-left.jpg" alt="Défi UNICEF">
-                                    <div class="hover-effect">
-                                        <h6 style="margin:0;">Défi : 10 kills Fortnite</h6>
-                                    </div>
-                                </div>
-                                <div class="down-content">
-                                    <h4>10 kills Fortnite pour UNICEF</h4>
-                                    <p>Récompense : Badge Épique + Shoutout</p>
-                                    <div class="progress-container">
-                                        <div class="progress-bar-bg">
-                                            <div class="progress-fill" style="width: 50%;"></div>
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="challenges-carousel-wrapper">
+                    <div class="challenges-grid">
+                        <?php if (!empty($challenges_epiques)): ?>
+                            <?php foreach ($challenges_epiques as $index => $challenge): ?>
+                                <?php 
+                                    $pourcentage = ($challenge['objectif'] > 0) ? ($challenge['progression'] / $challenge['objectif']) * 100 : 0;
+                                    $pourcentage = min(100, max(0, $pourcentage)); // Limiter entre 0 et 100%
+                                ?>
+                                <div class="item challenge-card">
+                                    <div class="thumb position-relative">
+                                        <img src="assets/images/feature-<?= ($index % 2 == 0) ? 'left' : 'right' ?>.jpg" alt="Défi <?= htmlspecialchars($challenge['association_name']) ?>">
+                                        <div class="hover-effect">
+                                            <h6 style="margin:0;">Défi : <?= htmlspecialchars($challenge['name']) ?></h6>
                                         </div>
                                     </div>
-                                    <small class="progress-text">50€ / 100€ (50%)</small>
-                                    <a href="streams.html" class="btn-challenge mt-2" role="button">Rejoindre en Stream</a>
+                                    <div class="down-content">
+                                        <h4><?= htmlspecialchars($challenge['name']) ?> pour <?= htmlspecialchars($challenge['association_name']) ?></h4>
+                                        <p>Récompense : <?= htmlspecialchars($challenge['recompense']) ?></p>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-bg">
+                                                <div class="progress-fill" style="width: <?= $pourcentage ?>%;"></div>
+                                            </div>
+                                        </div>
+                                        <small class="progress-text"><?= number_format($challenge['progression'], 0, ',', ' ') ?>€ / <?= number_format($challenge['objectif'], 0, ',', ' ') ?>€ (<?= number_format($pourcentage, 0) ?>%)</small>
+                                        <a href="streams.html" class="btn-challenge mt-2" role="button">Rejoindre en Stream</a>
+                                    </div>
                                 </div>
-                            </div>
-
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <!-- Affichage par défaut si aucun challenge épique -->
                             <div class="item challenge-card">
                                 <div class="thumb position-relative">
-                                    <img src="assets/images/feature-right.jpg" alt="Défi WWF">
+                                    <img src="assets/images/feature-left.jpg" alt="Aucun challenge épique">
                                     <div class="hover-effect">
-                                        <h6 style="margin:0;">Défi : Marathon WoW</h6>
+                                        <h6 style="margin:0;">Aucun challenge épique</h6>
                                     </div>
                                 </div>
                                 <div class="down-content">
-                                    <h4>Marathon WoW 24h pour WWF</h4>
-                                    <p>Récompense : NFT Solidaire</p>
+                                    <h4>Aucun challenge épique pour le moment</h4>
+                                    <p>Les challenges épiques apparaissent quand ils dépassent 1000€</p>
                                     <div class="progress-container">
                                         <div class="progress-bar-bg">
-                                            <div class="progress-fill" style="width: 25%;"></div>
+                                            <div class="progress-fill" style="width: 0%;"></div>
                                         </div>
                                     </div>
-                                    <small class="progress-text">50€ / 200€ (25%)</small>
-                                    <a href="streams.html" class="btn-challenge mt-2" role="button">Rejoindre en Stream</a>
+                                    <small class="progress-text">Soyez le premier à créer un challenge épique !</small>
+                                    <a href="#modalDon" data-bs-toggle="modal" class="btn-challenge mt-2" role="button">Créer un Challenge</a>
                                 </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <div class="text-center mt-4">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#modalDon" class="btn btn-donate me-3" role="button">Faire un Don Simple</a>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#modalChallenge" class="btn btn-challenge" role="button">Lancer un Challenge Stream</a>
-                        </div>
+        <!-- SECTION ACTIONS RAPIDES -->
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="action-buttons-creative">
+                    <div class="action-card action-card-don">
+                        <div class="action-icon">💚</div>
+                        <h4>Don Simple</h4>
+                        <p>Soutenez directement une cause</p>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalDon" class="btn btn-donate" role="button">Faire un Don</a>
+                    </div>
+                    <div class="action-card action-card-challenge">
+                        <div class="action-icon">🎮</div>
+                        <h4>Challenge Stream</h4>
+                        <p>Créez votre propre défi gaming</p>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalChallenge" class="btn btn-challenge" role="button">Lancer un Challenge</a>
                     </div>
                 </div>
             </div>
@@ -1708,12 +1997,517 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer>
+    <!-- FOOTER FUTURISTE HEXAGONAL -->
+    <footer class="footer-compact">
+        <div class="footer-glow"></div>
+        
         <div class="container">
-            <p>Copyright © 2025 <a href="#">Play to Help</a> - Gaming pour l'Humanitaire. Tous droits réservés.</p>
+            <div class="footer-main">
+                <!-- Logo et titre -->
+                <div class="footer-brand">
+                    <img src="assets/images/logooo.png" alt="Play to Help" class="footer-logo">
+                    <h3>PLAY TO HELP</h3>
+                    <p>🎮 Gaming pour l'Humanitaire</p>
+                </div>
+
+                <!-- Navigation rapide -->
+                <div class="footer-nav">
+                    <a href="index.html">Accueil</a>
+                    <a href="don.php">Dons</a>
+                    <a href="streams.html">Streams</a>
+                    <a href="association.php">Associations</a>
+                </div>
+
+                <!-- Réseaux sociaux -->
+                <div class="footer-social">
+                    <a href="#" class="social-btn discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-btn twitch"><i class="fab fa-twitch"></i></a>
+                    <a href="#" class="social-btn youtube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-btn twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="footer-copyright">
+                <div class="glow-line"></div>
+                <p>© 2025 Play to Help - Gaming Solidaire • Tous droits réservés</p>
+            </div>
         </div>
     </footer>
+
+
+    <style>
+        /* ===== FOOTER COMPACT CRÉATIF ===== */
+        .footer-compact {
+            background: linear-gradient(135deg, rgba(15, 12, 41, 0.95), rgba(30, 30, 50, 1));
+            position: relative;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+            overflow: hidden;
+        }
+
+        .footer-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(102, 126, 234, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .footer-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
+            text-align: center;
+        }
+
+        .footer-logo {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.6));
+        }
+
+        .footer-brand h3 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .footer-nav a:hover {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .footer-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .footer-nav a:hover::after {
+            width: 100%;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .social-btn:hover::before {
+            left: 100%;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        .discord { background: linear-gradient(135deg, #5865F2, #4752C4); }
+        .twitch { background: linear-gradient(135deg, #9146FF, #6441A5); }
+        .youtube { background: linear-gradient(135deg, #FF0000, #CC0000); }
+        .twitter { background: linear-gradient(135deg, #1DA1F2, #0C85D0); }
+
+        .footer-copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glow-line {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
+            margin: 0 auto 20px;
+            animation: lineGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lineGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .footer-copyright p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-main {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+            }
+
+            .footer-nav {
+                justify-content: center;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+        }
+
+        /* Copyright futuriste */
+        .footer-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .copyright-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, #00ffff, transparent);
+            margin-bottom: 20px;
+            animation: lineGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes lineGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .copyright-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: pulseDot 1s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        /* Effet de scan */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: scanMove 4s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: #667eea;
+            transform: translateX(5px);
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Réseaux sociaux */
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .social-icon:hover::before {
+            opacity: 1;
+        }
+
+        .social-twitch {
+            background: linear-gradient(135deg, #9146FF, #6441A5);
+            color: white;
+        }
+
+        .social-discord {
+            background: linear-gradient(135deg, #5865F2, #4752C4);
+            color: white;
+        }
+
+        .social-twitter {
+            background: linear-gradient(135deg, #1DA1F2, #0C85D0);
+            color: white;
+        }
+
+        .social-youtube {
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+            color: white;
+        }
+
+        .social-instagram {
+            background: linear-gradient(135deg, #E1306C, #C13584, #833AB4);
+            color: white;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Stats */
+        .footer-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            flex: 1;
+        }
+
+        .stat-number {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Bottom bar */
+        .footer-bottom {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-copyright {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .brand-highlight {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-legal a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-legal a:hover {
+            color: #667eea;
+        }
+
+        .footer-legal .separator {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Vague animée */
+        .footer-wave {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .footer-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 120px;
+        }
+
+        .wave-path {
+            fill: rgba(102, 126, 234, 0.1);
+            animation: waveAnimation 10s ease-in-out infinite;
+        }
+
+        @keyframes waveAnimation {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-25px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-gaming {
+                padding: 50px 0 20px;
+                margin-top: 60px;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+
+            .footer-stats {
+                justify-content: center;
+            }
+
+            .footer-legal {
+                margin-top: 15px;
+            }
+
+            .footer-wave {
+                top: -50px;
+            }
+
+            .footer-wave svg {
+                height: 60px;
+            }
+        }
+    </style>
 
     <!-- SCRIPTS -->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -1819,18 +2613,46 @@
             }, 50);
         }
 
-        // Effet de parallax sur les cartes
+        // Effet 3D sur les cartes au mouvement de la souris
+        const cards = document.querySelectorAll('.don-item, .challenge-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                this.style.transform = `
+                    perspective(1000px)
+                    rotateX(${rotateX}deg)
+                    rotateY(${rotateY}deg)
+                    translateY(-15px)
+                    scale(1.05)
+                `;
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
+            });
+        });
+
+        // Effet de parallax global
         document.addEventListener('mousemove', function(e) {
-            const cards = document.querySelectorAll('.don-item, .challenge-card');
+            const allCards = document.querySelectorAll('.don-item, .challenge-card, .action-card');
             const mouseX = e.clientX / window.innerWidth;
             const mouseY = e.clientY / window.innerHeight;
             
-            cards.forEach((card, index) => {
-                const speed = (index % 2 === 0) ? 20 : -20;
-                const x = (mouseX - 0.5) * speed;
-                const y = (mouseY - 0.5) * speed;
-                
+            allCards.forEach((card, index) => {
                 if (!card.matches(':hover')) {
+                    const speed = (index % 2 === 0) ? 15 : -15;
+                    const x = (mouseX - 0.5) * speed;
+                    const y = (mouseY - 0.5) * speed;
+                    
                     card.style.transform = `translateX(${x}px) translateY(${y}px)`;
                 }
             });

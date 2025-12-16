@@ -1,7 +1,8 @@
 <?php
-require_once '../../config/db.php';
+require_once '../../config/config.php';
 require_once '../../controllers/DonController.php';
 require_once '../../controllers/ChallengeController.php';
+require_once '../../controllers/AssociationController.php';
 
 // ---- DON DATA ---- //
 $donC = new DonController();
@@ -29,6 +30,10 @@ foreach ($dons as $d) {
 // ---- CHALLENGE DATA ---- //
 $challengeC = new ChallengeController();
 $challenges = $challengeC->list();
+
+// ---- ASSOCIATION DATA ---- //
+$associationC = new AssociationController();
+$associationsData = $associationC->list();
 
 // Liste des associations pour le filtre
 $assocQuery = $conn->query("SELECT id_association as id, name as nom FROM association ORDER BY name");
@@ -522,7 +527,118 @@ while ($row = $assocQuery->fetch_assoc()) {
                 </table>
             </div>
         </div>
+
+        <!-- TABLEAU DES ASSOCIATIONS AVEC GESTION CRUD -->
+        <div class="card rounded-3xl p-10 glow mt-20">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                <h2 class="text-4xl font-bold neon font-orbitron">Associations • <?= count($associationsData) ?></h2>
+                <a href="add_association.php" class="bg-gradient-to-r from-purple-500 to-cyan-500 px-8 py-4 rounded-full text-xl font-bold hover:scale-110 transition">
+                    ➕ Nouvelle Association
+                </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-cyan-500/30">
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">ID</th>
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">Nom</th>
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">Description</th>
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">Total Dons</th>
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">Donateurs</th>
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">Date Création</th>
+                            <th class="py-4 px-6 text-cyan-300 font-bold text-lg">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="associationsTableBody">
+                        <?php foreach ($associationsData as $assoc): ?>
+                        <tr class="border-b border-gray-700/50 hover:bg-gray-800/30 transition">
+                            <td class="py-4 px-6 text-gray-300"><?= $assoc['id_association'] ?></td>
+                            <td class="py-4 px-6">
+                                <span class="editable-cell text-white font-semibold" 
+                                      data-field="name" 
+                                      data-id="<?= $assoc['id_association'] ?>"
+                                      onclick="editAssociation(this)">
+                                    <?= htmlspecialchars($assoc['name']) ?>
+                                </span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <span class="editable-cell text-gray-300" 
+                                      data-field="description" 
+                                      data-id="<?= $assoc['id_association'] ?>"
+                                      onclick="editAssociation(this)">
+                                    <?= htmlspecialchars(substr($assoc['description'], 0, 50)) ?><?= strlen($assoc['description']) > 50 ? '...' : '' ?>
+                                </span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <span class="text-emerald-400 font-bold text-lg">
+                                    <?= number_format($assoc['total_dons_reel'], 2, ',', ' ') ?>€
+                                </span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <span class="text-blue-400 font-semibold">
+                                    <?= $assoc['nombre_donateurs'] ?>
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-gray-400">
+                                <?= date('d/m/Y', strtotime($assoc['date_creation'])) ?>
+                            </td>
+                            <td class="py-5 px-6 text-center">
+                                <div class="flex justify-center gap-6">
+                                    <button onclick="editAssociationModal(<?= $assoc['id_association'] ?>, '<?= htmlspecialchars($assoc['name']) ?>', '<?= htmlspecialchars($assoc['description']) ?>')" 
+                                            class="text-yellow-400 hover:text-yellow-300 transition"
+                                            title="Modifier">
+                                        <i data-feather="edit-2"></i>
+                                    </button>
+                                    <button onclick="deleteAssociation(<?= $assoc['id_association'] ?>, '<?= htmlspecialchars($assoc['name']) ?>')" 
+                                            class="text-red-500 hover:text-red-400 transition"
+                                            title="Supprimer">
+                                        <i data-feather="trash-2"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php if (empty($associationsData)): ?>
+                        <tr>
+                            <td colspan="7" class="py-10 text-center text-gray-400 text-lg">
+                                Aucune association trouvée. Créez la première !
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
+
+
+
+    <!-- MODAL MODIFICATION ASSOCIATION -->
+    <div id="editAssociationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 border-2 border-blue-500/30">
+            <h3 class="text-2xl font-bold text-blue-300 mb-6">Modifier Association</h3>
+            <form id="editAssociationForm">
+                <input type="hidden" id="editAssociationId">
+                <div class="mb-4">
+                    <label class="block text-gray-300 mb-2">Nom de l'association</label>
+                    <input type="text" id="editAssociationName" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Description</label>
+                    <textarea id="editAssociationDescription" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white h-24" required></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-bold transition">
+                        Modifier
+                    </button>
+                    <button type="button" onclick="closeEditAssociationModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-bold transition">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- FOOTER -->
     <footer class="text-center py-8 text-gray-500 border-t border-gray-800 mt-20">
@@ -802,6 +918,78 @@ while ($row = $assocQuery->fetch_assoc()) {
                 window.location.href = `edit_progression_page.php?id=${challengeId}&nom=${encodeURIComponent(challengeName)}&progression=${currentProgression}&objectif=${objectif}`;
             });
         });
+
+        // ===== FONCTIONS ASSOCIATIONS =====
+
+        function editAssociationModal(id, name, description) {
+            document.getElementById('editAssociationId').value = id;
+            document.getElementById('editAssociationName').value = name;
+            document.getElementById('editAssociationDescription').value = description;
+            document.getElementById('editAssociationModal').classList.remove('hidden');
+            document.getElementById('editAssociationModal').classList.add('flex');
+        }
+
+        function closeEditAssociationModal() {
+            document.getElementById('editAssociationModal').classList.add('hidden');
+            document.getElementById('editAssociationModal').classList.remove('flex');
+        }
+
+
+
+        // Gestion du formulaire de modification
+        document.getElementById('editAssociationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('editAssociationId').value;
+            const name = document.getElementById('editAssociationName').value;
+            const description = document.getElementById('editAssociationDescription').value;
+            
+            fetch('association_actions.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=update&id=${id}&name=${encodeURIComponent(name)}&description=${encodeURIComponent(description)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Association modifiée avec succès !');
+                    location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la modification de l\'association');
+            });
+        });
+
+        function deleteAssociation(id, name) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer l'association "${name}" ?\n\nAttention: Cette action est irréversible !`)) {
+                fetch('association_actions.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=delete&id=${id}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Association supprimée avec succès !');
+                        location.reload();
+                    } else {
+                        alert('Erreur: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la suppression de l\'association');
+                });
+            }
+        }
 
     </script>
 </body>
