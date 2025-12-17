@@ -19,16 +19,46 @@ if (!isset($forums)) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Q&A Communauté</title>
-  <link rel="stylesheet" href="assets/css/styleq&a.css">
+  <link rel="icon" type="image/png" href="assets/images/logooo.png">
+  <link rel="apple-touch-icon" href="assets/images/logooo.png">
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/fontawesome.css" />
   <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css" />
   <link rel="stylesheet" href="assets/css/owl.css" />
   <link rel="stylesheet" href="assets/css/animate.css" />
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="assets/css/cookie-banner.css" />
+  <link rel="stylesheet" href="assets/css/dons-assoc.css" />
+  <link rel="stylesheet" href="assets/css/styleq&a.css">
   <style>
+    /* Fix header position au chargement */
+    #mainHeader,
+    .header-area,
+    .header-area.header-sticky {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 99999 !important;
+      /* transform géré par JS pour hide/show au scroll */
+    }
+    
+    /* Fix taille des éléments du header - même taille que association.php */
+    .header-area .main-nav {
+      min-height: 80px !important;
+    }
+    .header-area .main-nav .nav li a {
+      font-size: 15px !important;
+      padding: 10px 15px !important;
+    }
+    .header-area .main-nav .logo img {
+      height: 50px !important;
+    }
+    .header-area .search-input input {
+      height: 46px !important;
+      font-size: 14px !important;
+    }
+    
     /* Styles pour les sélecteurs de médias */
     .media-btn {
       background: linear-gradient(135deg, #6e6eff, #ff69b4);
@@ -94,85 +124,20 @@ if (!isset($forums)) {
       display: block;
     }
     
-    /* Alignement du header avec le contenu */
-    .header-area {
-      padding: 0 !important;
-      margin: 0 !important;
-    }
-    
-    .header-area .container {
-
-
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-      margin: 0 auto;
-    }
-    
-    .header-area .row {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    
-    .header-area .col-12 {
-      padding: 0 !important;
-    }
-    
-    .main-nav {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      padding-top: 5000    !important;
-      padding-bottom: 5000 !important;
-      margin: 0 !important;
-      min-height: auto !important;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
   </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header id="mainHeader" class="header-area header-sticky">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-12">
-                    <nav class="main-nav d-flex align-items-center justify-content-between">
-                        <a href="Accueil.php" class="logo">
-                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
-                        </a>
-                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
-                            <form id="search" action="search.html" class="d-flex align-items-center">
-                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
-                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
-                                    <i class="fa fa-search" aria-hidden="true"></i>
-                                    <span class="sr-only">Rechercher</span>
-                                </button>
-                            </form>
-                        </div>
-                        <ul class="nav d-flex align-items-center mb-0">
-                            <li><a href="Accueil.php">Accueil</a></li>
-                            <li><a href="index.php" class="active">Forum</a></li>
-                            <li><a href="browse.php">Événements</a></li>
-                            <li><a href="streams.php">Streams Solidaires</a></li>
-                            <li><a href="association.html">Associations</a></li>
-                            <li><a href="don.html">Dons & Challenges</a></li>
-                            <?php if (isset($_SESSION['user'])): ?>
-                                <li><a href="profile.php">Profil</a></li>
-                                <li><a href="logout.php">Déconnexion</a></li>
-                            <?php else: ?>
-                                <li><a href="login.php">Connexion</a></li>
-                                <li><a href="register.php">Inscription</a></li>
-                            <?php endif; ?>
-                        </ul>
-                        <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
-                    </nav>
-                </div>
-            </div>
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots"><span></span><span></span><span></span></div>
         </div>
-    </header>
+    </div>
 
-  <div class="container">
+    <?php include 'includes/header.php'; ?>
+
+  <div class="container qa-container">
     <div class="header">
       <h1>Q&A Communauté</h1>
       <p>Fortnite • D&D • Minecraft • Valorant • Général</p>
@@ -340,6 +305,16 @@ if (!isset($forums)) {
     console.log('CURRENT_USER_ID final:', window.CURRENT_USER_ID);
     console.log('CURRENT_USER_NAME final:', window.CURRENT_USER_NAME);
   </script>
+  
+  <!-- Scripts -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/owl-carousel.js"></script>
+  <script src="assets/js/tabs.js"></script>
+  <script src="assets/js/popup.js"></script>
+  <script src="assets/js/custom.js"></script>
+  <script src="assets/js/dons-assoc.js"></script>
   
   <!-- Inclure votre fichier JavaScript externe -->
   <script src="assets/js/testq&a.js"></script>
@@ -824,10 +799,7 @@ Génère une réponse utile et amicale à cette question en 2-3 phrases.`;
       textarea.parentNode.insertBefore(aiBtn, textarea.nextSibling);
     };
   </script>
+  
+  <?php include 'includes/footer.php'; ?>
 </body>
-    <footer>
-        <div class="container">
-            <p>Copyright © 2025 <a href="#">Play to Help</a> - Gaming pour l'Humanitaire. Tous droits réservés.</p>
-        </div>
-    </footer>
 </html>

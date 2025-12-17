@@ -42,6 +42,8 @@ if (isset($_GET['id_forum']) && !empty($_GET['id_forum']) && is_numeric($_GET['i
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Play2Help • Backoffice Q&A</title>
+  <link rel="icon" type="image/png" href="../../views/frontoffice/assets/images/logooo.png">
+  <link rel="apple-touch-icon" href="../../views/frontoffice/assets/images/logooo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>

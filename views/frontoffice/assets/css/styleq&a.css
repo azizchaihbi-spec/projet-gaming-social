@@ -2,11 +2,14 @@
 /*           PLAY2HELP Q&A - CSS PRO         */
 /* ========================================= */
 
+/* Reset CSS désactivé - Bootstrap gère cela */
+/*
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+*/
 
 :root {
   --primary-pink: #ff69b4;
@@ -27,15 +30,16 @@
 /* ========================================= */
 
 body {
-  background: var(--dark-bg);
   color: var(--text-light);
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  /* background géré par dons-assoc.css */
 }
 
-/* Animated gradient background */
+/* Animated gradient background - désactivé pour compatibilité header */
+/*
 body::before {
   content: '';
   position: fixed;
@@ -50,13 +54,15 @@ body::before {
   animation: gradientShift 15s ease infinite;
   z-index: -1;
 }
+*/
 
 @keyframes gradientShift {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.8; transform: scale(1.1); }
 }
 
-/* Floating particles effect */
+/* Floating particles effect - désactivé pour compatibilité header */
+/*
 body::after {
   content: '';
   position: fixed;
@@ -74,13 +80,15 @@ body::after {
   pointer-events: none;
   z-index: -1;
 }
+*/
 
 @keyframes particleFloat {
   0%, 100% { background-position: 0% 0%; }
   50% { background-position: 100% 100%; }
 }
 
-.container {
+/* Container Q&A - ne pas écraser le container Bootstrap du header */
+.container.qa-container {
   max-width: 950px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -89,16 +97,19 @@ body::after {
 }
 
 /* ========================================= */
-/*                  HEADER                   */
+/*           PAGE TITLE HEADER (Q&A)         */
 /* ========================================= */
 
-.header {
+.container > .header,
+.qa-page-header {
   text-align: center;
   margin-bottom: 50px;
   position: relative;
+  margin-top: 20px;
 }
 
-.header h1 {
+.container > .header h1,
+.qa-page-header h1 {
   font-size: 3.5rem;
   font-weight: 800;
   background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple), var(--primary-pink));
@@ -117,7 +128,8 @@ body::after {
   50% { background-position: 100% 50%; }
 }
 
-.header h1::after {
+.container > .header h1::after,
+.qa-page-header h1::after {
   content: '';
   position: absolute;
   bottom: -10px;
@@ -135,7 +147,8 @@ body::after {
   50% { opacity: 1; width: 150px; }
 }
 
-.header p {
+.container > .header p,
+.qa-page-header p {
   color: var(--text-muted);
   font-size: 1.1rem;
   margin-top: 20px;

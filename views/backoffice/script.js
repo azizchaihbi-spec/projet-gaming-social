@@ -128,11 +128,7 @@ function validateCreateUserForm(e) {
 // Animation for stat cards
 const animateStatCards = () => {
     const statCards = document.querySelectorAll('.stat-card');
-<<<<<<< HEAD
-    statCards.forEach((card, index) => {
-=======
     statCards.forEach((card) => {
->>>>>>> sinda
         card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
         card.style.transform = 'translateY(0)';
         
@@ -147,10 +143,7 @@ const animateStatCards = () => {
         });
     });
 };
-<<<<<<< HEAD
-=======
 
->>>>>>> sinda
 function isAdult(dateString) {
     const today = new Date();
     const birthDate = new Date(dateString);
@@ -313,11 +306,7 @@ function loadTableData() {
     }
 
     // Appel AJAX vers l'API
-<<<<<<< HEAD
     fetch(`index.php?action=getTableData&${params.toString()}`)
-=======
-    fetch(`indexsinda.php?action=getTableData&${params.toString()}`)
->>>>>>> sinda
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -400,53 +389,31 @@ function renderTable(users) {
         let actionButtons = '';
         if (isBanned) {
             actionButtons = `
-<<<<<<< HEAD
                 <a href="index.php?action=edit&id=${user.id}" title="Modifier">
-=======
-                <a href="indexsinda.php?action=edit&id=${user.id}" title="Modifier">
->>>>>>> sinda
                     <i data-feather="edit-2" class="w-5 h-5"></i>
                 </a>
                 <button onclick="unbanUser(${user.id})" title="Débannir">
                     <i data-feather="unlock" class="w-5 h-5"></i>
                 </button>
-<<<<<<< HEAD
                 <a href="index.php?action=delete&id=${user.id}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')" title="Supprimer">
                     <i data-feather="trash-2" class="w-5 h-5"></i>
                 </a>
                 <a href="index.php?action=view&id=${user.id}" title="Voir profil">
-=======
-                <a href="indexsinda.php?action=delete&id=${user.id}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')" title="Supprimer">
-                    <i data-feather="trash-2" class="w-5 h-5"></i>
-                </a>
-                <a href="indexsinda.php?action=view&id=${user.id}" title="Voir profil">
->>>>>>> sinda
                     <i data-feather="eye" class="w-5 h-5"></i>
                 </a>
             `;
         } else {
             actionButtons = `
-<<<<<<< HEAD
                 <a href="index.php?action=edit&id=${user.id}" title="Modifier">
-=======
-                <a href="indexsinda.php?action=edit&id=${user.id}" title="Modifier">
->>>>>>> sinda
                     <i data-feather="edit-2" class="w-5 h-5"></i>
                 </a>
                 <button onclick="openBanModal(${user.id}, '${user.username.replace(/'/g, "\\'")}')" title="Bannir">
                     <i data-feather="shield-off" class="w-5 h-5"></i>
                 </button>
-<<<<<<< HEAD
                 <a href="index.php?action=delete&id=${user.id}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')" title="Supprimer">
                     <i data-feather="trash-2" class="w-5 h-5"></i>
                 </a>
                 <a href="index.php?action=view&id=${user.id}" title="Voir profil">
-=======
-                <a href="indexsinda.php?action=delete&id=${user.id}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')" title="Supprimer">
-                    <i data-feather="trash-2" class="w-5 h-5"></i>
-                </a>
-                <a href="indexsinda.php?action=view&id=${user.id}" title="Voir profil">
->>>>>>> sinda
                     <i data-feather="eye" class="w-5 h-5"></i>
                 </a>
             `;
@@ -764,11 +731,7 @@ function openBanModal(userId, username) {
                             class="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition">
                         Annuler
                     </button>
-<<<<<<< HEAD
-                    <button type="submit" 
-=======
                     <button type="submit"
->>>>>>> sinda
                             class="flex-1 bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-semibold transition">
                         Confirmer le bannissement
                     </button>
@@ -825,11 +788,7 @@ function submitBan(event, userId) {
         params.append('banned_until', bannedUntil);
     }
 
-<<<<<<< HEAD
     fetch('index.php?action=ban', {
-=======
-    fetch('indexsinda.php?action=ban', {
->>>>>>> sinda
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -862,11 +821,7 @@ function unbanUser(userId) {
     const formData = new FormData();
     formData.append('user_id', userId);
 
-<<<<<<< HEAD
     fetch('index.php?action=unban', {
-=======
-    fetch('indexsinda.php?action=unban', {
->>>>>>> sinda
         method: 'POST',
         body: formData
     })
@@ -913,25 +868,4 @@ function updateScrollHints() {
     } else {
         rightHint.classList.remove('visible');
     }
-<<<<<<< HEAD
 }
-
-/**
- * Fonctions de scroll dans le tableau (si nécessaire)
- */
-function scrollTableToLeft() {
-    const container = document.getElementById('tableScrollContainer');
-    if (container) {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
-    }
-}
-
-function scrollTableToRight() {
-    const container = document.getElementById('tableScrollContainer');
-    if (container) {
-        container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
-    }
-}
-=======
-}
->>>>>>> sinda

@@ -1,15 +1,15 @@
 :root {
   --pink: #ff6b6b;
   --pink-2: #ff8c42;
-  --dark: #0f0f1a;
-  --glass: rgba(255,255,255,0.04);
-  --stroke: rgba(255,255,255,0.08);
+  --dark: #2E2A5C;
+  --glass: rgba(255,255,255,0.06);
+  --stroke: rgba(255,255,255,0.12);
 }
 
 body {
-  background: radial-gradient(circle at 20% 20%, rgba(255,107,107,0.08), transparent 35%),
-              radial-gradient(circle at 80% 0%, rgba(255,140,66,0.1), transparent 30%),
-              #0b0b14;
+  background: radial-gradient(circle at 20% 20%, rgba(46,42,92,0.3), transparent 35%),
+              radial-gradient(circle at 80% 0%, rgba(58,53,112,0.4), transparent 30%),
+              #2E2A5C;
 }
 
 .page-content {

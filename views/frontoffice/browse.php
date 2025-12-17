@@ -10,6 +10,8 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <title>Play to Help - Événements Solidaires</title>
+    <link rel="icon" type="image/png" href="assets/images/logooo.png">
+    <link rel="apple-touch-icon" href="assets/images/logooo.png">
 
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/fontawesome.css">
@@ -32,45 +34,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </div>
 
-    <!-- HEADER -->
-    <header id="mainHeader" class="header-area header-sticky">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-12">
-                    <nav class="main-nav d-flex align-items-center justify-content-between">
-                        <a href="Accueil.php" class="logo">
-                            <img src="assets/images/logooo.png" alt="Play to Help - Manette Solidaire" height="50">
-                        </a>
-                        <div class="search-input" style="flex-grow: 1; max-width: 400px; margin-left: 20px;">
-                            <form id="search" action="search.html" class="d-flex align-items-center">
-                                <input type="text" class="form-control" placeholder="Rechercher association, don ou challenge..." name="q" />
-                                <button type="submit" style="background:none; border:none; color:#666; font-size:1.2em; cursor:pointer;">
-                                    <i class="fa fa-search" aria-hidden="true"></i>
-                                    <span class="sr-only">Rechercher</span>
-                                </button>
-                            </form>
-                        </div>
-                        <ul class="nav d-flex align-items-center mb-0">
-                            <li><a href="Accueil.php">Accueil</a></li>
-                            <li><a href="index.php">Forum</a></li>
-                            <li><a href="browse.php" class="active">Événements</a></li>
-                            <li><a href="streams.php">Streams Solidaires</a></li>
-                            <li><a href="association.html">Associations</a></li>
-                            <li><a href="don.html">Dons & Challenges</a></li>
-                            <?php if (isset($_SESSION['user'])): ?>
-                                <li><a href="profile.php">Profil</a></li>
-                                <li><a href="logout.php">Déconnexion</a></li>
-                            <?php else: ?>
-                                <li><a href="login.php">Connexion</a></li>
-                                <li><a href="register.php">Inscription</a></li>
-                            <?php endif; ?>
-                        </ul>
-                        <a class="menu-trigger" role="button" aria-label="Menu toggle" tabindex="0"><span>Menu</span></a>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </header>
+    <?php include 'includes/header.php'; ?>
 
     <div class="container">
         <div class="row">
@@ -135,15 +99,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <p>Copyright © 2025 Play to Help • Tous droits réservés.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
 
     <!-- Event Details Modal -->
     <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
@@ -242,6 +198,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <script src="assets/js/path-utils.js"></script>
     <script src="assets/js/popup.js"></script>
     <script src="assets/js/custom.js"></script>
+    <script src="assets/js/dons-assoc.js"></script>
     <script src="assets/js/events.js"></script>
     <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
     <script src="assets/js/event.js"></script>

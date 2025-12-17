@@ -12,7 +12,7 @@ class StreamController {
     }
 
     public function listStreams(): array {
-        $sql = "SELECT s.*, st.pseudo as streamer_pseudo, st.plateforme as streamer_platform, u.email as streamer_email,
+        $sql = "SELECT s.*, st.pseudo as streamer_name, st.plateforme as streamer_platform, u.email as streamer_email,
                 (SELECT COUNT(*) FROM clip c WHERE c.id_stream = s.id_stream) as clip_count
                 FROM stream s
                 LEFT JOIN streamer st ON s.id_streamer = st.id_user

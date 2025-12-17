@@ -4,9 +4,12 @@
   let allStreams = [];
   const userActions = {}; // Track user actions per stream: { streamId: { liked: bool, disliked: bool } }
 
+  // Cache for found stream thumbnails
+  const streamThumbCache = {};
+
   // Build streamer thumbnails: prefer pre-saved file per streamer, fallback to generated SVG
   function getStreamerThumbs(stream) {
-    const pseudo = stream.streamer_pseudo || 'Streamer';
+    const pseudo = stream.streamer_name || stream.streamer_pseudo || 'Streamer';
     const streamerId = stream.id_streamer || stream.streamer_id || stream.id_user;
 
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#5f27cd', '#00d2d3', '#ff9ff3', '#54a0ff'];
@@ -29,15 +32,54 @@
 
     const primary = streamerId ? `assets/images/streamers/${streamerId}.jpg` : fallback;
     
-    // Check for stream-specific thumbnail, fallback to streamer avatar
-    const streamThumbnail = stream.id_stream ? `assets/images/streams/${stream.id_stream}.jpg` : null;
+    // Check for stream-specific thumbnail with multiple extensions (jpg, png, webp)
+    let streamThumbnail = null;
+    if (stream.id_stream) {
+      // Use cached value if available
+      if (streamThumbCache[stream.id_stream]) {
+        streamThumbnail = streamThumbCache[stream.id_stream];
+      } else {
+        // Default to jpg, will try other extensions via onerror
+        streamThumbnail = `assets/images/streams/${stream.id_stream}.jpg`;
+      }
+    }
     
     return { 
       avatar: primary,
       fallback,
-      thumbnail: streamThumbnail || primary
+      thumbnail: streamThumbnail || primary,
+      streamId: stream.id_stream
     };
   }
+
+  // Try different image extensions for stream thumbnails
+  function tryNextExtension(img, streamId, fallback) {
+    const extensions = ['jpg', 'png', 'webp'];
+    const currentSrc = img.src;
+    let currentExt = null;
+    
+    for (const ext of extensions) {
+      if (currentSrc.endsWith('.' + ext)) {
+        currentExt = ext;
+        break;
+      }
+    }
+    
+    const currentIndex = currentExt ? extensions.indexOf(currentExt) : -1;
+    const nextIndex = currentIndex + 1;
+    
+    if (nextIndex < extensions.length) {
+      const basePath = `assets/images/streams/${streamId}`;
+      img.src = basePath + '.' + extensions[nextIndex];
+    } else {
+      // All extensions failed, use fallback
+      img.onerror = null;
+      img.src = fallback;
+    }
+  }
+
+  // Make function globally available for inline onerror handlers
+  window.tryStreamThumbExtension = tryNextExtension;
 
   async function fetchStreams() {
     try {
@@ -67,9 +109,11 @@
   }
 
   function renderTopStreamers() {
+    console.log('renderTopStreamers called with', allStreams.length, 'streams');
     const streamerStats = {};
     allStreams.forEach(stream => {
-      const pseudo = stream.streamer_pseudo || 'Unknown';
+      const pseudo = stream.streamer_name || stream.streamer_pseudo || 'Unknown';
+      console.log('Processing stream:', stream.titre, 'by', pseudo);
       if (!streamerStats[pseudo]) {
         streamerStats[pseudo] = {
           pseudo,
@@ -93,8 +137,12 @@
       })
       .slice(0, 5);
 
+    console.log('Top streamers calculated:', topStreamers);
     const container = document.getElementById('top-streamers');
-    if (!container) return;
+    if (!container) {
+      console.error('top-streamers container not found');
+      return;
+    }
     container.innerHTML = '';
     topStreamers.forEach((streamer, idx) => {
       const card = document.createElement('div');
@@ -152,14 +200,14 @@
       col.innerHTML = `
           <div style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(255, 107, 107, 0.3)); border: 2px solid #28a745; border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;" class="open-stream" data-id="${stream.id_stream}" data-url="${stream.url || '#'}">
             <div style="position: relative; height: 180px; overflow: hidden;">
-              <img src="${thumbs.thumbnail}" onerror="this.onerror=null;this.src='${thumbs.fallback}';" alt="${stream.titre}" style="width: 100%; height: 100%; object-fit: cover;">
+              <img src="${thumbs.thumbnail}" onerror="window.tryStreamThumbExtension(this, ${stream.id_stream}, '${thumbs.fallback}')" alt="${stream.titre}" style="width: 100%; height: 100%; object-fit: cover;">
               <div style="position: absolute; top: 10px; left: 10px; background: #28a745; color: white; padding: 8px 12px; border-radius: 50px; font-size: 0.85em; font-weight: bold; animation: pulse 1s infinite;">
                 🔴 LIVE
               </div>
             </div>
             <div style="padding: 15px;">
               <h4 style="margin: 0 0 10px 0; color: #ff6b6b; font-weight: bold; font-size: 1.1em;">${stream.titre}</h4>
-              <p style="margin: 0 0 10px 0; color: #999; font-size: 0.9em;">🎮 ${stream.streamer_pseudo}</p>
+              <p style="margin: 0 0 10px 0; color: #999; font-size: 0.9em;">🎮 ${stream.streamer_name || stream.streamer_pseudo || 'Streamer'}</p>
               <div style="display: flex; gap: 8px; margin-top: 10px;">
                 <span style="flex: 1; background: rgba(255,107,107,0.2); padding: 5px; border-radius: 5px; font-size: 0.85em;">👁️ ${stream.nb_vues || 0}</span>
                 <span style="flex: 1; background: rgba(40,167,69,0.2); padding: 5px; border-radius: 5px; font-size: 0.85em;">👍 ${stream.nb_likes || 0}</span>
@@ -269,7 +317,7 @@
 
       card.innerHTML = `
           <div style="position: relative; height: 200px; overflow: hidden; background: rgba(0,0,0,0.3);" class="open-stream" data-id="${stream.id_stream}" data-url="${stream.url || '#'}">
-            <img src="${thumbs.thumbnail}" onerror="this.onerror=null;this.src='${thumbs.fallback}';" alt="${stream.titre}" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="${thumbs.thumbnail}" onerror="window.tryStreamThumbExtension(this, ${stream.id_stream}, '${thumbs.fallback}')" alt="${stream.titre}" style="width: 100%; height: 100%; object-fit: cover;">
             <div style="position: absolute; top: 12px; right: 12px; background: ${statusColor}; color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.85em; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
               ${statusLabel}
             </div>
@@ -279,9 +327,9 @@
           </div>
           <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
             <div style="display: flex; align-items: center; margin-bottom: 12px;">
-              <img src="${thumbs.avatar}" onerror="this.onerror=null;this.src='${thumbs.fallback}';" alt="${stream.streamer_pseudo}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid #ff6b6b; object-fit: cover;">
+              <img src="${thumbs.avatar}" onerror="this.onerror=null;this.src='${thumbs.fallback}';" alt="${stream.streamer_name || stream.streamer_pseudo || 'Streamer'}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid #ff6b6b; object-fit: cover;">
               <div>
-                <p style="margin: 0; color: #ff6b6b; font-weight: bold; font-size: 0.95em;">${stream.streamer_pseudo || 'Streamer'}</p>
+                <p style="margin: 0; color: #ff6b6b; font-weight: bold; font-size: 0.95em;">${stream.streamer_name || stream.streamer_pseudo || 'Streamer'}</p>
                 <p style="margin: 0; color: #999; font-size: 0.8em;">Streamer</p>
               </div>
             </div>
@@ -327,13 +375,20 @@
 
     document.querySelectorAll('.open-stream-link').forEach(link => {
       link.addEventListener('click', async (e) => {
-        e.preventDefault();
         e.stopPropagation();
         const id = link.dataset.id;
+        const url = link.dataset.url || link.href;
         if (!id) return;
-        try {
-          await postAction('view', id);
-        } catch (err) { console.warn(err); }
+        
+        // Don't prevent default if URL is valid - let the link open
+        if (url && url !== '#') {
+          // Record view in background, don't wait
+          postAction('view', id).catch(err => console.warn(err));
+          // Link will open naturally via href and target="_blank"
+        } else {
+          e.preventDefault();
+          alert('Aucun lien disponible pour ce stream.');
+        }
       });
     });
 

@@ -17,6 +17,7 @@ if (strpos($currentDir, 'events') !== false || strpos($currentDir, 'stream') !==
             <span class="text-gray-400">|</span>
             <a href="<?= $relativePath ?>index.php" class="px-4 py-2 rounded-lg font-semibold bg-cyan-700 hover:bg-cyan-600 text-white transition">Gestion Utilisateurs</a>
             <a href="<?= $relativePath ?>admin.php" class="px-4 py-2 rounded-lg font-semibold bg-purple-700 hover:bg-purple-600 text-white transition">Gestion Forum</a>
+            <a href="<?= $relativePath ?>indexsinda.php" class="px-4 py-2 rounded-lg font-semibold bg-orange-700 hover:bg-orange-600 text-white transition">Gestion de Dons</a>
             <a href="<?= $relativePath ?>dashboard.php" class="px-4 py-2 rounded-lg font-semibold bg-emerald-700 hover:bg-emerald-600 text-white transition">Gestion Streams & Events</a>
         </div>
         <div class="flex items-center space-x-6">

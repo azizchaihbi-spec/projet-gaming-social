@@ -206,13 +206,6 @@
 	    var scrollPos = $(document).scrollTop();
 	    $('.nav a').each(function () {
 	        var currLink = $(this);
-<<<<<<< HEAD
-<<<<<<< HEAD
-	        var refElement = $(currLink.attr("href"));
-	        if (refElement.position().top <= scrollPos && refElement.position().top + refElement.height() > scrollPos) {
-=======
-=======
->>>>>>> sinda
 	        var href = currLink.attr("href");
 	        if (!href || href.charAt(0) !== '#') {
 	            return; // Only handle in-page anchors
@@ -223,10 +216,6 @@
 	        }
 	        var pos = refElement.position();
 	        if (pos.top <= scrollPos && pos.top + refElement.height() > scrollPos) {
-<<<<<<< HEAD
->>>>>>> ismail
-=======
->>>>>>> sinda
 	            $('.nav ul li a').removeClass("active");
 	            currLink.addClass("active");
 	        }

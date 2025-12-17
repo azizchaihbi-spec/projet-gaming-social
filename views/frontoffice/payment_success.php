@@ -66,6 +66,8 @@ $adminEmailResult = EmailController::sendDonationReceiptToPlayToHelp($donData);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paiement réussi - Play to Help</title>
+    <link rel="icon" type="image/png" href="assets/images/logooo.png">
+    <link rel="apple-touch-icon" href="assets/images/logooo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -190,7 +192,7 @@ $adminEmailResult = EmailController::sendDonationReceiptToPlayToHelp($donData);
             </a>
         <?php endif; ?>
         
-        <a href="index.html" class="btn-download" style="background: #6c757d;">
+        <a href="Accueil.php" class="btn-download" style="background: #6c757d;">
             🏠 Retour à l'accueil
         </a>
         

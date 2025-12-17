@@ -1,0 +1,111 @@
+/* ============================================= */
+/*              STREAMS PAGE STYLES             */
+/* ============================================= */
+
+/* Hero Streams */
+@keyframes gradientShift { 
+    0% { background-position: 0% 50%; } 
+    50% { background-position: 100% 50%; } 
+    100% { background-position: 0% 50%; } 
+}
+
+.hero-streams { 
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #c44569 50%, #f8b500 75%, #ff6b6b 100%); 
+    background-size: 400% 400%; 
+    animation: gradientShift 8s ease infinite; 
+    border-radius: 20px; 
+    padding: 60px 30px; 
+    margin-bottom: 40px; 
+    position: relative; 
+    overflow: hidden; 
+}
+
+.hero-streams h1 { 
+    font-weight: 800; 
+    color: #11cc4c; 
+}
+
+.hero-streams p { 
+    color: rgba(255,255,255,0.9); 
+}
+
+/* Filters Card */
+.filters-card { 
+    background: rgba(255,255,255,0.04); 
+    border: 1px solid rgba(255,255,255,0.08); 
+    border-radius: 14px; 
+    padding: 18px; 
+    margin-bottom: 26px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18); 
+    backdrop-filter: blur(6px); 
+}
+
+.filters-card .form-select, 
+.filters-card .btn { 
+    background-color: rgba(255,255,255,0.04); 
+    color: #fff; 
+    border: 1px solid rgba(255,255,255,0.08); 
+}
+
+.filters-card .form-select option { 
+    background-color: #1a1a2e; 
+    color: #fff; 
+}
+
+.filters-card .form-select:focus { 
+    background-color: rgba(255,255,255,0.08); 
+    color: #fff; 
+    border-color: #ff6b6b; 
+    box-shadow: 0 0 0 2px rgba(255,107,107,0.25); 
+}
+
+.filters-card label { 
+    font-weight: 600; 
+}
+
+/* Section Title */
+.section-title { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
+}
+
+/* Badge Live */
+.badge-live { 
+    background: #28a745; 
+    color: #fff; 
+    padding: 6px 12px; 
+    border-radius: 50px; 
+    font-weight: 700; 
+}
+
+/* Empty State */
+.empty-state { 
+    display: none; 
+    color: #999; 
+    padding: 15px; 
+    text-align: center; 
+    border: 1px dashed rgba(255,255,255,0.2); 
+    border-radius: 12px; 
+}
+
+/* Button Events */
+.btn-events { 
+    background: linear-gradient(135deg, #ff6b6b, #ff8c42); 
+    color: #fff; 
+    font-weight: 800; 
+    padding: 10px 16px; 
+    border-radius: 12px; 
+    border: 1px solid rgba(255,107,107,0.35); 
+    box-shadow: 0 12px 30px rgba(255,107,107,0.35); 
+    text-decoration: none; 
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; 
+}
+
+.btn-events:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 16px 36px rgba(255,107,107,0.45); 
+    opacity: 0.95; 
+    color: #fff; 
+}

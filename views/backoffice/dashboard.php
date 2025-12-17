@@ -10,6 +10,12 @@ $eventController = new EventController();
 $streams = $streamController->listStreams();
 $events = $eventController->listEvents();
 
+// Debug: voir les données récupérées
+error_log("Dashboard - Nombre de streams: " . count($streams));
+if (!empty($streams)) {
+    error_log("Dashboard - Premier stream: " . print_r($streams[0], true));
+}
+
 $totalStreams = count($streams);
 $streamsEnCours = count(array_filter($streams, fn($s) => $s['statut'] === 'en_cours'));
 $totalDonsStreams = array_sum(array_column($streams, 'don_total'));
@@ -39,6 +45,8 @@ if (isset($_GET['deleted']) && $_GET['deleted'] === 'success') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play2Help • Backoffice Unifié</title>
+    <link rel="icon" type="image/png" href="../../views/frontoffice/assets/images/logooo.png">
+    <link rel="apple-touch-icon" href="../../views/frontoffice/assets/images/logooo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -97,13 +105,17 @@ if (isset($_GET['deleted']) && $_GET['deleted'] === 'success') {
             <!-- GRAPHIQUE COURBE - Dons par Stream -->
             <div class="card rounded-3xl p-8 glow border-2 border-cyan-500/50">
                 <h3 class="text-2xl font-bold text-cyan-400 mb-6 text-center font-orbitron">📈 DONS PAR STREAM</h3>
-                <canvas id="donsChart"></canvas>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="donsChart" width="400" height="300"></canvas>
+                </div>
             </div>
 
             <!-- GRAPHIQUE CERCLE - Répartition des Statuts -->
             <div class="card rounded-3xl p-8 glow border-2 border-purple-500/50">
                 <h3 class="text-2xl font-bold text-purple-400 mb-6 text-center font-orbitron">📊 RÉPARTITION DES STATUTS</h3>
-                <canvas id="statusChart"></canvas>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="statusChart" width="400" height="300"></canvas>
+                </div>
             </div>
         </div>
 
@@ -356,141 +368,245 @@ if (isset($_GET['deleted']) && $_GET['deleted'] === 'success') {
     </footer>
 
     <script>
+        // Initialize feather icons
         feather.replace({ width: 16, height: 16 });
 
+        // Global function for tab switching (must be outside DOMContentLoaded)
         function showTab(tab) {
+            console.log('showTab called with:', tab);
+            
             const tabs = ['streams', 'events'];
             tabs.forEach(t => {
                 const section = document.getElementById('section-' + t);
                 const button = document.getElementById('tab-' + t);
+                
+                console.log('Processing tab:', t);
+                console.log('Section found:', section);
+                console.log('Button found:', button);
+                
+                if (!section || !button) {
+                    console.error('Missing elements for tab:', t);
+                    return;
+                }
+                
                 if (t === tab) {
                     section.classList.remove('hidden');
                     button.classList.remove('tab-inactive');
                     button.classList.add('tab-active');
+                    console.log('Activated tab:', t);
                 } else {
                     section.classList.add('hidden');
                     button.classList.remove('tab-active');
                     button.classList.add('tab-inactive');
+                    console.log('Deactivated tab:', t);
                 }
             });
         }
 
-        // Données PHP pour les graphiques
-        <?php
-        // Préparation des données pour le graphique des dons
-        $streamLabels = [];
-        $streamDons = [];
-        foreach ($streams as $stream) {
-            $streamLabels[] = substr($stream['titre'], 0, 20) . (strlen($stream['titre']) > 20 ? '...' : '');
-            $streamDons[] = (float)$stream['don_total'];
-        }
+        // Test function accessibility
+        console.log('showTab function defined:', typeof showTab);
 
-        // Comptage des statuts pour le graphique circulaire
-        $statusCount = [
-            'planifie' => 0,
-            'en_cours' => 0,
-            'termine' => 0,
-            'annule' => 0
-        ];
-        foreach ($streams as $stream) {
-            $status = $stream['statut'] ?? 'planifie';
-            if (isset($statusCount[$status])) {
-                $statusCount[$status]++;
-            }
-        }
-        ?>
-
-        // GRAPHIQUE COURBE - Dons par Stream
-        const donsCtx = document.getElementById('donsChart').getContext('2d');
-        const donsChart = new Chart(donsCtx, {
-            type: 'line',
-            data: {
-                labels: <?= json_encode($streamLabels) ?>,
-                datasets: [{
-                    label: 'Dons (DT)',
-                    data: <?= json_encode($streamDons) ?>,
-                    borderColor: '#22d3ee',
-                    backgroundColor: 'rgba(34, 211, 238, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#22d3ee',
-                    pointBorderColor: '#0f172a',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#22d3ee',
-                            font: { size: 14, family: 'Space Mono' }
-                        }
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing charts...');
+            console.log('showTab function accessible in DOMContentLoaded:', typeof showTab);
+            
+            // Données PHP pour les graphiques
+            <?php
+            // Préparation des données pour le graphique des dons
+            $streamLabels = [];
+            $streamDons = [];
+            if (is_array($streams)) {
+                error_log("Dashboard - Processing " . count($streams) . " streams");
+                foreach ($streams as $index => $stream) {
+                    $titre = $stream['titre'] ?? '';
+                    $donTotal = $stream['don_total'] ?? 0;
+                    
+                    error_log("Dashboard - Stream $index: titre='$titre', don_total='$donTotal'");
+                    
+                    if (!empty($titre)) {
+                        $streamLabels[] = substr($titre, 0, 20) . (strlen($titre) > 20 ? '...' : '');
+                    } else {
+                        $streamLabels[] = "Stream #" . ($stream['id_stream'] ?? $index + 1);
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: 'rgba(34, 211, 238, 0.1)' }
+                    $streamDons[] = (float)$donTotal;
+                }
+            }
+
+            // Comptage des statuts pour le graphique circulaire
+            $statusCount = [
+                'planifie' => 0,
+                'en_cours' => 0,
+                'termine' => 0,
+                'annule' => 0
+            ];
+            if (is_array($streams)) {
+                foreach ($streams as $stream) {
+                    $status = $stream['statut'] ?? 'planifie';
+                    if (isset($statusCount[$status])) {
+                        $statusCount[$status]++;
+                    }
+                }
+            }
+            
+            // Ensure we have valid JSON
+            $streamLabelsJson = json_encode($streamLabels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+            $streamDonsJson = json_encode($streamDons, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+            
+            if ($streamLabelsJson === false) $streamLabelsJson = '[]';
+            if ($streamDonsJson === false) $streamDonsJson = '[]';
+            ?>
+
+            // Debug data
+            const streamLabels = <?= $streamLabelsJson ?>;
+            const streamDons = <?= $streamDonsJson ?>;
+            const statusData = [
+                <?= (int)$statusCount['planifie'] ?>,
+                <?= (int)$statusCount['en_cours'] ?>,
+                <?= (int)$statusCount['termine'] ?>,
+                <?= (int)$statusCount['annule'] ?>
+            ];
+            
+            console.log('Stream labels:', streamLabels);
+            console.log('Stream dons:', streamDons);
+            console.log('Status data:', statusData);
+
+            // Fallback data if no streams exist
+            const hasStreamData = streamDons.length > 0; // On se base sur les dons, pas les labels
+            const hasStatusData = statusData.some(val => val > 0);
+            
+            console.log('hasStreamData:', hasStreamData, 'streamLabels.length:', streamLabels.length, 'streamDons.length:', streamDons.length);
+            
+            // Si on a des dons mais pas de labels, créer des labels par défaut
+            if (streamDons.length > 0 && streamLabels.length === 0) {
+                console.log('Creating default labels for streams');
+                for (let i = 0; i < streamDons.length; i++) {
+                    streamLabels.push('Stream #' + (i + 1));
+                }
+            }
+            
+            if (!hasStreamData) {
+                console.warn('No stream data available, using fallback');
+            }
+            if (!hasStatusData) {
+                console.warn('No status data available, using fallback');
+            }
+
+            // Check if Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded!');
+                return;
+            }
+
+            // GRAPHIQUE COURBE - Dons par Stream
+            try {
+                const donsCanvas = document.getElementById('donsChart');
+                if (!donsCanvas) {
+                    console.error('Canvas donsChart not found!');
+                    return;
+                }
+                
+                const donsCtx = donsCanvas.getContext('2d');
+                const donsChart = new Chart(donsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: hasStreamData ? streamLabels : ['Aucun stream'],
+                        datasets: [{
+                            label: 'Dons (DT)',
+                            data: hasStreamData ? streamDons : [0],
+                            borderColor: '#22d3ee',
+                            backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#22d3ee',
+                            pointBorderColor: '#0f172a',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
                     },
-                    x: {
-                        ticks: { 
-                            color: '#94a3b8',
-                            maxRotation: 45,
-                            minRotation: 45
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#22d3ee',
+                                    font: { size: 14, family: 'Space Mono' }
+                                }
+                            }
                         },
-                        grid: { color: 'rgba(34, 211, 238, 0.1)' }
-                    }
-                }
-            }
-        });
-
-        // GRAPHIQUE CERCLE - Répartition des Statuts
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        const statusChart = new Chart(statusCtx, {
-            type: 'pie',
-            data: {
-                labels: ['📅 Planifié', '🔴 En cours', '✅ Terminé', '❌ Annulé'],
-                datasets: [{
-                    data: [
-                        <?= $statusCount['planifie'] ?>,
-                        <?= $statusCount['en_cours'] ?>,
-                        <?= $statusCount['termine'] ?>,
-                        <?= $statusCount['annule'] ?>
-                    ],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(34, 197, 94, 0.8)',
-                        'rgba(156, 163, 175, 0.8)',
-                        'rgba(239, 68, 68, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(59, 130, 246, 1)',
-                        'rgba(34, 197, 94, 1)',
-                        'rgba(156, 163, 175, 1)',
-                        'rgba(239, 68, 68, 1)'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#a855f7',
-                            font: { size: 14, family: 'Space Mono' },
-                            padding: 15
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(34, 211, 238, 0.1)' }
+                            },
+                            x: {
+                                ticks: { 
+                                    color: '#94a3b8',
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                },
+                                grid: { color: 'rgba(34, 211, 238, 0.1)' }
+                            }
                         }
                     }
+                });
+                console.log('Dons chart created successfully');
+            } catch (error) {
+                console.error('Error creating dons chart:', error);
+            }
+
+            // GRAPHIQUE CERCLE - Répartition des Statuts
+            try {
+                const statusCanvas = document.getElementById('statusChart');
+                if (!statusCanvas) {
+                    console.error('Canvas statusChart not found!');
+                    return;
                 }
+                
+                const statusCtx = statusCanvas.getContext('2d');
+                const statusChart = new Chart(statusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: hasStatusData ? ['📅 Planifié', '🔴 En cours', '✅ Terminé', '❌ Annulé'] : ['Aucune donnée'],
+                        datasets: [{
+                            data: hasStatusData ? statusData : [1],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(156, 163, 175, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(156, 163, 175, 1)',
+                                'rgba(239, 68, 68, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#a855f7',
+                                    font: { size: 14, family: 'Space Mono' },
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('Status chart created successfully');
+            } catch (error) {
+                console.error('Error creating status chart:', error);
             }
         });
     </script>

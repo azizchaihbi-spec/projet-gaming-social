@@ -26,8 +26,6 @@ font & reset css
 --------------------------------------------- 
 */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900");
-<<<<<<< HEAD
-=======
 
 /* Theme CSS Variables (non-breaking: map existing palette) */
 :root {
@@ -39,7 +37,6 @@ font & reset css
   --tm-overlay: rgba(0,0,0,0.5);
 }
 
->>>>>>> sinda
 /* 
 ---------------------------------------------
 reset
@@ -100,22 +97,6 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-/* Theme CSS Variables (non-breaking: map existing palette) */
-:root {
-  --tm-bg-dark: #1f2122;
-  --tm-bg-panel: #27292a;
-  --tm-accent: #e75e8d; /* main pink accent used across theme */
-  --tm-accent-strong: #ec6090; /* border/text accent */
-  --tm-text-muted: #666;
-  --tm-overlay: rgba(0,0,0,0.5);
-}
-
-=======
->>>>>>> ismail
-=======
->>>>>>> sinda
 a {
 	color: #CCC;
   text-decoration: none !important;
@@ -153,22 +134,99 @@ Global Styles
 */
 html,
 body {
-  background: #1f2122;
+  background: #2E2A5C;
   font-family: 'Poppins', sans-serif;
-<<<<<<< HEAD
-=======
   overflow-x: hidden;
   padding-top: 80px; /* height of header */
->>>>>>> sinda
 }
 
 body .page-content {
   margin-top: 110px;
-  background-color: #27292a;
+  background: 
+    linear-gradient(135deg, rgba(138, 43, 226, 0.12) 0%, transparent 25%),
+    linear-gradient(225deg, rgba(75, 0, 130, 0.10) 0%, transparent 25%),
+    linear-gradient(315deg, rgba(0, 191, 255, 0.08) 0%, transparent 25%),
+    radial-gradient(circle at 20% 30%, rgba(147, 112, 219, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(72, 61, 139, 0.15) 0%, transparent 40%),
+    linear-gradient(145deg, rgba(25, 25, 60, 0.95), rgba(46, 42, 92, 0.85));
   padding: 60px;
   border-radius: 23px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 40px rgba(138, 43, 226, 0.2);
 }
 
+body .page-content::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    #8A2BE2 0%, 
+    #4B0082 25%, 
+    #00BFFF 50%, 
+    #9370DB 75%, 
+    #8A2BE2 100%);
+  background-size: 400% 400%;
+  border-radius: 25px;
+  z-index: -1;
+  animation: borderGlow 8s ease infinite;
+  opacity: 0.6;
+}
+
+body .page-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 98px,
+      rgba(138, 43, 226, 0.04) 100px,
+      rgba(138, 43, 226, 0.04) 102px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 98px,
+      rgba(75, 0, 130, 0.04) 100px,
+      rgba(75, 0, 130, 0.04) 102px
+    );
+  border-radius: 23px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes borderGlow {
+  0%, 100% { 
+    background-position: 0% 50%; 
+    opacity: 0.6;
+  }
+  25% { 
+    background-position: 100% 50%; 
+    opacity: 0.8;
+  }
+  50% { 
+    background-position: 200% 50%; 
+    opacity: 0.6;
+  }
+  75% { 
+    background-position: 300% 50%; 
+    opacity: 0.8;
+  }
+}
+  
 p {
   font-size: 15px;
   color: #666;
@@ -261,8 +319,6 @@ section {
   text-decoration: underline;
 }
 
-<<<<<<< HEAD
-=======
 .content{ 
   color: white;
 }
@@ -280,7 +336,6 @@ small{
   margin-right: 30px;
 }
 
->>>>>>> sinda
 /* 
 ---------------------------------------------
 Pre-loader Style
@@ -381,11 +436,6 @@ Pre-loader Style
   border-radius: 50%;
 }
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> sinda
 /* 
 ---------------------------------------------
 Header Style
@@ -393,11 +443,7 @@ Header Style
 */
 
 .background-header {
-<<<<<<< HEAD
-  background-color: #1a1a2e !important; /* Corrigé : fond gris au lieu de blanc */
-=======
   background-color: #1a1a2e !important;
->>>>>>> sinda
   height: 70px!important;
   position: fixed!important;
   top: 0!important;
@@ -409,20 +455,11 @@ Header Style
   -o-transition: all .5s ease 0s;
   transition: all .5s ease 0s;
   display: none;
-<<<<<<< HEAD
-  /* Surcharge pour garder le fond gris même en sticky/scrolled */
-  backdrop-filter: blur(10px); /* Optionnel : effet flou pour modernité */
-}
-
-.header-area {
-  background-color: #1a1a2e; /* Corrigé : fond gris par défaut */
-=======
   backdrop-filter: blur(10px);
 }
 
 .header-area {
   background-color: #1a1a2e;
->>>>>>> sinda
   position: absolute;
   height: 70px;
   top: 15px;
@@ -433,19 +470,11 @@ Header Style
   -moz-transition: all .5s ease 0s;
   -o-transition: all .5s ease 0s;
   transition: all .5s ease 0s;
-<<<<<<< HEAD
-  width: 100%; /* Assure la pleine largeur */
-}
-
-.header-area .container {
-  max-width: none; /* Corrigé : pleine largeur du conteneur header */
-=======
   width: 100%;
 }
 
 .header-area .container {
   max-width: none;
->>>>>>> sinda
   width: 100%;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -710,19 +739,11 @@ Header Style
   color: #fff;
 }
 
-<<<<<<< HEAD
-/* Surcharge pour header sticky et scrolled (si JS ajoute .scrolled) */
-=======
->>>>>>> sinda
 .header-area.header-sticky,
 .header-area.header-sticky.scrolled,
 .header-area.scrolled {
     background-color: #1a1a2e !important;
-<<<<<<< HEAD
-    backdrop-filter: blur(10px); /* Effet flou optionnel pour modernité sans blanc */
-=======
     backdrop-filter: blur(10px);
->>>>>>> sinda
 }
 
 @media (max-width: 1200px) {
@@ -733,8 +754,6 @@ Header Style
   .header-area .main-nav:before {
     display: none;
   }
-<<<<<<< HEAD
-=======
   .header-area .main-nav .logooo {
     margin-right: 30px;
     border-right: none;
@@ -742,7 +761,6 @@ Header Style
   .gaming-library .item ul li {
     width: 16%;
   }
->>>>>>> sinda
 }
 
 @media (max-width: 992px) {
@@ -750,11 +768,7 @@ Header Style
     top: 0;
   }
   .header-area .main-nav {
-<<<<<<< HEAD
-    background-color: #1a1a2e; /* Corrigé : fond gris en mobile */
-=======
     background-color: #1a1a2e;
->>>>>>> sinda
     border-radius: 0px;
   }
   .header-area .main-nav .nav {
@@ -786,11 +800,7 @@ Header Style
     width: 100%;
   }
   .header-area {
-<<<<<<< HEAD
-    background-color: #1a1a2e; /* Corrigé : fond gris en mobile */
-=======
     background-color: #1a1a2e;
->>>>>>> sinda
     padding: 0px 15px;
     height: 80px;
     box-shadow: none;
@@ -885,8 +895,6 @@ Header Style
   .header-area .main-nav .nav li.submenu:hover ul, .header-area .main-nav .nav li.submenu:focus ul {
     height: 0px;
   }
-<<<<<<< HEAD
-=======
   .background-header {
     display: inline-block;
   }
@@ -914,7 +922,6 @@ Header Style
   .main-profile .main-info {
     margin: 45px 0px;
   }
->>>>>>> sinda
 }
 
 /* 
@@ -959,12 +966,12 @@ Most Popular Style
 .most-popular {
   margin-top: 60px;
   padding: 30px;
-  background-color: #1f2122;
+  background-color: #353b75;
   border-radius: 23px;
 }
 
 .most-popular .item {
-  background-color: #27292a;
+  background-color: #353b75;;
   padding: 30px 15px;
   border-radius: 23px;
   margin-bottom: 30px;
@@ -1019,13 +1026,10 @@ Most Popular Style
   margin-bottom: -53px;
 }
 
-<<<<<<< HEAD
-=======
 .most-popular .item .inner-item {
   margin-bottom: 20px;
 }
 
->>>>>>> sinda
 /* 
 ---------------------------------------------
 Gaming Library Style
@@ -1035,12 +1039,12 @@ Gaming Library Style
 .gaming-library {
   margin-top: 60px;
   padding: 30px;
-  background-color: #1f2122;
+  background-color: #353b75;;
   border-radius: 23px;
 }
 
 .gaming-library .item {
-  border-bottom: 1px solid #27292a;
+  border-bottom: 1px solid #353b75;;
   margin-bottom: 20px;
   padding-bottom: 20px;
 }
@@ -1094,31 +1098,6 @@ Gaming Library Style
 
 /* 
 ---------------------------------------------
-<<<<<<< HEAD
-Footer Style
---------------------------------------------- 
-*/
-
-footer p {
-  text-align: center;
-  padding: 30px 0px;
-  color: #fff;
-  font-weight: 300;
-}
-
-footer p a {
-  color: #fff;
-  transition: all .3s;
-}
-
-footer p a:hover {
-  color: #ec6090;
-}
-
-/* 
----------------------------------------------
-=======
->>>>>>> sinda
 Featured Games Style
 --------------------------------------------- 
 */
@@ -1629,20 +1608,10 @@ Top Streamers Style
   display: inline-block;
   width: 100%;
   border-bottom: 1px solid #353637;
-<<<<<<< HEAD
-<<<<<<< HEAD
-  margin-bottom: 25px;
-  padding-bottom: 25px;
-=======
-  margin-top: 0;      /* FIX */
-  padding: 15px 0;
->>>>>>> ismail
-=======
   margin-bottom: 25px;
   padding-bottom: 25px;
   margin-top: 0;
   padding: 15px 0;
->>>>>>> sinda
 }
 
 .top-streamers ul li:last-child {
@@ -1806,135 +1775,9 @@ Profile Style
 
 /* 
 ---------------------------------------------
-<<<<<<< HEAD
-Responsive Style
---------------------------------------------- 
-*/
-
-body {
-  overflow-x: hidden;
-  padding-top: 80px; /* height of header - conservé de votre ajout */
-}
-
-@media (max-width: 767px) {
-  body .page-content {
-    padding: 0px 30px;
-  }
-  .main-banner {
-    text-align: center;
-  }
-  .main-banner h4 {
-    font-size: 35px;
-  }
-  .gaming-library .item ul li,
-  .gaming-library .item ul li:first-child,
-  .gaming-library .item ul li:last-child {
-    width: 100% !important;
-    text-align: center !important;
-  }
-  .gaming-library .item ul li {
-    margin-top: 30px;
-  }
-  .top-downloaded ul li .download i {
-    top: 20px;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-  }
-  .top-downloaded ul li img {
-    margin-right: 10px;
-  }
-  .top-downloaded ul li span {
-    font-size: 14px;
-  }
-  .top-streamers ul li .main-button {
-    float: none;
-    margin-top: 10px;
-  }
-  .top-streamers ul li .main-button a {
-    width: 100%;
-    text-align: center;
-  }
-  .top-streamers,
-  .top-downloaded {
-    max-height: 100%;
-    min-height: 100%;
-  }
-  .most-popular .item .inner-item {
-    margin-bottom: 20px;
-  }
-}
-
-@media (max-width: 992px) {
-  .background-header {
-  display: inline-block;
-  }
-  .header-area .main-nav #search {
-    display: none;
-  }
-  .heading-section h4 {
-    font-size: 20px;
-  }
-  .gaming-library .item ul li {
-    width: 48% !important;
-  }
-  .gaming-library .item ul li:last-child {
-    text-align: left;
-  }
-  .featured-games {
-    margin-bottom: 60px;
-  }
-  .start-stream .item {
-    margin: 15px 0px;
-  }
-  .feature-banner .thumb {
-    margin-top: 30px;
-  }
-  .main-profile .main-info {
-    margin: 45px 0px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .header-area .main-nav .nav li {
-    padding-right: 5px;
-    padding-left: 5px;
-  }
-  .header-area .main-nav .logooo {
-    margin-right: 30px;
-    border-right: none;
-  }
-  .gaming-library .item ul li {
-    width: 16%;
-  }
-}
-.logooo{
-  width: 10px;
-  height: 75px;
-  display: flex;
-  margin: 0 auto;
-  margin-bottom: 50px;
-  margin-right: 30px;
-
-}
-small{
-  color: red;
-}
-.content{ 
-  color: white;
-}
-
-<<<<<<< HEAD
-/* Keep header fixed at the top - conservé de votre ajout, mais déjà géré par .header-sticky */
-=======
-/* ──────────────────────────
-   EVENTS SECTION – Big Posters Grid
-   ────────────────────────── */
-=======
 Events Section - Big Posters Grid
 --------------------------------------------- 
 */
->>>>>>> sinda
 .events-section {
   padding: 60px 0;
   background-color: #1f2122;
@@ -1972,11 +1815,7 @@ Events Section - Big Posters Grid
 
 .event-poster {
   position: relative;
-<<<<<<< HEAD
-  height: 280px; /* Big poster height */
-=======
   height: 280px;
->>>>>>> sinda
   overflow: hidden;
 }
 
@@ -2061,14 +1900,6 @@ Events Section - Big Posters Grid
   transform: translateY(-2px);
 }
 
-<<<<<<< HEAD
-/* Responsive */
-@media (max-width: 768px) {
-  .event-poster { height: 220px; }
-  .event-meta { justify-content: center; }
-}
->>>>>>> ismail
-=======
 /* 
 ---------------------------------------------
 Footer Style
@@ -2148,4 +1979,3 @@ Responsive Style
     justify-content: center; 
   }
 }
->>>>>>> sinda

@@ -1,50 +1,23 @@
-<<<<<<< HEAD
-// Menu toggle
-=======
 $(document).ready(function() {
     // Menu toggle functionality
->>>>>>> sinda
     $('.menu-trigger').click(function(e) {
         e.preventDefault();
         $('body').toggleClass('menu-is-open');
     });
-<<<<<<< HEAD
-=======
 
     // Close menu when clicking outside
->>>>>>> sinda
     $(document).on('click', function(e) {
         if (!$(e.target).closest('.main-nav, .menu-trigger').length) {
             $('body').removeClass('menu-is-open');
         }
     });
-<<<<<<< HEAD
-=======
 
     // Close menu on scroll
->>>>>>> sinda
     $(window).on('scroll', function() {
         $('body').removeClass('menu-is-open');
     });
 
     // Header show/hide on scroll
-<<<<<<< HEAD
-    $(document).ready(function () {
-        var lastScrollTop = 0;
-        var $header = $('#mainHeader');
-        $(window).on('scroll', function () {
-            var st = $(this).scrollTop();
-            if (st > lastScrollTop && st > 100) {
-                $header.css('transform', 'translateY(-100%)');
-            } else {
-                $header.css('transform', 'translateY(0)');
-            }
-            lastScrollTop = st;
-        });
-    });
-
-    // Validation formulaire Don
-=======
     var lastScrollTop = 0;
     var $header = $('#mainHeader');
     $(window).on('scroll', function () {
@@ -97,7 +70,6 @@ $(document).ready(function() {
     });
 
     // Validation formulaire Don (jQuery version)
->>>>>>> sinda
     $('#formDon').submit(function(e) {
         e.preventDefault();
 
@@ -159,78 +131,6 @@ $(document).ready(function() {
         $('#modalChallenge').modal('hide');
         this.reset();
     });
-<<<<<<< HEAD
-
-    // Animation cards au chargement
-    $('.challenge-card').each(function(i) {
-        $(this).delay(200 * i).queue(function(next){
-            $(this).addClass('animated fadeInUp');
-            next();
-        });
-    });
-// Toggle menu open class
-    $('.menu-trigger').click(function(e) {
-        e.preventDefault();
-        $('body').toggleClass('menu-is-open');
-    });
-
-    // Close menu when clicking outside
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('.main-nav, .menu-trigger').length) {
-            $('body').removeClass('menu-is-open');
-        }
-    });
-
-    // Show/hide header on scroll: hide scroll down, show scroll up
-    $(document).ready(function() {
-        var lastScrollTop = 0;
-        var $header = $('#mainHeader');
-
-        $(window).on('scroll', function() {
-            var st = $(this).scrollTop();
-
-            if (st > lastScrollTop && st > 100) {
-                // Scroll vers bas, cacher header
-                $header.css({
-                    'transform': 'translateY(-100%)',
-                    'transition': 'transform 0.4s ease'
-                });
-            } else {
-                // Scroll vers haut, montrer header
-                $header.css({
-                    'transform': 'translateY(0)',
-                    'transition': 'transform 0.4s ease'
-                });
-            }
-            lastScrollTop = st;
-        });
-    });
-
-    // Initialisation Owl Carousel pour associations
-    $(document).ready(function () {
-      $('#assoc-slider').owlCarousel({
-        loop: true,
-        margin: 20,
-        nav: true,
-        navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
-        responsive: {
-          0: { items: 1 },
-          768: { items: 2 },
-          992: { items: 3 }
-        }
-      });
-    });
-
-    // Animation remplissage barre de progression dans challenges
-    $('.progression-fill').each(function () {
-      const width = $(this).attr('style');
-      $(this).css('width', '0');
-      $(this).animate(
-        { width: width.replace('width: ', '') },
-        1500
-      );
-    });
-=======
 });
 
 // Advanced form validation for donations (vanilla JS version for compatibility)
@@ -295,4 +195,61 @@ document.addEventListener("DOMContentLoaded", function () {
         // (cette partie peut être étendue selon les besoins)
     });
 });
->>>>>>> sinda
+
+// Association Card Click - Open Modal with Details
+document.addEventListener("DOMContentLoaded", function () {
+    const cards = document.querySelectorAll('.solidaire-card.clickable-card');
+    const modal = document.getElementById('modalAssociation');
+    
+    if (!modal || cards.length === 0) return;
+    
+    // Bootstrap modal instance
+    let bsModal = null;
+    if (typeof bootstrap !== 'undefined') {
+        bsModal = new bootstrap.Modal(modal);
+    }
+    
+    cards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Don't open modal if clicking on the donate button
+            if (e.target.closest('.neon-btn')) return;
+            
+            // Get data from card attributes
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            const description = this.dataset.description;
+            const total = this.dataset.total;
+            const donateurs = this.dataset.donateurs;
+            const email = this.dataset.email;
+            const website = this.dataset.website;
+            
+            // Populate modal
+            document.getElementById('modal-assoc-name').textContent = name;
+            document.getElementById('modal-assoc-description').textContent = description;
+            document.getElementById('modal-assoc-total').textContent = total + '€';
+            document.getElementById('modal-assoc-donateurs').textContent = donateurs;
+            document.getElementById('modal-assoc-email').textContent = email;
+            
+            // Website section
+            const websiteSection = document.getElementById('website-section');
+            const websiteLink = document.getElementById('modal-assoc-website');
+            if (website && website.trim() !== '') {
+                websiteSection.style.display = 'block';
+                websiteLink.href = website;
+                websiteLink.textContent = website;
+            } else {
+                websiteSection.style.display = 'none';
+            }
+            
+            // Update donate button link
+            document.getElementById('modal-donate-btn').href = 'don.php?association=' + id;
+            
+            // Open modal
+            if (bsModal) {
+                bsModal.show();
+            } else if (typeof $ !== 'undefined') {
+                $('#modalAssociation').modal('show');
+            }
+        });
+    });
+});

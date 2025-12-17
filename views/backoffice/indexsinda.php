@@ -47,43 +47,22 @@ while ($row = $assocQuery->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play2Help • Backoffice</title>
+    <title>Play2Help • Gestion des Dons</title>
+    <link rel="icon" type="image/png" href="../../views/frontoffice/assets/images/logooo.png">
+    <link rel="apple-touch-icon" href="../../views/frontoffice/assets/images/logooo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Space Mono', monospace; 
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
-        }
-        .card { 
-            background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(34, 211, 238, 0.3); 
-        }
-        .neon { 
-            text-shadow: 0 0 20px #22d3ee, 0 0 40px #22d3ee; 
-        }
-        .glow:hover { 
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.6); 
-        }
-        .scanline { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 4px; 
-            background: linear-gradient(90deg, transparent, #22d3ee, transparent); 
-            animation: scan 6s linear infinite; 
-        }
-        @keyframes scan { 
-            0% { transform: translateY(-100%); } 
-            100% { transform: translateY(100vh); } 
-        }
-        .font-orbitron { 
-            font-family: 'Orbitron', sans-serif; 
-        }
+        body { font-family: 'Space Mono', monospace; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(34, 211, 238, 0.3); }
+        .neon { text-shadow: 0 0 20px #22d3ee, 0 0 40px #22d3ee; }
+        .glow:hover { box-shadow: 0 0 30px rgba(34, 211, 238, 0.6); }
+        .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, transparent, #22d3ee, transparent); animation: scan 6s linear infinite; }
+        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+        .tab-active { background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); }
+        .tab-inactive { background: rgba(30, 41, 59, 0.5); }
         
         /* Styles pour l'édition inline */
         .editable-cell {
@@ -215,7 +194,11 @@ while ($row = $assocQuery->fetch_assoc()) {
     </style>
 </head>
 <body class="relative min-h-screen overflow-x-hidden">
+
     <div class="scanline"></div>
+
+    <!-- Header commun -->
+    <?php include __DIR__ . '/includes/header.php'; ?>
     
     <main class="container mx-auto px-6 py-12 max-w-7xl">
         <!-- TITRE FUTURISTE -->
@@ -225,7 +208,7 @@ while ($row = $assocQuery->fetch_assoc()) {
         </div>
 
         <!-- NAVIGATION VERS NOUVELLES PAGES -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 gap-6 mb-12 max-w-2xl mx-auto">
             <!-- Analytics Challenges -->
             <a href="challenge_analytics.php" class="nav-btn rounded-2xl p-8 text-center block group">
                 <div class="text-6xl mb-4 group-hover:scale-110 transition-transform">📊</div>
@@ -234,13 +217,7 @@ while ($row = $assocQuery->fetch_assoc()) {
                 <div class="mt-4 text-cyan-400 font-semibold">Voir les stats <i data-feather="arrow-right" class="inline w-4 h-4 ml-1"></i></div>
             </a>
             
-            <!-- Retour Front -->
-            <a href="../frontoffice/don.php" class="nav-btn rounded-2xl p-8 text-center block group">
-                <div class="text-6xl mb-4 group-hover:scale-110 transition-transform">🎮</div>
-                <h3 class="text-2xl font-bold text-emerald-300 mb-2">Espace Public</h3>
-                <p class="text-gray-400">Retour à l'interface utilisateur</p>
-                <div class="mt-4 text-cyan-400 font-semibold">Accéder <i data-feather="arrow-right" class="inline w-4 h-4 ml-1"></i></div>
-            </a>
+
         </div>
 
         <!-- 4 CARTES DE STATS -->
