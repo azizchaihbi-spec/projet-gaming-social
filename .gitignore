@@ -1,0 +1,23 @@
+# Dépendances (commenté pour push vendor/)
+# vendor/
+
+# Fichiers de configuration sensibles
+.env
+config/stripe_config.php
+config/email_configsinda.php
+
+# Exports générés
+exports/dons/*.pdf
+exports/dons/*.csv
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Fichiers temporaires
+*.tmp
+*.temp

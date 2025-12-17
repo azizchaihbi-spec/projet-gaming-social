@@ -1,0 +1,33 @@
+{
+    "name": "playtohelp/gaming-solidaire",
+    "description": "Plateforme gaming solidaire avec système de dons et challenges",
+    "type": "project",
+    "keywords": ["gaming", "solidaire", "dons", "challenges", "stripe"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aziz Chaihbi",
+            "email": "aziz@playtohelp.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "stripe/stripe-php": "^10.0",
+        "phpmailer/phpmailer": "^6.8",
+        "tecnickcom/tcpdf": "^6.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "PlayToHelp\\": "src/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "echo 'Installation terminée ! Configurez vos clés API dans config/'"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

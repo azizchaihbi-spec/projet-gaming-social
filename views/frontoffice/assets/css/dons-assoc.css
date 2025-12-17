@@ -1,3 +1,4 @@
+<<<<<<< HEAD
  /* Fix header */
         .header-area {
             background-color: #1a1a2e;
@@ -976,3 +977,710 @@
         footer a:hover {
             text-decoration: underline;
         }
+=======
+/* ============================================= */
+/*              DONS & ASSOCIATIONS STYLES     */
+/* ============================================= */
+
+/* === Styles Générales - Fond & Typo === */
+body {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+    color: #eee;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    padding-top: 80px;
+}
+
+/* Fix header */
+.header-area {
+    background-color: #1a1a2e;
+    width: 100%;
+}
+.header-area .container {
+    max-width: none;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.header-area.header-sticky { 
+    top: 0 !important; 
+    z-index: 99999 !important; 
+    transition: transform 0.4s ease !important; 
+}
+.header-area.header-sticky { 
+    display: flex !important; 
+    margin-right: 20px; 
+}
+body.menu-is-open .header-area { 
+    display: flex !important; 
+    position: fixed !important; 
+}
+.menu-trigger { 
+    cursor: pointer; 
+    z-index: 100000; 
+}
+body.menu-is-open { 
+    overflow-x: hidden; 
+    padding-top: 0 !important; 
+}
+@media (max-width: 768px) { 
+    body { 
+        padding-top: 0 !important; 
+    } 
+}
+
+/* Navigation */
+.main-nav img {
+    height: 50px;
+    filter: drop-shadow(0 0 5px #00ff88dd);
+}
+.main-nav ul.nav li a,
+.main-nav ul.nav li a.active {
+    color: #eee;
+    font-weight: 600;
+    padding: 10px 15px;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+.main-nav ul.nav li a.active,
+.main-nav ul.nav li a:hover {
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88;
+}
+.search-input input {
+    background: #111;
+    border: none;
+    color: #eee;
+    padding: 8px 12px;
+    border-radius: 20px;
+    width: 280px;
+    transition: box-shadow 0.3s ease;
+}
+.search-input input:focus {
+    outline: none;
+    box-shadow: 0 0 15px #00ff88;
+    background: #1a1a1a;
+}
+.search-input i.fa-search {
+    color: #00ff88;
+    position: relative;
+    left: -30px;
+    top: 2px;
+    cursor: pointer;
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+    border-radius: 20px;
+    padding: 50px 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 0 60px rgba(0,255,136,0.4);
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    max-width: 900px;
+    margin: 40px auto;
+}
+.hero-banner h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #00ff88;
+    text-shadow: 0 0 25px #00ff88;
+    animation: glow 1.5s ease-in-out infinite alternate;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+.hero-banner p {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+    color: #aaa;
+    animation: fadeInUp 1s ease-out 0.5s both;
+    position: relative;
+    z-index: 1;
+}
+.hero-banner .btn-hero {
+    display: inline-block;
+    padding: 14px 40px;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 40px;
+    box-shadow: 0 0 20px #ff416c99;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+.hero-banner .btn-hero:hover {
+    box-shadow: 0 0 40px #ff4b2bcc;
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 15px #00ff88, 0 0 25px #00ff88;
+    }
+    to {
+        text-shadow: 0 0 25px #00ff88, 0 0 35px #00ff88, 0 0 45px #00ff88;
+    }
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+@keyframes buttonGlow {
+    0% {
+        box-shadow: 0 0 30px #ff416c99;
+    }
+    100% {
+        box-shadow: 0 0 40px #ff4b2b, 0 0 50px #ff416c;
+    }
+}
+@keyframes buttonPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* Grid Donation & Challenges */
+.challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+/* Slider Associations en Vedette */
+.owl-features .item {
+    background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(0,255,136,0.05));
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 5px 35px rgba(0,255,136,0.2);
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+.owl-features .item:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 45px rgba(0,255,136,0.8);
+    border-color: #00ff88;
+}
+.owl-features .thumb {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 15px #00ff88aa;
+}
+.owl-features .thumb img {
+    max-width: 100%;
+    display: block;
+    border-radius: 15px;
+}
+.owl-features .hover-effect {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,255,136,0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.owl-features .item:hover .hover-effect {
+    opacity: 1;
+}
+.owl-features h4 {
+    margin-top: 15px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88;
+}
+.owl-features h4 span {
+    font-weight: 400;
+    font-size: 1rem;
+    color: #aaa;
+    display: block;
+    margin-top: 5px;
+    text-shadow: none;
+}
+.owl-features ul {
+    margin-top: 10px;
+    list-style-type: none;
+    padding: 0;
+    font-weight: 600;
+    color: #00ff88;
+    font-size: 1rem;
+}
+.owl-features ul li {
+    margin-bottom: 8px;
+    display: inline-block;
+    margin-right: 15px;
+}
+.owl-features ul li a.neon-btn {
+    color: #000;
+    background: linear-gradient(45deg, #00ff88, #36a2eb);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: 700;
+    box-shadow: 0 0 15px #00ff88;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.owl-features ul li a.neon-btn:hover {
+    box-shadow: 0 0 25px #36a2eb;
+    color: #fff;
+}
+
+/* Grille Associations & Challenges */
+#liste-associations, #challenges-assoc {
+    margin-top: 40px;
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Cards génériques */
+.item {
+    background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(0,255,136,0.05));
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,255,136,0.1);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+}
+.item:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 45px rgba(0,255,136,0.3);
+    border-color: #00ff88;
+}
+
+/* Solidaire Cards */
+.solidaire-card {
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #00ff88;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 0 25px #00ff8822;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #00ff88;
+    text-align: center;
+}
+.solidaire-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px #00ff88aa;
+    border-color: #00ff88cc;
+}
+.solidaire-card h4 {
+    font-weight: 800;
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88aa;
+}
+.solidaire-card p {
+    color: #aad8c4;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    min-height: 50px;
+}
+.solidaire-card ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.solidaire-card ul li {
+    color: #00ff88;
+    margin-bottom: 8px;
+}
+.solidaire-card ul li i.fa {
+    margin-right: 8px;
+    color: #00ff88;
+}
+.solidaire-card a.btn.neon-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    text-decoration: none;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #00ff88, #36a2eb);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 20px #00ff88;
+    transition: all 0.3s ease;
+    letter-spacing: 0.03em;
+}
+.solidaire-card a.btn.neon-btn:hover {
+    background: linear-gradient(45deg, #36a2eb, #00ff88);
+    color: #fff;
+    box-shadow: 0 0 35px #36a2eb;
+}
+
+/* Challenge Cards */
+.challenge-card {
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.85), rgba(0, 255, 136, 0.1));
+    border-radius: 20px;
+    border: 1px solid #00ff88;
+    padding: 20px;
+    box-shadow: 0 0 30px #00ff8840;
+    transition: all 0.3s ease;
+    color: #00ff88;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+.challenge-card:hover {
+    box-shadow: 0 0 60px #00ff88;
+    transform: translateY(-8px) scale(1.03);
+    border-color: #36a2eb;
+    color: #36a2eb;
+}
+.challenge-card .thumb {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px #00ff88cc;
+}
+.challenge-card .thumb img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+    filter: drop-shadow(0 0 10px rgba(0,255,136,0.5));
+    transition: filter 0.3s ease;
+}
+.challenge-card .thumb img:hover {
+    filter: drop-shadow(0 0 20px rgba(0,255,136,0.8));
+}
+.challenge-card .hover-effect {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,255,136,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: #000;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 12px;
+}
+.challenge-card:hover .hover-effect {
+    opacity: 1;
+}
+.challenge-card h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: inherit;
+    white-space: normal;
+    word-break: break-word;
+    text-shadow: 0 0 10px currentColor;
+}
+.challenge-card p {
+    font-style: italic;
+    margin-bottom: 12px;
+    color: #a0dfc9;
+}
+
+/* Avatar et contenu */
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #00ff88;
+    margin: 0 auto 10px;
+    box-shadow: 0 0 15px rgba(0,255,136,0.5);
+    overflow: hidden;
+}
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.down-content {
+    margin-top: 15px;
+    text-align: center;
+}
+.down-content span {
+    display: block;
+    color: #00ff88;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+.down-content h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: normal;
+    word-break: break-word;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px #00ff88;
+}
+.down-content p {
+    font-size: 1rem;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+/* Progress bars */
+.progress-container {
+    margin: 15px 0;
+}
+.progress-bar-bg {
+    background: linear-gradient(to right, #333, #555);
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+.progress-fill {
+    background: linear-gradient(to right, #00ff88, #36a2eb);
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1.5s ease-in-out;
+    position: relative;
+}
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+.progression-bar {
+    background: #222;
+    height: 14px;
+    border-radius: 7px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    box-shadow: inset 0 0 5px #00ff88aa;
+}
+.progression-fill {
+    background: linear-gradient(45deg, #00ff88, #36a2eb);
+    height: 100%;
+    width: 0;
+    border-radius: 7px;
+    transition: width 1.5s ease-in-out;
+    box-shadow: 0 0 8px #36a2eb, 0 0 15px #00ff88;
+    position: relative;
+}
+small.progress-text {
+    display: block;
+    font-size: 0.9em;
+    color: #ccc;
+    margin-top: 5px;
+    text-align: center;
+}
+small {
+    font-size: 0.9rem;
+    color: #66bb8855;
+    margin-bottom: 12px;
+    display: block;
+}
+
+/* Buttons */
+.btn-challenge {
+    background: linear-gradient(45deg, #00ff88, #36a2eb);
+    border: none;
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0,255,136,0.4);
+    transition: all 0.3s ease;
+    font-weight: bold;
+    font-size: 1rem;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-challenge:hover, .btn-challenge:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 25px rgba(0,255,136,0.6);
+    color: #fff;
+    text-shadow: 0 0 10px #00ff88;
+    outline: none;
+}
+.btn-donate {
+    background: linear-gradient(45deg, #ff6384, #ff9ff3);
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(255,99,132,0.4);
+    transition: all 0.3s ease;
+    font-weight: bold;
+    font-size: 1rem;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+.btn-donate:hover, .btn-donate:focus {
+    box-shadow: 0 0 30px rgba(255,99,132,0.8);
+    outline: none;
+    color: #fff;
+    text-shadow: 0 0 10px #ff6384;
+}
+.main-button a.btn-donate {
+    background: linear-gradient(45deg, #ff6384, #ff9ff3);
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(255,99,132,0.4);
+    transition: all 0.3s ease;
+    font-weight: bold;
+    font-size: 1.1rem;
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+}
+.main-button a.btn-donate:hover {
+    box-shadow: 0 0 30px rgba(255,99,132,0.8);
+    color: #fff;
+    text-shadow: 0 0 10px #ff6384;
+}
+.challenge-card a.neon-btn {
+    align-self: start;
+    padding: 10px 22px;
+    background: linear-gradient(45deg, #00ff88, #36a2eb);
+    border-radius: 25px;
+    font-weight: 700;
+    color: #000;
+    box-shadow: 0 0 20px #00ff88aa;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.challenge-card a.neon-btn:hover {
+    box-shadow: 0 0 35px #36a2eb;
+    color: #fff;
+}
+
+/* Bouton principal bas page avec animation */
+.main-button a {
+    display: inline-block;
+    margin: 30px auto 60px;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    padding: 15px 50px;
+    border-radius: 40px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 0 30px #ff416c99;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    animation: buttonGlow 2s ease-in-out infinite alternate, buttonPulse 3s ease-in-out infinite;
+}
+.main-button a:hover {
+    box-shadow: 0 0 60px #ff4b2bcc;
+    transform: scale(1.05);
+    animation: none;
+}
+
+/* Modal styling */
+.modal-header {
+    background: linear-gradient(45deg, #00ff88, #36a2eb);
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+.btn-close {
+    background: transparent;
+    border: none;
+}
+.modal-body {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,255,136,0.05));
+    color: #fff;
+}
+
+/* Form control */
+.form-control {
+    border: 1px solid #00ff88;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+}
+.form-control:focus {
+    border-color: #00ff88;
+    box-shadow: 0 0 15px rgba(0,255,136,0.5);
+    background: rgba(0,0,0,0.7);
+    outline: none;
+    color: #fff;
+}
+
+/* Neon effects */
+.neon-text {
+    text-shadow: 
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 40px #00ffff,
+        0 0 80px #00ffff;
+    color: #00ffff;
+}
+.neon-border {
+    border: 2px solid #00ffff;
+    box-shadow: 
+        0 0 20px #00ffff,
+        inset 0 0 20px rgba(0,255,255,0.3);
+}
+
+/* Footer */
+footer {
+    padding: 20px 0;
+    background: #111;
+    color: #ccc;
+    text-align: center;
+    font-size: 0.9em;
+}
+footer a {
+    color: #00ff88;
+    text-decoration: none;
+}
+footer a:hover {
+    text-decoration: underline;
+}
+>>>>>>> sinda
